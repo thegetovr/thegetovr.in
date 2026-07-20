@@ -10,6 +10,12 @@ import {
   Transformer,
 } from "react-konva";
 import type { DesignElement } from "@/app/studio/page";
+const PRINT_AREA = {
+  x: 150,
+  y: 140,
+  width: 200,
+  height: 220,
+};
 
 interface DesignCanvasProps {
   elements: DesignElement[];
@@ -64,7 +70,23 @@ export default function DesignCanvas({
       transformerRef.current.getLayer()?.batchDraw();
     }
   }, [selectedElementId, loadedImages]);
-
+const clampPosition = (
+  x: number,
+  y: number,
+  width: number,
+  height: number
+) => {
+  return {
+    x: Math.min(
+      Math.max(x, PRINT_AREA.x),
+      PRINT_AREA.x + PRINT_AREA.width - width
+    ),
+    y: Math.min(
+      Math.max(y, PRINT_AREA.y),
+      PRINT_AREA.y + PRINT_AREA.height - height
+    ),
+  };
+};
   return (
     <div className="flex h-full w-full items-center justify-center rounded-xl bg-gray-100">
       <Stage
@@ -78,15 +100,13 @@ export default function DesignCanvas({
       >
         <Layer>
           <Rect
-            x={100}
-            y={50}
-            width={300}
-            height={450}
-            cornerRadius={20}
-            fill="white"
-            stroke="black"
-            strokeWidth={2}
-          />
+            x={PRINT_AREA.x}
+            y={PRINT_AREA.y}
+            width={PRINT_AREA.width}
+            height={PRINT_AREA.height}
+            dash={[8, 8]}
+            stroke="#666"
+            />
 
           <Rect
             x={150}
@@ -121,53 +141,100 @@ export default function DesignCanvas({
               height={element.height}
               rotation={element.rotation}
               draggable
+              dragBoundFunc={(pos) =>
+  clampPosition(
+    pos.x,
+    pos.y,
+    element.width,
+    element.height
+  )
+}
               onClick={() => setSelectedElementId(element.id)}
               onTap={() => setSelectedElementId(element.id)}
               onDragEnd={(e) => {
-                setElements((prev) =>
-                  prev.map((item) =>
-                    item.id === element.id
-                      ? {
-                          ...item,
-                          x: e.target.x(),
-                          y: e.target.y(),
-                        }
-                      : item
-                  )
-                );
-              }}
+  const position = clampPosition(
+    e.target.x(),
+    e.target.y(),
+    element.width,
+    element.height
+  );
+
+  e.target.position(position);
+
+  setElements((prev) =>
+    prev.map((item) =>
+      item.id === element.id
+        ? {
+            ...item,
+            x: position.x,
+            y: position.y,
+          }
+        : item
+    )
+  );
+}}
               onTransformEnd={(e) => {
-                const node = e.target;
+  const node = e.target;
 
-                const scaleX = node.scaleX();
-                const scaleY = node.scaleY();
+  const scaleX = node.scaleX();
+  const scaleY = node.scaleY();
 
-                node.scaleX(1);
-                node.scaleY(1);
+  node.scaleX(1);
+  node.scaleY(1);
 
-                setElements((prev) =>
-                  prev.map((item) =>
-                    item.id === element.id
-                      ? {
-                          ...item,
-                          x: node.x(),
-                          y: node.y(),
-                          rotation: node.rotation(),
-                          width: Math.max(20, node.width() * scaleX),
-                          height: Math.max(20, node.height() * scaleY),
-                        }
-                      : item
-                  )
-                );
-              }}
+  let width = Math.max(20, node.width() * scaleX);
+  let height = Math.max(20, node.height() * scaleY);
+
+  width = Math.min(width, PRINT_AREA.width);
+  height = Math.min(height, PRINT_AREA.height);
+
+  const position = clampPosition(
+    node.x(),
+    node.y(),
+    width,
+    height
+  );
+
+  node.position(position);
+
+  setElements((prev) =>
+    prev.map((item) =>
+      item.id === element.id
+        ? {
+            ...item,
+            x: position.x,
+            y: position.y,
+            width,
+            height,
+            rotation: node.rotation(),
+          }
+        : item
+    )
+  );
+}}
             />
           ))}
 
           <Transformer
-            ref={transformerRef}
-            rotateEnabled
-            keepRatio
-          />
+  ref={transformerRef}
+  rotateEnabled
+  keepRatio
+  boundBoxFunc={(oldBox, newBox) => {
+    const maxWidth = PRINT_AREA.width;
+    const maxHeight = PRINT_AREA.height;
+
+    if (
+      newBox.width > maxWidth ||
+      newBox.height > maxHeight ||
+      newBox.width < 20 ||
+      newBox.height < 20
+    ) {
+      return oldBox;
+    }
+
+    return newBox;
+  }}
+/>
         </Layer>
       </Stage>
     </div>
