@@ -8,11 +8,24 @@ import StudioSummary from "@/components/studio/StudioSummary";
 
 type Product = "hoodie" | "oversized" | "tshirt";
 
+export interface DesignElement {
+  id: string;
+  type: "image";
+  src: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotation: number;
+}
+
 export default function StudioPage() {
   const [product, setProduct] =
     useState<Product>("hoodie");
 
-  const [designImage, setDesignImage] =
+  const [elements, setElements] = useState<DesignElement[]>([]);
+
+  const [selectedElementId, setSelectedElementId] =
     useState<string | null>(null);
 
   return (
@@ -27,14 +40,19 @@ export default function StudioPage() {
             <StudioSidebar
               product={product}
               setProduct={setProduct}
-              designImage={designImage}
-              setDesignImage={setDesignImage}
+              elements={elements}
+              setElements={setElements}
+              selectedElementId={selectedElementId}
+              setSelectedElementId={setSelectedElementId}
             />
           </div>
 
           <div className="col-span-6">
             <DesignCanvas
-              designImage={designImage}
+              elements={elements}
+              setElements={setElements}
+              selectedElementId={selectedElementId}
+              setSelectedElementId={setSelectedElementId}
             />
           </div>
 

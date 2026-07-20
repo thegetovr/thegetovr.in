@@ -1,21 +1,26 @@
 "use client";
 
 import { useRef } from "react";
+import type { DesignElement } from "@/app/studio/page";
 
 type Product = "hoodie" | "oversized" | "tshirt";
 
 interface StudioSidebarProps {
   product: Product;
   setProduct: (product: Product) => void;
-  designImage: string | null;
-  setDesignImage: (image: string | null) => void;
+  elements: DesignElement[];
+  setElements: React.Dispatch<React.SetStateAction<DesignElement[]>>;
+  selectedElementId: string | null;
+  setSelectedElementId: (id: string | null) => void;
 }
 
 export default function StudioSidebar({
   product,
   setProduct,
-  designImage,
-  setDesignImage,
+  elements,
+  setElements,
+  selectedElementId,
+  setSelectedElementId,
 }: StudioSidebarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -29,9 +34,20 @@ export default function StudioSidebar({
     const reader = new FileReader();
 
     reader.onload = () => {
-      setDesignImage(reader.result as string);
+      const newElement: DesignElement = {
+        id: crypto.randomUUID(),
+        type: "image",
+        src: reader.result as string,
+        x: 170,
+        y: 160,
+        width: 160,
+        height: 160,
+        rotation: 0,
+      };
 
-      // Reset input so the same file can be selected again
+      setElements((prev) => [...prev, newElement]);
+      setSelectedElementId(newElement.id);
+
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -40,8 +56,14 @@ export default function StudioSidebar({
     reader.readAsDataURL(file);
   };
 
-  const handleRemoveDesign = () => {
-    setDesignImage(null);
+  const handleDelete = () => {
+    if (!selectedElementId) return;
+
+    setElements((prev) =>
+      prev.filter((element) => element.id !== selectedElementId)
+    );
+
+    setSelectedElementId(null);
 
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -104,7 +126,7 @@ export default function StudioSidebar({
 
       <div className="mt-8">
         <label className="flex cursor-pointer items-center justify-center rounded-xl border border-dashed p-6 hover:bg-[#2a2a2f]">
-          {designImage ? "Replace Design" : "Upload Design"}
+          Add Image
 
           <input
             ref={fileInputRef}
@@ -116,20 +138,17 @@ export default function StudioSidebar({
         </label>
       </div>
 
-      {designImage && (
-        <>
-          <p className="mt-3 text-center text-sm text-green-400">
-            ✔ Image uploaded
-          </p>
+      <p className="mt-3 text-center text-sm text-green-400">
+        {elements.length} image{elements.length !== 1 ? "s" : ""} added
+      </p>
 
-          <button
-            onClick={handleRemoveDesign}
-            className="mt-4 w-full rounded-xl bg-red-600 p-3 font-semibold transition hover:bg-red-700"
-          >
-            Remove Design
-          </button>
-        </>
-      )}
+      <button
+        onClick={handleDelete}
+        disabled={!selectedElementId}
+        className="mt-4 w-full rounded-xl bg-red-600 p-3 font-semibold transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        Delete
+      </button>
 
       <button className="mt-5 w-full rounded-xl border border-dashed p-6">
         Add Text

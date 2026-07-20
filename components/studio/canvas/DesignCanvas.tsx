@@ -9,46 +9,74 @@ import {
   Image,
   Transformer,
 } from "react-konva";
+import type { DesignElement } from "@/app/studio/page";
 
 interface DesignCanvasProps {
-  designImage: string | null;
+  elements: DesignElement[];
+  setElements: React.Dispatch<React.SetStateAction<DesignElement[]>>;
+  selectedElementId: string | null;
+  setSelectedElementId: (id: string | null) => void;
 }
 
 export default function DesignCanvas({
-  designImage,
+  elements,
+  setElements,
+  selectedElementId,
+  setSelectedElementId,
 }: DesignCanvasProps) {
-  const [image, setImage] = useState<HTMLImageElement | null>(null);
+  const [loadedImages, setLoadedImages] = useState<
+    Record<string, HTMLImageElement>
+  >({});
 
-  const imageRef = useRef<any>(null);
+  const imageRefs = useRef<Record<string, any>>({});
   const transformerRef = useRef<any>(null);
 
   useEffect(() => {
-    if (!designImage) {
-      setImage(null);
+    elements.forEach((element) => {
+      if (loadedImages[element.id]) return;
+
+      const img = new window.Image();
+
+      img.src = element.src;
+
+      img.onload = () => {
+        setLoadedImages((prev) => ({
+          ...prev,
+          [element.id]: img,
+        }));
+      };
+    });
+  }, [elements, loadedImages]);
+
+  useEffect(() => {
+    if (!transformerRef.current) return;
+
+    if (!selectedElementId) {
+      transformerRef.current.nodes([]);
+      transformerRef.current.getLayer()?.batchDraw();
       return;
     }
 
-    const img = new window.Image();
-    img.src = designImage;
+    const node = imageRefs.current[selectedElementId];
 
-    img.onload = () => {
-      setImage(img);
-    };
-  }, [designImage]);
-
-  useEffect(() => {
-    if (image && imageRef.current && transformerRef.current) {
-      transformerRef.current.nodes([imageRef.current]);
+    if (node) {
+      transformerRef.current.nodes([node]);
       transformerRef.current.getLayer()?.batchDraw();
     }
-  }, [image]);
+  }, [selectedElementId, loadedImages]);
 
   return (
     <div className="flex h-full w-full items-center justify-center rounded-xl bg-gray-100">
-      <Stage width={500} height={600}>
+      <Stage
+        width={500}
+        height={600}
+        onMouseDown={(e) => {
+          if (e.target === e.target.getStage()) {
+            setSelectedElementId(null);
+          }
+        }}
+      >
         <Layer>
-
-          {/* Shirt Placeholder */}
           <Rect
             x={100}
             y={50}
@@ -60,7 +88,6 @@ export default function DesignCanvas({
             strokeWidth={2}
           />
 
-          {/* Print Area */}
           <Rect
             x={150}
             y={140}
@@ -70,7 +97,7 @@ export default function DesignCanvas({
             stroke="#666"
           />
 
-          {!image && (
+          {elements.length === 0 && (
             <Text
               x={175}
               y={245}
@@ -79,26 +106,68 @@ export default function DesignCanvas({
             />
           )}
 
-          {image && (
-            <>
-              <Image
-                ref={imageRef}
-                image={image}
-                x={170}
-                y={160}
-                width={160}
-                height={160}
-                draggable
-              />
+          {elements.map((element) => (
+            <Image
+              key={element.id}
+              ref={(node) => {
+                if (node) {
+                  imageRefs.current[element.id] = node;
+                }
+              }}
+              image={loadedImages[element.id]}
+              x={element.x}
+              y={element.y}
+              width={element.width}
+              height={element.height}
+              rotation={element.rotation}
+              draggable
+              onClick={() => setSelectedElementId(element.id)}
+              onTap={() => setSelectedElementId(element.id)}
+              onDragEnd={(e) => {
+                setElements((prev) =>
+                  prev.map((item) =>
+                    item.id === element.id
+                      ? {
+                          ...item,
+                          x: e.target.x(),
+                          y: e.target.y(),
+                        }
+                      : item
+                  )
+                );
+              }}
+              onTransformEnd={(e) => {
+                const node = e.target;
 
-              <Transformer
-                ref={transformerRef}
-                rotateEnabled
-                keepRatio
-              />
-            </>
-          )}
+                const scaleX = node.scaleX();
+                const scaleY = node.scaleY();
 
+                node.scaleX(1);
+                node.scaleY(1);
+
+                setElements((prev) =>
+                  prev.map((item) =>
+                    item.id === element.id
+                      ? {
+                          ...item,
+                          x: node.x(),
+                          y: node.y(),
+                          rotation: node.rotation(),
+                          width: Math.max(20, node.width() * scaleX),
+                          height: Math.max(20, node.height() * scaleY),
+                        }
+                      : item
+                  )
+                );
+              }}
+            />
+          ))}
+
+          <Transformer
+            ref={transformerRef}
+            rotateEnabled
+            keepRatio
+          />
         </Layer>
       </Stage>
     </div>
