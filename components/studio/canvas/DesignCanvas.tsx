@@ -9,15 +9,16 @@ import {
   Image,
   Transformer,
 } from "react-konva";
+
+import ProductMockup from "./ProductMockup";
+import { CANVAS, PRINT_AREAS } from "./constants";
 import type { DesignElement } from "@/app/studio/page";
-const PRINT_AREA = {
-  x: 150,
-  y: 140,
-  width: 200,
-  height: 220,
-};
+
+
+type Product = "hoodie" | "oversized" | "tshirt";
 
 interface DesignCanvasProps {
+  product: Product;
   elements: DesignElement[];
   setElements: React.Dispatch<React.SetStateAction<DesignElement[]>>;
   selectedElementId: string | null;
@@ -25,6 +26,7 @@ interface DesignCanvasProps {
 }
 
 export default function DesignCanvas({
+  product,
   elements,
   setElements,
   selectedElementId,
@@ -70,6 +72,7 @@ export default function DesignCanvas({
       transformerRef.current.getLayer()?.batchDraw();
     }
   }, [selectedElementId, loadedImages]);
+  const PRINT_AREA = PRINT_AREAS[product];
 const clampPosition = (
   x: number,
   y: number,
@@ -88,10 +91,11 @@ const clampPosition = (
   };
 };
   return (
-    <div className="flex h-full w-full items-center justify-center rounded-xl bg-gray-100">
+  <div className="flex h-full w-full items-center justify-center bg-[#ececec] p-10">
+    <div className="rounded-2xl bg-white p-8 shadow-2xl">
       <Stage
-        width={500}
-        height={600}
+        width={CANVAS.width}
+        height={CANVAS.height}
         onMouseDown={(e) => {
           if (e.target === e.target.getStage()) {
             setSelectedElementId(null);
@@ -99,6 +103,7 @@ const clampPosition = (
         }}
       >
         <Layer>
+        <ProductMockup product={product} />
           <Rect
             x={PRINT_AREA.x}
             y={PRINT_AREA.y}
@@ -108,22 +113,18 @@ const clampPosition = (
             stroke="#666"
             />
 
-          <Rect
-            x={150}
-            y={140}
-            width={200}
-            height={220}
-            dash={[8, 8]}
-            stroke="#666"
-          />
+        
 
           {elements.length === 0 && (
             <Text
-              x={175}
-              y={245}
-              text="Design Area"
-              fontSize={20}
-            />
+              x={250}
+               y={300}
+               width={200}
+              align="center"
+              text="Upload a logo to begin"
+              fontSize={18}
+                fill="#8a8a8a"
+              />
           )}
 
           {elements.map((element) => (
@@ -237,6 +238,7 @@ const clampPosition = (
 />
         </Layer>
       </Stage>
+      </div>
     </div>
   );
 }
