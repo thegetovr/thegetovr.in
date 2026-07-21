@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Image } from "react-konva";
-import { MOCKUP } from "./constants";
+import { CANVAS } from "./constants";
 
 type Product = "hoodie" | "oversized" | "tshirt";
 
@@ -28,19 +28,34 @@ export default function ProductMockup({
     img.src = mockupSources[product];
 
     img.onload = () => {
+      console.log(
+        "Product:",
+        product,
+        "Size:",
+        img.naturalWidth,
+        "x",
+        img.naturalHeight
+      );
+
       setImage(img);
     };
   }, [product]);
 
   if (!image) return null;
 
+  // Preserve aspect ratio
+  const aspect = image.naturalWidth / image.naturalHeight;
+
+  const targetHeight = 560;
+  const targetWidth = targetHeight * aspect;
+
   return (
     <Image
       image={image}
-      x={MOCKUP.x}
-      y={MOCKUP.y}
-      width={MOCKUP.width}
-      height={MOCKUP.height}
+      x={(CANVAS.width - targetWidth) / 2}
+      y={30}
+      width={targetWidth}
+      height={targetHeight}
       listening={false}
     />
   );

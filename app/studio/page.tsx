@@ -9,10 +9,8 @@ import type {
   DesignElement,
 } from "@/types/design";
 
-
 export default function StudioPage() {
-  const [product, setProduct] =
-    useState<Product>("hoodie");
+  const [product, setProduct] = useState<Product>("hoodie");
 
   const [elements, setElements] = useState<DesignElement[]>([]);
 
@@ -21,10 +19,10 @@ export default function StudioPage() {
 
   return (
     <main className="min-h-screen bg-[#0b0b0d] pt-24 text-white">
-      <div className="mx-auto flex h-[calc(100vh-96px)] max-w-[1800px] gap-6 px-6 pb-6">
+      <div className="mx-auto flex min-h-[calc(100vh-96px)] max-w-[1700px] gap-5 px-5 pb-5">
 
-        {/* LEFT SIDEBAR */}
-        <aside className="w-[320px] shrink-0 rounded-2xl border border-white/10 bg-[#141418] p-5">
+        {/* Sidebar */}
+        <aside className="w-[300px] shrink-0 rounded-3xl border border-white/10 bg-[#151519] p-5">
           <StudioSidebar
             product={product}
             setProduct={setProduct}
@@ -35,28 +33,30 @@ export default function StudioPage() {
           />
         </aside>
 
-        {/* CENTER */}
-        <section className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#141418]">
+        {/* Studio */}
+        <section className="flex flex-1 flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#151519]">
 
-          {/* Top Bar */}
-          <div className="flex h-16 items-center justify-between border-b border-white/10 px-6">
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-white/10 px-8 py-5">
+
             <div>
-              <h1 className="text-2xl font-bold">
+              <h1 className="text-4xl font-bold tracking-tight">
                 Design Studio
               </h1>
 
-              <p className="text-sm text-gray-400">
-                Customize your product
+              <p className="mt-1 text-gray-400">
+                Create your own premium apparel
               </p>
             </div>
 
-            <div className="rounded-full bg-white/5 px-4 py-2 text-sm">
-              {product.toUpperCase()}
+            <div className="rounded-full border border-white/10 bg-white/5 px-5 py-2 text-sm font-semibold tracking-wide">
+              🧥 {product.toUpperCase()}
             </div>
+
           </div>
 
-          {/* Canvas */}
-          <div className="flex flex-1 items-center justify-center bg-[#ececec] p-8">
+          {/* Workspace */}
+          <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-[#e9e9e9] p-6">
             <DesignCanvas
               product={product}
               elements={elements}
@@ -66,32 +66,32 @@ export default function StudioPage() {
             />
           </div>
 
-          {/* Bottom Toolbar */}
-          <div className="flex h-16 items-center justify-center gap-4 border-t border-white/10">
+          {/* Toolbar */}
+          <div className="flex h-16 items-center justify-center gap-3 border-t border-white/10 bg-[#111114]">
 
-            <button className="rounded-lg bg-white/5 px-4 py-2 hover:bg-white/10">
-              Undo
+            <button className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10">
+              ↶ Undo
             </button>
 
-            <button className="rounded-lg bg-white/5 px-4 py-2 hover:bg-white/10">
-              Redo
+            <button className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10">
+              ↷ Redo
             </button>
 
-            <button className="rounded-lg bg-white/5 px-4 py-2 hover:bg-white/10">
+            <button className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10">
               Reset
             </button>
 
-            <button className="rounded-lg bg-white/5 px-4 py-2 hover:bg-white/10">
-              Front
+            <button className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10">
+              ↑ Front
             </button>
 
-            <button className="rounded-lg bg-white/5 px-4 py-2 hover:bg-white/10">
-              Back
+            <button className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10">
+              ↓ Back
             </button>
+
           </div>
-        </section>
 
-        
+        </section>
 
       </div>
     </main>

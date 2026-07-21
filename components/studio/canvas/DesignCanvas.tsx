@@ -1,6 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Stage,
   Layer,
@@ -36,26 +40,25 @@ export default function DesignCanvas({
     Record<string, HTMLImageElement>
   >({});
 
-  const imageRefs = useRef<Record<string, any>>({});
+  const elementRefs = useRef<Record<string, any>>({});
   const transformerRef = useRef<any>(null);
 
   useEffect(() => {
     elements.forEach((element) => {
-  if (element.type !== "image") return;
+      if (element.type !== "image") return;
 
-  if (loadedImages[element.id]) return;
+      if (loadedImages[element.id]) return;
 
-  const img = new window.Image();
+      const img = new window.Image();
+      img.src = element.src;
 
-  img.src = element.src;
-
-  img.onload = () => {
-    setLoadedImages((prev) => ({
-      ...prev,
-      [element.id]: img,
-    }));
-  };
-});
+      img.onload = () => {
+        setLoadedImages((prev) => ({
+          ...prev,
+          [element.id]: img,
+        }));
+      };
+    });
   }, [elements, loadedImages]);
 
   useEffect(() => {
@@ -67,7 +70,7 @@ export default function DesignCanvas({
       return;
     }
 
-    const node = imageRefs.current[selectedElementId];
+    const node = elementRefs.current[selectedElementId];
 
     if (node) {
       transformerRef.current.nodes([node]);
@@ -75,13 +78,13 @@ export default function DesignCanvas({
     }
   }, [selectedElementId, loadedImages]);
   const PRINT_AREA = PRINT_AREAS[product];
-const clampPosition = (
-  x: number,
-  y: number,
-  width: number,
-  height: number
-) => {
-  return {
+
+  const clampPosition = (
+    x: number,
+    y: number,
+    width: number,
+    height: number
+  ) => ({
     x: Math.min(
       Math.max(x, PRINT_AREA.x),
       PRINT_AREA.x + PRINT_AREA.width - width
@@ -90,160 +93,211 @@ const clampPosition = (
       Math.max(y, PRINT_AREA.y),
       PRINT_AREA.y + PRINT_AREA.height - height
     ),
-  };
-};
+  });
+
   return (
-  <div className="flex h-full w-full items-center justify-center bg-[#ececec] p-10">
-    <div className="rounded-2xl bg-white p-8 shadow-2xl">
-      <Stage
-        width={CANVAS.width}
-        height={CANVAS.height}
-        onMouseDown={(e) => {
-          if (e.target === e.target.getStage()) {
-            setSelectedElementId(null);
-          }
-        }}
-      >
-        <Layer>
-        <ProductMockup product={product} />
-          <Rect
-            x={PRINT_AREA.x}
-            y={PRINT_AREA.y}
-            width={PRINT_AREA.width}
-            height={PRINT_AREA.height}
-            dash={[8, 8]}
-            stroke="#666"
+    <div className="flex h-full w-full items-center justify-center bg-[#ececec] overflow-auto p-6">
+      <div className="rounded-3xl bg-transparent">
+        <Stage
+          width={CANVAS.width}
+          height={CANVAS.height}
+          onMouseDown={(e) => {
+            if (e.target === e.target.getStage()) {
+              setSelectedElementId(null);
+            }
+          }}
+        >
+          <Layer>
+            <ProductMockup product={product} />
+
+            <Rect
+              x={PRINT_AREA.x}
+              y={PRINT_AREA.y}
+              width={PRINT_AREA.width}
+              height={PRINT_AREA.height}
+              dash={[8, 8]}
+              stroke="#666"
             />
 
-        
+            {elements.length === 0 && (
+  <Text
+    x={PRINT_AREA.x}
+    y={PRINT_AREA.y + PRINT_AREA.height / 2 - 10}
+    width={PRINT_AREA.width}
+    align="center"
+    text="Drop image or add text"
+    fontSize={16}
+    fill="#777"
+  />
+)}
 
-          {elements.length === 0 && (
-            <Text
-              x={250}
-               y={300}
-               width={200}
-              align="center"
-              text="Upload a logo to begin"
-              fontSize={18}
-                fill="#8a8a8a"
-              />
-          )}
+            {elements.map((element) => {
+              if (element.type === "image") {
+                return (
+                  <Image
+                    key={element.id}
+                    ref={(node) => {
+                      if (node) {
+                        elementRefs.current[element.id] = node;
+                      }
+                    }}
+                    image={loadedImages[element.id]}
+                    x={element.x}
+                    y={element.y}
+                    width={element.width}
+                    height={element.height}
+                    rotation={element.rotation}
+                    draggable
+                    dragBoundFunc={(pos) =>
+                      clampPosition(
+                        pos.x,
+                        pos.y,
+                        element.width,
+                        element.height
+                      )
+                    }
+                    onClick={() => setSelectedElementId(element.id)}
+                    onTap={() => setSelectedElementId(element.id)}
+                    onDragEnd={(e) => {
+                      const position = clampPosition(
+                        e.target.x(),
+                        e.target.y(),
+                        element.width,
+                        element.height
+                      );
 
-          {elements.map((element) => {
-  if (element.type !== "image") return null;
+                      e.target.position(position);
 
-  return (
-    <Image
-              key={element.id}
-              ref={(node) => {
-                if (node) {
-                  imageRefs.current[element.id] = node;
-                }
-              }}
-              image={loadedImages[element.id]}
-              x={element.x}
-              y={element.y}
-              width={element.width}
-              height={element.height}
-              rotation={element.rotation}
-              draggable
-              dragBoundFunc={(pos) =>
-  clampPosition(
-    pos.x,
-    pos.y,
-    element.width,
-    element.height
-  )
-}
-              onClick={() => setSelectedElementId(element.id)}
-              onTap={() => setSelectedElementId(element.id)}
-              onDragEnd={(e) => {
-  const position = clampPosition(
-    e.target.x(),
-    e.target.y(),
-    element.width,
-    element.height
-  );
+                      setElements((prev) =>
+                        prev.map((item) =>
+                          item.id === element.id
+                            ? {
+                                ...item,
+                                x: position.x,
+                                y: position.y,
+                              }
+                            : item
+                        )
+                      );
+                    }}
+                    onTransformEnd={(e) => {
+                      const node = e.target;
 
-  e.target.position(position);
+                      const scaleX = node.scaleX();
+                      const scaleY = node.scaleY();
 
-  setElements((prev) =>
-    prev.map((item) =>
-      item.id === element.id
-        ? {
-            ...item,
-            x: position.x,
-            y: position.y,
-          }
-        : item
-    )
-  );
-}}
-              onTransformEnd={(e) => {
+                      node.scaleX(1);
+                      node.scaleY(1);
+
+                      let width = Math.max(20, node.width() * scaleX);
+                      let height = Math.max(20, node.height() * scaleY);
+
+                      width = Math.min(width, PRINT_AREA.width);
+                      height = Math.min(height, PRINT_AREA.height);
+
+                      const position = clampPosition(
+                        node.x(),
+                        node.y(),
+                        width,
+                        height
+                      );
+
+                      node.position(position);
+
+                      setElements((prev) =>
+                        prev.map((item) =>
+                          item.id === element.id
+                            ? {
+                                ...item,
+                                x: position.x,
+                                y: position.y,
+                                width,
+                                height,
+                                rotation: node.rotation(),
+                              }
+                            : item
+                        )
+                      );
+                    }}
+                  />
+                );
+              }
+
+              return (
+                <Text
+                  key={element.id}
+                  ref={(node) => {
+                    if (node) {
+                      elementRefs.current[element.id] = node;
+                    }
+                  }}
+                  x={element.x}
+                  y={element.y}
+                  width={element.width}
+                  rotation={element.rotation}
+                  text={element.text}
+                  fontSize={element.fontSize}
+                  fill={element.fill}
+                  fontFamily={element.fontFamily}
+                  draggable
+                  onClick={() => setSelectedElementId(element.id)}
+                  onTap={() => setSelectedElementId(element.id)}
+                  onDragEnd={(e) => {
+                    setElements((prev) =>
+                      prev.map((item) =>
+                        item.id === element.id
+                          ? {
+                              ...item,
+                              x: e.target.x(),
+                              y: e.target.y(),
+                            }
+                          : item
+                      )
+                    );
+                  }}
+                  onTransformEnd={(e) => {
   const node = e.target;
 
   const scaleX = node.scaleX();
-  const scaleY = node.scaleY();
 
   node.scaleX(1);
   node.scaleY(1);
 
-  let width = Math.max(20, node.width() * scaleX);
-  let height = Math.max(20, node.height() * scaleY);
-
-  width = Math.min(width, PRINT_AREA.width);
-  height = Math.min(height, PRINT_AREA.height);
-
-  const position = clampPosition(
-    node.x(),
-    node.y(),
-    width,
-    height
-  );
-
-  node.position(position);
-
   setElements((prev) =>
-    prev.map((item) =>
-      item.id === element.id
-        ? {
-            ...item,
-            x: position.x,
-            y: position.y,
-            width,
-            height,
-            rotation: node.rotation(),
-          }
-        : item
-    )
+    prev.map((item) => {
+      if (item.id !== element.id) {
+        return item;
+      }
+
+      if (item.type !== "text") {
+        return item;
+      }
+
+      return {
+        ...item,
+        x: node.x(),
+        y: node.y(),
+        rotation: node.rotation(),
+        width: node.width() * scaleX,
+        fontSize: Math.max(
+          12,
+          item.fontSize * scaleX
+        ),
+      };
+    })
   );
 }}
+                />
+              );
+            })}
+
+            <Transformer
+              ref={transformerRef}
+              rotateEnabled
+              keepRatio={false}
             />
-  );
-})}
-
-          <Transformer
-  ref={transformerRef}
-  rotateEnabled
-  keepRatio
-  boundBoxFunc={(oldBox, newBox) => {
-    const maxWidth = PRINT_AREA.width;
-    const maxHeight = PRINT_AREA.height;
-
-    if (
-      newBox.width > maxWidth ||
-      newBox.height > maxHeight ||
-      newBox.width < 20 ||
-      newBox.height < 20
-    ) {
-      return oldBox;
-    }
-
-    return newBox;
-  }}
-/>
-        </Layer>
-      </Stage>
+          </Layer>
+        </Stage>
       </div>
     </div>
   );
