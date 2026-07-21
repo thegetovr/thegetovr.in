@@ -1,9 +1,11 @@
 "use client";
 
 import { useRef } from "react";
-import type { DesignElement } from "@/app/studio/page";
-
-type Product = "hoodie" | "oversized" | "tshirt";
+import type {
+  DesignElement,
+  Product,
+  TextElement,
+} from "@/types/design";
 
 interface StudioSidebarProps {
   product: Product;
@@ -34,41 +36,60 @@ export default function StudioSidebar({
     const reader = new FileReader();
 
     reader.onload = () => {
-      const newElement: DesignElement = {
-        id: crypto.randomUUID(),
-        type: "image",
-        src: reader.result as string,
-        x: 170,
-        y: 160,
-        width: 160,
-        height: 160,
-        rotation: 0,
-      };
-
-      setElements((prev) => [...prev, newElement]);
-      setSelectedElementId(newElement.id);
-
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-    };
-
-    reader.readAsDataURL(file);
+  const newElement: DesignElement = {
+    id: crypto.randomUUID(),
+    type: "image",
+    src: reader.result as string,
+    x: 170,
+    y: 160,
+    width: 160,
+    height: 160,
+    rotation: 0,
   };
 
-  const handleDelete = () => {
-    if (!selectedElementId) return;
+  setElements((prev) => [...prev, newElement]);
+  setSelectedElementId(newElement.id);
 
-    setElements((prev) =>
-      prev.filter((element) => element.id !== selectedElementId)
-    );
+  if (fileInputRef.current) {
+    fileInputRef.current.value = "";
+  }
+};
 
-    setSelectedElementId(null);
+reader.readAsDataURL(file);
+};
 
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+const handleAddText = () => {
+  const newText: TextElement = {
+    id: crypto.randomUUID(),
+    type: "text",
+    text: "Your Text",
+    x: 170,
+    y: 180,
+    width: 200,
+    height: 50,
+    rotation: 0,
+    fontSize: 32,
+    fill: "#000000",
+    fontFamily: "Arial",
   };
+
+  setElements((prev) => [...prev, newText]);
+  setSelectedElementId(newText.id);
+};
+
+const handleDelete = () => {
+  if (!selectedElementId) return;
+
+  setElements((prev) =>
+    prev.filter((element) => element.id !== selectedElementId)
+  );
+
+  setSelectedElementId(null);
+
+  if (fileInputRef.current) {
+    fileInputRef.current.value = "";
+  }
+};
 
   return (
     <div className="rounded-3xl bg-[#1d1d21] p-5">
@@ -150,9 +171,12 @@ export default function StudioSidebar({
         Delete
       </button>
 
-      <button className="mt-5 w-full rounded-xl border border-dashed p-6">
-        Add Text
-      </button>
+      <button
+  onClick={handleAddText}
+  className="mt-5 w-full rounded-xl border border-dashed p-6"
+>
+  Add Text
+</button>
     </div>
   );
 }

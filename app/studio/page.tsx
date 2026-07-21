@@ -4,19 +4,11 @@ import { useState } from "react";
 
 import DesignCanvas from "@/components/studio/canvas/DesignCanvas";
 import StudioSidebar from "@/components/studio/StudioSidebar";
+import type {
+  Product,
+  DesignElement,
+} from "@/types/design";
 
-type Product = "hoodie" | "oversized" | "tshirt";
-
-export interface DesignElement {
-  id: string;
-  type: "image";
-  src: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  rotation: number;
-}
 
 export default function StudioPage() {
   const [product, setProduct] =

@@ -12,10 +12,10 @@ import {
 
 import ProductMockup from "./ProductMockup";
 import { CANVAS, PRINT_AREAS } from "./constants";
-import type { DesignElement } from "@/app/studio/page";
-
-
-type Product = "hoodie" | "oversized" | "tshirt";
+import type {
+  DesignElement,
+  Product,
+} from "@/types/design";
 
 interface DesignCanvasProps {
   product: Product;
@@ -41,19 +41,21 @@ export default function DesignCanvas({
 
   useEffect(() => {
     elements.forEach((element) => {
-      if (loadedImages[element.id]) return;
+  if (element.type !== "image") return;
 
-      const img = new window.Image();
+  if (loadedImages[element.id]) return;
 
-      img.src = element.src;
+  const img = new window.Image();
 
-      img.onload = () => {
-        setLoadedImages((prev) => ({
-          ...prev,
-          [element.id]: img,
-        }));
-      };
-    });
+  img.src = element.src;
+
+  img.onload = () => {
+    setLoadedImages((prev) => ({
+      ...prev,
+      [element.id]: img,
+    }));
+  };
+});
   }, [elements, loadedImages]);
 
   useEffect(() => {
@@ -127,8 +129,11 @@ const clampPosition = (
               />
           )}
 
-          {elements.map((element) => (
-            <Image
+          {elements.map((element) => {
+  if (element.type !== "image") return null;
+
+  return (
+    <Image
               key={element.id}
               ref={(node) => {
                 if (node) {
@@ -214,7 +219,8 @@ const clampPosition = (
   );
 }}
             />
-          ))}
+  );
+})}
 
           <Transformer
   ref={transformerRef}
