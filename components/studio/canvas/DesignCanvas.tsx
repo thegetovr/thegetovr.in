@@ -23,6 +23,7 @@ import type {
 
 interface DesignCanvasProps {
   product: Product;
+  productColor: "black" | "white" | "gray" | "green";
   view: "front" | "back";
   elements: DesignElement[];
   setElements: React.Dispatch<React.SetStateAction<DesignElement[]>>;
@@ -32,6 +33,7 @@ interface DesignCanvasProps {
 
 export default function DesignCanvas({
   product,
+  productColor,
   view,
   elements,
   setElements,
@@ -138,7 +140,11 @@ const [zoom, setZoom] = useState(1);
           }}
         >
           <Layer>
-            <ProductMockup product={product} view={view} />
+            <ProductMockup
+  product={product}
+  productColor={productColor}
+  view={view}
+/>
 
             
           

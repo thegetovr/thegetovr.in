@@ -12,6 +12,9 @@ import type {
 export default function StudioPage() {
   const [product, setProduct] = useState<Product>("hoodie");
   const [view, setView] = useState<"front" | "back">("front");
+  const [productColor, setProductColor] = useState<
+  "black" | "white" | "gray" | "green"
+>("black");
   const [designs, setDesigns] = useState<{
   front: DesignElement[];
   back: DesignElement[];
@@ -19,19 +22,40 @@ export default function StudioPage() {
   front: [],
   back: [],
 });
-  const [history, setHistory] = useState<DesignElement[][]>([]);
-  const [redoHistory, setRedoHistory] = useState<DesignElement[][]>([]);
+  const [history, setHistory] = useState<{
+  front: DesignElement[][];
+  back: DesignElement[][];
+}>({
+  front: [],
+  back: [],
+});
+
+const [redoHistory, setRedoHistory] = useState<{
+  front: DesignElement[][];
+  back: DesignElement[][];
+}>({
+  front: [],
+  back: [],
+});
+const currentHistory = history[view];
+const currentRedoHistory = redoHistory[view];
   const elements = designs[view];
 
 const setElements: React.Dispatch<
   React.SetStateAction<DesignElement[]>
 > = (value) => {
-  setHistory((prev) => [
+  setHistory((prev) => ({
     ...prev,
-    structuredClone(designs[view]),
-  ]);
+    [view]: [
+      ...prev[view],
+      structuredClone(designs[view]),
+    ],
+  }));
 
-  setRedoHistory([]);
+  setRedoHistory((prev) => ({
+    ...prev,
+    [view]: [],
+  }));
 
   setDesigns((prev) => ({
     ...prev,
@@ -41,19 +65,25 @@ const setElements: React.Dispatch<
         : value,
   }));
 };
-  
   const [selectedElementId, setSelectedElementId] =
     useState<string | null>(null);
 const undo = () => {
-  if (history.length === 0) return;
+  if (currentHistory.length === 0) return;
 
-  const previous = history[history.length - 1];
+  const previous = currentHistory[currentHistory.length - 1];
 
-  setHistory((prev) => prev.slice(0, -1));
-  setRedoHistory((prev) => [
+  setHistory((prev) => ({
     ...prev,
-    structuredClone(designs[view]),
-  ]);
+    [view]: prev[view].slice(0, -1),
+  }));
+
+  setRedoHistory((prev) => ({
+    ...prev,
+    [view]: [
+      ...prev[view],
+      structuredClone(designs[view]),
+    ],
+  }));
 
   setDesigns((prev) => ({
     ...prev,
@@ -62,16 +92,23 @@ const undo = () => {
 };
 
 const redo = () => {
-  if (redoHistory.length === 0) return;
+  if (currentRedoHistory.length === 0) return;
 
-  const next = redoHistory[redoHistory.length - 1];
+  const next =
+    currentRedoHistory[currentRedoHistory.length - 1];
 
-  setRedoHistory((prev) => prev.slice(0, -1));
-
-  setHistory((prev) => [
+  setRedoHistory((prev) => ({
     ...prev,
-    structuredClone(designs[view]),
-  ]);
+    [view]: prev[view].slice(0, -1),
+  }));
+
+  setHistory((prev) => ({
+    ...prev,
+    [view]: [
+      ...prev[view],
+      structuredClone(designs[view]),
+    ],
+  }));
 
   setDesigns((prev) => ({
     ...prev,
@@ -82,12 +119,18 @@ const redo = () => {
 const resetCanvas = () => {
   if (elements.length === 0) return;
 
-  setHistory((prev) => [
+  setHistory((prev) => ({
     ...prev,
-    structuredClone(designs[view]),
-  ]);
+    [view]: [
+      ...prev[view],
+      structuredClone(designs[view]),
+    ],
+  }));
 
-  setRedoHistory([]);
+  setRedoHistory((prev) => ({
+    ...prev,
+    [view]: [],
+  }));
 
   setDesigns((prev) => ({
     ...prev,
@@ -180,6 +223,8 @@ useEffect(() => {
           <StudioSidebar
             product={product}
             setProduct={setProduct}
+            productColor={productColor}
+            setProductColor={setProductColor}
             elements={elements}
             setElements={setElements}
             selectedElementId={selectedElementId}
@@ -239,6 +284,7 @@ useEffect(() => {
           <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-[#e9e9e9] p-6">
             <DesignCanvas
               product={product}
+              productColor={productColor}
               view={view}
               elements={elements}
               setElements={setElements}
@@ -252,7 +298,7 @@ useEffect(() => {
 
             <button
   onClick={undo}
-  disabled={history.length === 0}
+  disabled={currentHistory.length === 0}
   className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed"
 >
   ↶ Undo
@@ -260,7 +306,7 @@ useEffect(() => {
 
             <button
   onClick={redo}
-  disabled={redoHistory.length === 0}
+  disabled={currentRedoHistory.length === 0}
   className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
 >
   ↷ Redo

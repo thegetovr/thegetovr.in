@@ -8,11 +8,13 @@ type Product = "hoodie" | "oversized" | "tshirt";
 
 interface ProductMockupProps {
   product: Product;
+  productColor: "black" | "white" | "gray" | "green";
   view: "front" | "back";
 }
 
 export default function ProductMockup({
   product,
+  productColor,
   view,
 }: ProductMockupProps) {
   const [image, setImage] =
@@ -21,7 +23,7 @@ export default function ProductMockup({
   useEffect(() => {
     const img = new window.Image();
 
-    img.src = `/mockups/${product}/${view}/black.png`;
+    img.src = `/mockups/${product}/${view}/${productColor}.png`;
 
     img.onload = () => {
       console.log(
@@ -35,7 +37,7 @@ export default function ProductMockup({
 
       setImage(img);
     };
-  }, [product, view]);
+  }, [product, productColor, view]);
 
   if (!image) return null;
 
