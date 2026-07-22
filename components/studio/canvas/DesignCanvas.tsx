@@ -37,12 +37,12 @@ export default function DesignCanvas({
   setSelectedElementId,
 }: DesignCanvasProps) {
   const [loadedImages, setLoadedImages] = useState<
-    Record<string, HTMLImageElement>
-  >({});
+  Record<string, HTMLImageElement>
+>({});
 
   const elementRefs = useRef<Record<string, any>>({});
   const transformerRef = useRef<any>(null);
-
+  const stageRef = useRef<any>(null);
   useEffect(() => {
     elements.forEach((element) => {
       if (element.type !== "image") return;
@@ -78,7 +78,18 @@ export default function DesignCanvas({
     }
   }, [selectedElementId, loadedImages]);
   const PRINT_AREA = PRINT_AREAS[product];
+  const downloadDesign = () => {
+  if (!stageRef.current) return;
 
+  const uri = stageRef.current.toDataURL({
+    pixelRatio: 3,
+  });
+
+  const link = document.createElement("a");
+  link.download = `${product}-design.png`;
+  link.href = uri;
+  link.click();
+};
   const clampPosition = (
     x: number,
     y: number,
@@ -99,6 +110,7 @@ export default function DesignCanvas({
     <div className="flex h-full w-full items-center justify-center bg-[#ececec] overflow-auto p-6">
       <div className="rounded-3xl bg-transparent">
         <Stage
+          ref={stageRef}
           width={CANVAS.width}
           height={CANVAS.height}
           onMouseDown={(e) => {
