@@ -39,6 +39,7 @@ export default function DesignCanvas({
   const [loadedImages, setLoadedImages] = useState<
   Record<string, HTMLImageElement>
 >({});
+const [zoom, setZoom] = useState(1);
 
   const elementRefs = useRef<Record<string, any>>({});
   const transformerRef = useRef<any>(null);
@@ -91,20 +92,35 @@ export default function DesignCanvas({
   link.click();
 };
   const clampPosition = (
-    x: number,
-    y: number,
-    width: number,
-    height: number
-  ) => ({
+  x: number,
+  y: number,
+  width: number,
+  height: number
+) => {
+  const visibleRatio = 0.3;
+
+  return {
     x: Math.min(
-      Math.max(x, PRINT_AREA.x),
-      PRINT_AREA.x + PRINT_AREA.width - width
+      Math.max(
+        x,
+        PRINT_AREA.x - width * (1 - visibleRatio)
+      ),
+      PRINT_AREA.x +
+        PRINT_AREA.width -
+        width * visibleRatio
     ),
+
     y: Math.min(
-      Math.max(y, PRINT_AREA.y),
-      PRINT_AREA.y + PRINT_AREA.height - height
+      Math.max(
+        y,
+        PRINT_AREA.y - height * (1 - visibleRatio)
+      ),
+      PRINT_AREA.y +
+        PRINT_AREA.height -
+        height * visibleRatio
     ),
-  });
+  };
+};
 
   return (
     <div className="flex h-full w-full items-center justify-center bg-[#ececec] overflow-auto p-6">
@@ -122,26 +138,8 @@ export default function DesignCanvas({
           <Layer>
             <ProductMockup product={product} />
 
-            <Rect
-              x={PRINT_AREA.x}
-              y={PRINT_AREA.y}
-              width={PRINT_AREA.width}
-              height={PRINT_AREA.height}
-              dash={[8, 8]}
-              stroke="#666"
-            />
-
-            {elements.length === 0 && (
-  <Text
-    x={PRINT_AREA.x}
-    y={PRINT_AREA.y + PRINT_AREA.height / 2 - 10}
-    width={PRINT_AREA.width}
-    align="center"
-    text="Drop image or add text"
-    fontSize={16}
-    fill="#777"
-  />
-)}
+            
+          
 
             {elements.map((element) => {
               if (element.type === "image") {

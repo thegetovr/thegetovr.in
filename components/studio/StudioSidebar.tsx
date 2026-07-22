@@ -50,23 +50,43 @@ export default function StudioSidebar({
     const reader = new FileReader();
 
     reader.onload = () => {
-      const newElement: DesignElement = {
-        id: crypto.randomUUID(),
-        type: "image",
-        src: reader.result as string,
-        x: 170,
-        y: 160,
-        width: 160,
-        height: 160,
-        rotation: 0,
-      };
+      const img = new window.Image();
 
-      setElements((prev) => [...prev, newElement]);
-      setSelectedElementId(newElement.id);
+img.src = reader.result as string;
 
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+img.onload = () => {
+  const maxSize = 220;
+
+  let width = img.naturalWidth;
+  let height = img.naturalHeight;
+
+  const scale = Math.min(
+    maxSize / width,
+    maxSize / height,
+    1
+  );
+
+  width *= scale;
+  height *= scale;
+
+  const newElement: DesignElement = {
+    id: crypto.randomUUID(),
+    type: "image",
+    src: reader.result as string,
+    x: 250 - width / 2,
+    y: 220 - height / 2,
+    width,
+    height,
+    rotation: 0,
+  };
+
+  setElements((prev) => [...prev, newElement]);
+  setSelectedElementId(newElement.id);
+
+  if (fileInputRef.current) {
+    fileInputRef.current.value = "";
+  }
+};
     };
 
     reader.readAsDataURL(file);
