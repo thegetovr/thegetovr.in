@@ -8,16 +8,12 @@ type Product = "hoodie" | "oversized" | "tshirt";
 
 interface ProductMockupProps {
   product: Product;
+  view: "front" | "back";
 }
-
-const mockupSources = {
-  hoodie: "/mockups/hoodie.png",
-  oversized: "/mockups/oversized-tshirt.png",
-  tshirt: "/mockups/tshirt.png",
-};
 
 export default function ProductMockup({
   product,
+  view,
 }: ProductMockupProps) {
   const [image, setImage] =
     useState<HTMLImageElement | null>(null);
@@ -25,7 +21,7 @@ export default function ProductMockup({
   useEffect(() => {
     const img = new window.Image();
 
-    img.src = mockupSources[product];
+    img.src = `/mockups/${product}/${view}/black.png`;
 
     img.onload = () => {
       console.log(
@@ -39,7 +35,7 @@ export default function ProductMockup({
 
       setImage(img);
     };
-  }, [product]);
+  }, [product, view]);
 
   if (!image) return null;
 

@@ -11,24 +11,37 @@ import type {
 
 export default function StudioPage() {
   const [product, setProduct] = useState<Product>("hoodie");
-
-  const [elements, setElementsState] = useState<DesignElement[]>([]);
+  const [view, setView] = useState<"front" | "back">("front");
+  const [designs, setDesigns] = useState<{
+  front: DesignElement[];
+  back: DesignElement[];
+}>({
+  front: [],
+  back: [],
+});
   const [history, setHistory] = useState<DesignElement[][]>([]);
   const [redoHistory, setRedoHistory] = useState<DesignElement[][]>([]);
+  const elements = designs[view];
 
-  const setElements: React.Dispatch<
+const setElements: React.Dispatch<
   React.SetStateAction<DesignElement[]>
 > = (value) => {
-  setHistory((prev) => [...prev, structuredClone(elements)]);
+  setHistory((prev) => [
+    ...prev,
+    structuredClone(designs[view]),
+  ]);
+
   setRedoHistory([]);
 
-  setElementsState((current) =>
-    typeof value === "function"
-      ? value(current)
-      : value
-  );
-
+  setDesigns((prev) => ({
+    ...prev,
+    [view]:
+      typeof value === "function"
+        ? value(prev[view])
+        : value,
+  }));
 };
+  
   const [selectedElementId, setSelectedElementId] =
     useState<string | null>(null);
 const undo = () => {
@@ -37,26 +50,55 @@ const undo = () => {
   const previous = history[history.length - 1];
 
   setHistory((prev) => prev.slice(0, -1));
-  setRedoHistory((prev) => [...prev, structuredClone(elements)]);
-  setElementsState(previous);
+  setRedoHistory((prev) => [
+    ...prev,
+    structuredClone(designs[view]),
+  ]);
+
+  setDesigns((prev) => ({
+    ...prev,
+    [view]: previous,
+  }));
 };
+
 const redo = () => {
   if (redoHistory.length === 0) return;
 
   const next = redoHistory[redoHistory.length - 1];
 
   setRedoHistory((prev) => prev.slice(0, -1));
-  setHistory((prev) => [...prev, structuredClone(elements)]);
-  setElementsState(next);
+
+  setHistory((prev) => [
+    ...prev,
+    structuredClone(designs[view]),
+  ]);
+
+  setDesigns((prev) => ({
+    ...prev,
+    [view]: next,
+  }));
 };
+
 const resetCanvas = () => {
   if (elements.length === 0) return;
 
-  setHistory((prev) => [...prev, structuredClone(elements)]);
+  setHistory((prev) => [
+    ...prev,
+    structuredClone(designs[view]),
+  ]);
+
   setRedoHistory([]);
-  setElementsState([]);
+
+  setDesigns((prev) => ({
+    ...prev,
+    [view]: [],
+  }));
+
   setSelectedElementId(null);
 };
+
+
+
 const bringToFront = () => {
   if (!selectedElementId) return;
 
@@ -75,6 +117,9 @@ const bringToFront = () => {
     ];
   });
 };
+
+
+
 const sendToBack = () => {
   if (!selectedElementId) return;
 
@@ -158,9 +203,35 @@ useEffect(() => {
               </p>
             </div>
 
-            <div className="rounded-full border border-white/10 bg-white/5 px-5 py-2 text-sm font-semibold tracking-wide">
-              🧥 {product.toUpperCase()}
-            </div>
+            <div className="flex items-center gap-4">
+  <div className="flex overflow-hidden rounded-full border border-white/10 bg-white/5">
+    <button
+      onClick={() => setView("front")}
+      className={`px-5 py-2 text-sm font-semibold transition ${
+        view === "front"
+          ? "bg-white text-black"
+          : "text-white hover:bg-white/10"
+      }`}
+    >
+      Front
+    </button>
+
+    <button
+      onClick={() => setView("back")}
+      className={`px-5 py-2 text-sm font-semibold transition ${
+        view === "back"
+          ? "bg-white text-black"
+          : "text-white hover:bg-white/10"
+      }`}
+    >
+      Back
+    </button>
+  </div>
+
+  <div className="rounded-full border border-white/10 bg-white/5 px-5 py-2 text-sm font-semibold tracking-wide">
+    🧥 {product.toUpperCase()}
+  </div>
+</div>
 
           </div>
 
@@ -168,6 +239,7 @@ useEffect(() => {
           <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-[#e9e9e9] p-6">
             <DesignCanvas
               product={product}
+              view={view}
               elements={elements}
               setElements={setElements}
               selectedElementId={selectedElementId}
