@@ -5,7 +5,7 @@ import BestSellers from "@/components/home/BestSellers";
 import HowItWorks from "@/components/home/HowItWorks";
 import SectionDivider from "@/components/ui/SectionDivider";
 import FeaturedCollection from "@/components/home/FeaturedCollection";
-
+import CommunityGallery from "@/components/home/CommunityGallery";
 
 export default function Home() {
   return (
@@ -27,6 +27,10 @@ export default function Home() {
 <SectionDivider />
 
 <BestSellers />
+
+<SectionDivider />
+
+<CommunityGallery />
 
 <SectionDivider />
 
