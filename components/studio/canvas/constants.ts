@@ -31,4 +31,6 @@ export const PRINT_AREAS = {
     width: 330,
     height: 390,
   },
+  
 } as const;
+export const SNAP_THRESHOLD = 40;
