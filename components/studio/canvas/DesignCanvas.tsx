@@ -41,6 +41,10 @@ export default function DesignCanvas({
   const elementRefs = useRef<Record<string, any>>({});
   const transformerRef = useRef<any>(null);
   const stageRef = useRef<any>(null);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const [stageScale, setStageScale] = useState(1);
   useEffect(() => {
     elements.forEach((element) => {
       if (element.type !== "image") return;
@@ -75,6 +79,32 @@ export default function DesignCanvas({
       transformerRef.current.getLayer()?.batchDraw();
     }
   }, [selectedElementId, loadedImages]);
+  useEffect(() => {
+    const updateScale = () => {
+      if (!containerRef.current) return;
+
+      const { width, height } =
+        containerRef.current.getBoundingClientRect();
+
+      const availableWidth = width - 48;
+      const availableHeight = height - 48;
+
+      const scale = Math.min(
+        availableWidth / CANVAS.width,
+        availableHeight / CANVAS.height,
+        1
+      );
+
+      setStageScale(scale);
+    };
+
+    updateScale();
+
+    window.addEventListener("resize", updateScale);
+
+    return () =>
+      window.removeEventListener("resize", updateScale);
+  }, []);
   const PRINT_AREA = PRINT_AREAS[product];
 
   const clampPosition = (
@@ -130,20 +160,31 @@ export default function DesignCanvas({
       prev.map((item) =>
         item.id === id
           ? ({
-              ...item,
-              ...updates,
-            } as DesignElement)
+            ...item,
+            ...updates,
+          } as DesignElement)
           : item,
       ),
     );
   };
   return (
-    <div className="flex h-full w-full items-center justify-center bg-[#ececec] overflow-auto p-6">
-      <div className="rounded-3xl bg-transparent">
+    <div
+      ref={containerRef}
+      className="flex h-full w-full items-center justify-center bg-[#ececec] overflow-hidden p-6"
+    >
+      <div
+        className="rounded-3xl bg-transparent"
+        style={{
+          width: CANVAS.width * stageScale,
+          height: CANVAS.height * stageScale,
+        }}
+      >
         <Stage
           ref={stageRef}
           width={CANVAS.width}
           height={CANVAS.height}
+          scaleX={stageScale}
+          scaleY={stageScale}
           onMouseDown={(e) => {
             if (e.target === e.target.getStage()) {
               setSelectedElementId(null);

@@ -5,10 +5,15 @@ import LayersPanel from "@/components/studio/LayersPanel";
 import DesignCanvas from "@/components/studio/canvas/DesignCanvas";
 import StudioSidebar from "@/components/studio/StudioSidebar";
 import type { Product, DesignElement } from "@/types/design";
+import StudioLayout from "@/components/studio/layout/StudioLayout";
+import ToolRail, {
+  type StudioTool,
+} from "@/components/studio/layout/ToolRail";
 
 export default function StudioPage() {
   const [product, setProduct] = useState<Product>("hoodie");
   const [view, setView] = useState<"front" | "back">("front");
+  const [activeTool, setActiveTool] = useState<StudioTool>("product");
   const [productColor, setProductColor] = useState<
     "black" | "white" | "gray" | "green"
   >("black");
@@ -185,21 +190,8 @@ export default function StudioPage() {
     };
   }, [undo, redo, selectedElementId, setElements]);
   return (
-    <main className="min-h-screen bg-[#0b0b0d] pt-24 text-white">
-      <div className="mx-auto flex min-h-[calc(100vh-96px)] max-w-[1700px] gap-5 px-5 pb-5">
-        {/* Sidebar */}
-        <aside className="w-[300px] shrink-0 rounded-3xl border border-white/10 bg-[#151519] p-5">
-          <StudioSidebar
-            product={product}
-            setProduct={setProduct}
-            productColor={productColor}
-            setProductColor={setProductColor}
-            elements={elements}
-            setElements={setElements}
-            selectedElementId={selectedElementId}
-            setSelectedElementId={setSelectedElementId}
-          />
-        </aside>
+    <main className="flex h-screen flex-col bg-[#0b0b0d] pt-24 text-white">
+      <div className="mx-auto flex h-full min-h-0 w-full max-w-[1700px] gap-5 overflow-hidden px-5 pb-5">
 
         {/* Studio */}
         <section className="flex flex-1 flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#151519]">
@@ -219,22 +211,20 @@ export default function StudioPage() {
               <div className="flex overflow-hidden rounded-full border border-white/10 bg-white/5">
                 <button
                   onClick={() => setView("front")}
-                  className={`px-5 py-2 text-sm font-semibold transition ${
-                    view === "front"
-                      ? "bg-white text-black"
-                      : "text-white hover:bg-white/10"
-                  }`}
+                  className={`px-5 py-2 text-sm font-semibold transition ${view === "front"
+                    ? "bg-white text-black"
+                    : "text-white hover:bg-white/10"
+                    }`}
                 >
                   Front
                 </button>
 
                 <button
                   onClick={() => setView("back")}
-                  className={`px-5 py-2 text-sm font-semibold transition ${
-                    view === "back"
-                      ? "bg-white text-black"
-                      : "text-white hover:bg-white/10"
-                  }`}
+                  className={`px-5 py-2 text-sm font-semibold transition ${view === "back"
+                    ? "bg-white text-black"
+                    : "text-white hover:bg-white/10"
+                    }`}
                 >
                   Back
                 </button>
@@ -246,10 +236,27 @@ export default function StudioPage() {
             </div>
           </div>
 
-          {/* Workspace */}
-          {/* Workspace */}
-          <div className="flex min-h-0 flex-1 overflow-hidden bg-[#e9e9e9]">
-            <div className="flex flex-1 items-center justify-center p-6">
+          <StudioLayout
+            toolRail={
+              <ToolRail
+                activeTool={activeTool}
+                onChange={setActiveTool}
+              />
+            }
+            toolPanel={
+              <StudioSidebar
+                product={product}
+                setProduct={setProduct}
+                productColor={productColor}
+                setProductColor={setProductColor}
+                elements={elements}
+                setElements={setElements}
+                selectedElementId={selectedElementId}
+                setSelectedElementId={setSelectedElementId}
+                activeTool={activeTool}
+              />
+            }
+            canvas={
               <DesignCanvas
                 product={product}
                 productColor={productColor}
@@ -258,58 +265,81 @@ export default function StudioPage() {
                 setElements={setElements}
                 selectedElementId={selectedElementId}
                 setSelectedElementId={setSelectedElementId}
+
               />
-            </div>
+            }
+            inspector={
+              <LayersPanel
+                elements={elements}
+                selectedId={selectedElementId}
+                onSelect={setSelectedElementId}
+                onDelete={() => {
+                  if (!selectedElementId) return;
 
-            <LayersPanel
-              elements={elements}
-              selectedId={selectedElementId}
-              onSelect={setSelectedElementId}
-            />
-          </div>
+                  setElements((prev) =>
+                    prev.filter((e) => e.id !== selectedElementId)
+                  );
 
-          {/* Toolbar */}
-          <div className="flex h-16 items-center justify-center gap-3 border-t border-white/10 bg-[#111114]">
-            <button
-              onClick={undo}
-              disabled={currentHistory.length === 0}
-              className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              ↶ Undo
-            </button>
+                  setSelectedElementId(null);
+                }}
+                onToggleVisibility={(id) => {
+  setElements((prev) =>
+    prev.map((element) =>
+      element.id === id
+        ? {
+            ...element,
+            visible: !element.visible,
+          }
+        : element
+    )
+  );
+}}
+              />
+            }
+            toolbar={
+              <div className="flex h-16 items-center justify-center gap-3">
+                <button
+                  onClick={undo}
+                  disabled={currentHistory.length === 0}
+                  className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  ↶ Undo
+                </button>
 
-            <button
-              onClick={redo}
-              disabled={currentRedoHistory.length === 0}
-              className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              ↷ Redo
-            </button>
+                <button
+                  onClick={redo}
+                  disabled={currentRedoHistory.length === 0}
+                  className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  ↷ Redo
+                </button>
 
-            <button
-              onClick={resetCanvas}
-              disabled={elements.length === 0}
-              className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Reset
-            </button>
+                <button
+                  onClick={resetCanvas}
+                  disabled={elements.length === 0}
+                  className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Reset
+                </button>
 
-            <button
-              onClick={bringToFront}
-              disabled={!selectedElementId}
-              className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              ↑ Front
-            </button>
+                <button
+                  onClick={bringToFront}
+                  disabled={!selectedElementId}
+                  className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  ↑ Front
+                </button>
 
-            <button
-              onClick={sendToBack}
-              disabled={!selectedElementId}
-              className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              ↓ Back
-            </button>
-          </div>
+                <button
+                  onClick={sendToBack}
+                  disabled={!selectedElementId}
+                  className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  ↓ Back
+                </button>
+              </div>
+            }
+          />
         </section>
       </div>
     </main>

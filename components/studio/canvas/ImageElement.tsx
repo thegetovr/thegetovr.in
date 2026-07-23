@@ -1,4 +1,5 @@
 import { Image } from "react-konva";
+import { useEffect, useRef } from "react";
 import type { DesignElement } from "@/types/design";
 
 interface ImageElementProps {
@@ -43,9 +44,23 @@ export default function ImageElement({
   dragBoundFunc,
   nodeRef,
 }: ImageElementProps) {
+  const imageRef = useRef<any>(null);
+
+  useEffect(() => {
+    imageRef.current?.getLayer()?.batchDraw();
+  }, [element.visible]);
   return (
     <Image
-      ref={nodeRef}
+      opacity={element.visible ? 1 : 0}
+      ref={(node) => {
+        imageRef.current = node;
+        nodeRef(node);
+        console.log(
+  "ImageElement render",
+  element.id,
+  element.visible,
+);
+      }}
       image={image}
       x={element.x}
       y={element.y}
@@ -55,12 +70,12 @@ export default function ImageElement({
       draggable
       dragBoundFunc={dragBoundFunc}
       onDragMove={(e) => {
-  onDragMove?.(
-    e.target,
-    element.width,
-    element.height,
-  );
-}}
+        onDragMove?.(
+          e.target,
+          element.width,
+          element.height,
+        );
+      }}
       onClick={onSelect}
       onTap={onSelect}
       onDragEnd={(e) => {
