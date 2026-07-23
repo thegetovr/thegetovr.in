@@ -16,6 +16,12 @@ import type {
 
 interface StudioSidebarProps {
   product: Product;
+  productColor: "black" | "white" | "gray" | "green";
+setProductColor: React.Dispatch<
+  React.SetStateAction<
+    "black" | "white" | "gray" | "green"
+  >
+>;
   setProduct: (product: Product) => void;
   elements: DesignElement[];
   setElements: React.Dispatch<React.SetStateAction<DesignElement[]>>;
@@ -25,6 +31,8 @@ interface StudioSidebarProps {
 
 export default function StudioSidebar({
   product,
+  productColor,
+  setProductColor,
   setProduct,
   elements,
   setElements,
@@ -50,23 +58,43 @@ export default function StudioSidebar({
     const reader = new FileReader();
 
     reader.onload = () => {
-      const newElement: DesignElement = {
-        id: crypto.randomUUID(),
-        type: "image",
-        src: reader.result as string,
-        x: 170,
-        y: 160,
-        width: 160,
-        height: 160,
-        rotation: 0,
-      };
+      const img = new window.Image();
 
-      setElements((prev) => [...prev, newElement]);
-      setSelectedElementId(newElement.id);
+img.src = reader.result as string;
 
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+img.onload = () => {
+  const maxSize = 220;
+
+  let width = img.naturalWidth;
+  let height = img.naturalHeight;
+
+  const scale = Math.min(
+    maxSize / width,
+    maxSize / height,
+    1
+  );
+
+  width *= scale;
+  height *= scale;
+
+  const newElement: DesignElement = {
+    id: crypto.randomUUID(),
+    type: "image",
+    src: reader.result as string,
+    x: 250 - width / 2,
+    y: 220 - height / 2,
+    width,
+    height,
+    rotation: 0,
+  };
+
+  setElements((prev) => [...prev, newElement]);
+  setSelectedElementId(newElement.id);
+
+  if (fileInputRef.current) {
+    fileInputRef.current.value = "";
+  }
+};
     };
 
     reader.readAsDataURL(file);
@@ -207,15 +235,43 @@ export default function StudioSidebar({
 
   <div className="grid grid-cols-4 gap-3">
 
-    <button className="h-12 rounded-xl border-2 border-white bg-black transition hover:scale-105" />
+  <button
+    onClick={() => setProductColor("black")}
+    className={`h-12 rounded-xl bg-black transition hover:scale-105 ${
+      productColor === "black"
+        ? "border-2 border-white"
+        : ""
+    }`}
+  />
 
-    <button className="h-12 rounded-xl bg-white transition hover:scale-105" />
+  <button
+    onClick={() => setProductColor("white")}
+    className={`h-12 rounded-xl bg-white transition hover:scale-105 ${
+      productColor === "white"
+        ? "border-2 border-blue-500"
+        : ""
+    }`}
+  />
 
-    <button className="h-12 rounded-xl bg-gray-400 transition hover:scale-105" />
+  <button
+    onClick={() => setProductColor("gray")}
+    className={`h-12 rounded-xl bg-gray-400 transition hover:scale-105 ${
+      productColor === "gray"
+        ? "border-2 border-white"
+        : ""
+    }`}
+  />
 
-    <button className="h-12 rounded-xl bg-green-700 transition hover:scale-105" />
+  <button
+    onClick={() => setProductColor("green")}
+    className={`h-12 rounded-xl bg-green-700 transition hover:scale-105 ${
+      productColor === "green"
+        ? "border-2 border-white"
+        : ""
+    }`}
+  />
 
-  </div>
+</div>
 
 </div>
 

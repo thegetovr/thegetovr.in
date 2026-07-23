@@ -1,28 +1,20 @@
 "use client";
 
-import {
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import {
-  Stage,
-  Layer,
-  Rect,
-  Text,
-  Image,
-  Transformer,
-} from "react-konva";
-
+import { useEffect, useRef, useState } from "react";
+import { Stage, Layer, Transformer, Rect } from "react-konva";
+import { snapToElements } from "./snap";
 import ProductMockup from "./ProductMockup";
-import { CANVAS, PRINT_AREAS } from "./constants";
-import type {
-  DesignElement,
-  Product,
-} from "@/types/design";
+import ImageElement from "./ImageElement";
+import TextElement from "./TextElement";
+
+import { CANVAS, PRINT_AREAS, SNAP_THRESHOLD } from "./constants";
+
+import type { DesignElement, Product } from "@/types/design";
 
 interface DesignCanvasProps {
   product: Product;
+  productColor: "black" | "white" | "gray" | "green";
+  view: "front" | "back";
   elements: DesignElement[];
   setElements: React.Dispatch<React.SetStateAction<DesignElement[]>>;
   selectedElementId: string | null;
@@ -31,6 +23,8 @@ interface DesignCanvasProps {
 
 export default function DesignCanvas({
   product,
+  productColor,
+  view,
   elements,
   setElements,
   selectedElementId,
@@ -39,10 +33,14 @@ export default function DesignCanvas({
   const [loadedImages, setLoadedImages] = useState<
     Record<string, HTMLImageElement>
   >({});
-
+  const [zoom, setZoom] = useState(1);
+  const [guides, setGuides] = useState({
+    vertical: null as number | null,
+    horizontal: null as number | null,
+  });
   const elementRefs = useRef<Record<string, any>>({});
   const transformerRef = useRef<any>(null);
-
+  const stageRef = useRef<any>(null);
   useEffect(() => {
     elements.forEach((element) => {
       if (element.type !== "image") return;
@@ -83,22 +81,67 @@ export default function DesignCanvas({
     x: number,
     y: number,
     width: number,
-    height: number
-  ) => ({
-    x: Math.min(
-      Math.max(x, PRINT_AREA.x),
-      PRINT_AREA.x + PRINT_AREA.width - width
-    ),
-    y: Math.min(
-      Math.max(y, PRINT_AREA.y),
-      PRINT_AREA.y + PRINT_AREA.height - height
-    ),
-  });
+    height: number,
+  ) => {
+    const visibleRatio = 0.3;
 
+    return {
+      x: Math.min(
+        Math.max(x, PRINT_AREA.x - width * (1 - visibleRatio)),
+        PRINT_AREA.x + PRINT_AREA.width - width * visibleRatio,
+      ),
+
+      y: Math.min(
+        Math.max(y, PRINT_AREA.y - height * (1 - visibleRatio)),
+        PRINT_AREA.y + PRINT_AREA.height - height * visibleRatio,
+      ),
+    };
+  };
+  const snapToCenter = (
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+  ) => {
+    const centerX = PRINT_AREA.x + PRINT_AREA.width / 2;
+    const centerY = PRINT_AREA.y + PRINT_AREA.height / 2;
+
+    let snappedX = x;
+    let snappedY = y;
+
+    const elementCenterX = x + width / 2;
+    const elementCenterY = y + height / 2;
+
+    if (Math.abs(elementCenterX - centerX) < SNAP_THRESHOLD) {
+      snappedX = centerX - width / 2;
+    }
+
+    if (Math.abs(elementCenterY - centerY) < SNAP_THRESHOLD) {
+      snappedY = centerY - height / 2;
+    }
+
+    return {
+      x: snappedX,
+      y: snappedY,
+    };
+  };
+  const updateElement = (id: string, updates: Partial<DesignElement>) => {
+    setElements((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? ({
+              ...item,
+              ...updates,
+            } as DesignElement)
+          : item,
+      ),
+    );
+  };
   return (
     <div className="flex h-full w-full items-center justify-center bg-[#ececec] overflow-auto p-6">
       <div className="rounded-3xl bg-transparent">
         <Stage
+          ref={stageRef}
           width={CANVAS.width}
           height={CANVAS.height}
           onMouseDown={(e) => {
@@ -108,194 +151,163 @@ export default function DesignCanvas({
           }}
         >
           <Layer>
-            <ProductMockup product={product} />
-
-            <Rect
-              x={PRINT_AREA.x}
-              y={PRINT_AREA.y}
-              width={PRINT_AREA.width}
-              height={PRINT_AREA.height}
-              dash={[8, 8]}
-              stroke="#666"
+            <ProductMockup
+              product={product}
+              productColor={productColor}
+              view={view}
             />
-
-            {elements.length === 0 && (
-  <Text
-    x={PRINT_AREA.x}
-    y={PRINT_AREA.y + PRINT_AREA.height / 2 - 10}
-    width={PRINT_AREA.width}
-    align="center"
-    text="Drop image or add text"
-    fontSize={16}
-    fill="#777"
-  />
-)}
-
             {elements.map((element) => {
               if (element.type === "image") {
                 return (
-                  <Image
+                  <ImageElement
                     key={element.id}
-                    ref={(node) => {
+                    element={element}
+                    image={loadedImages[element.id]}
+                    printArea={PRINT_AREA}
+                    nodeRef={(node) => {
                       if (node) {
                         elementRefs.current[element.id] = node;
                       }
                     }}
-                    image={loadedImages[element.id]}
-                    x={element.x}
-                    y={element.y}
-                    width={element.width}
-                    height={element.height}
-                    rotation={element.rotation}
-                    draggable
+                    onSelect={() => setSelectedElementId(element.id)}
                     dragBoundFunc={(pos) =>
-                      clampPosition(
-                        pos.x,
-                        pos.y,
-                        element.width,
-                        element.height
-                      )
+                      clampPosition(pos.x, pos.y, element.width, element.height)
                     }
-                    onClick={() => setSelectedElementId(element.id)}
-                    onTap={() => setSelectedElementId(element.id)}
-                    onDragEnd={(e) => {
-                      const position = clampPosition(
-                        e.target.x(),
-                        e.target.y(),
-                        element.width,
-                        element.height
+                    onDragMove={(node, width, height) => {
+                      const moving = {
+                        ...element,
+                        x: node.x(),
+                        y: node.y(),
+                        width,
+                        height,
+                      };
+                      const snapped = snapToElements(
+                        moving,
+                        elements,
+                        SNAP_THRESHOLD,
+                        PRINT_AREA,
                       );
 
-                      e.target.position(position);
+                      node.position({
+                        x: snapped.x,
+                        y: snapped.y,
+                      });
 
-                      setElements((prev) =>
-                        prev.map((item) =>
-                          item.id === element.id
-                            ? {
-                                ...item,
-                                x: position.x,
-                                y: position.y,
-                              }
-                            : item
-                        )
-                      );
+                      setGuides({
+                        vertical: snapped.verticalGuide,
+                        horizontal: snapped.horizontalGuide,
+                      });
+
+                      node.getLayer()?.batchDraw();
                     }}
-                    onTransformEnd={(e) => {
-                      const node = e.target;
+                    onDragEnd={(id, x, y) => {
+                      const clamped = clampPosition(
+                        x,
+                        y,
+                        element.width,
+                        element.height,
+                      );
 
-                      const scaleX = node.scaleX();
-                      const scaleY = node.scaleY();
-
-                      node.scaleX(1);
-                      node.scaleY(1);
-
+                      const position = snapToCenter(
+                        clamped.x,
+                        clamped.y,
+                        element.width,
+                        element.height,
+                      );
+                      setGuides({
+                        vertical: null,
+                        horizontal: null,
+                      });
+                      updateElement(id, {
+                        x: position.x,
+                        y: position.y,
+                      });
+                    }}
+                    onTransformEnd={(id, node, scaleX, scaleY) => {
                       let width = Math.max(20, node.width() * scaleX);
+
                       let height = Math.max(20, node.height() * scaleY);
 
                       width = Math.min(width, PRINT_AREA.width);
+
                       height = Math.min(height, PRINT_AREA.height);
 
                       const position = clampPosition(
                         node.x(),
                         node.y(),
                         width,
-                        height
+                        height,
                       );
 
-                      node.position(position);
-
-                      setElements((prev) =>
-                        prev.map((item) =>
-                          item.id === element.id
-                            ? {
-                                ...item,
-                                x: position.x,
-                                y: position.y,
-                                width,
-                                height,
-                                rotation: node.rotation(),
-                              }
-                            : item
-                        )
-                      );
+                      updateElement(id, {
+                        x: position.x,
+                        y: position.y,
+                        width,
+                        height,
+                        rotation: node.rotation(),
+                      });
                     }}
                   />
                 );
               }
 
               return (
-                <Text
+                <TextElement
                   key={element.id}
-                  ref={(node) => {
+                  element={element}
+                  nodeRef={(node) => {
                     if (node) {
                       elementRefs.current[element.id] = node;
                     }
                   }}
-                  x={element.x}
-                  y={element.y}
-                  width={element.width}
-                  rotation={element.rotation}
-                  text={element.text}
-                  fontSize={element.fontSize}
-                  fill={element.fill}
-                  fontFamily={element.fontFamily}
-                  draggable
-                  onClick={() => setSelectedElementId(element.id)}
-                  onTap={() => setSelectedElementId(element.id)}
-                  onDragEnd={(e) => {
-                    setElements((prev) =>
-                      prev.map((item) =>
-                        item.id === element.id
-                          ? {
-                              ...item,
-                              x: e.target.x(),
-                              y: e.target.y(),
-                            }
-                          : item
-                      )
-                    );
+                  onSelect={() => setSelectedElementId(element.id)}
+                  onDragEnd={(id, x, y) => {
+                    updateElement(id, {
+                      x,
+                      y,
+                    });
                   }}
-                  onTransformEnd={(e) => {
-  const node = e.target;
-
-  const scaleX = node.scaleX();
-
-  node.scaleX(1);
-  node.scaleY(1);
-
-  setElements((prev) =>
-    prev.map((item) => {
-      if (item.id !== element.id) {
-        return item;
-      }
-
-      if (item.type !== "text") {
-        return item;
-      }
-
-      return {
-        ...item,
-        x: node.x(),
-        y: node.y(),
-        rotation: node.rotation(),
-        width: node.width() * scaleX,
-        fontSize: Math.max(
-          12,
-          item.fontSize * scaleX
-        ),
-      };
-    })
-  );
-}}
+                  onTransformEnd={(id, node, scaleX) => {
+                    updateElement(id, {
+                      x: node.x(),
+                      y: node.y(),
+                      rotation: node.rotation(),
+                      width: node.width() * scaleX,
+                      fontSize: Math.max(12, element.fontSize * scaleX),
+                    });
+                  }}
                 />
               );
             })}
+            <>
+              {guides.vertical !== null && (
+                <Rect
+                  x={guides.vertical}
+                  y={PRINT_AREA.y}
+                  width={2}
+                  height={PRINT_AREA.height}
+                  fill="#3b82f6"
+                  listening={false}
+                />
+              )}
 
-            <Transformer
-              ref={transformerRef}
-              rotateEnabled
-              keepRatio={false}
-            />
+              {guides.horizontal !== null && (
+                <Rect
+                  x={PRINT_AREA.x}
+                  y={guides.horizontal}
+                  width={PRINT_AREA.width}
+                  height={2}
+                  fill="#3b82f6"
+                  listening={false}
+                />
+              )}
+
+              <Transformer
+                ref={transformerRef}
+                rotateEnabled
+                keepRatio={false}
+              />
+            </>
           </Layer>
         </Stage>
       </div>

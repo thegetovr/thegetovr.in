@@ -12,23 +12,25 @@ export const MOCKUP = {
 
 export const PRINT_AREAS = {
   hoodie: {
-    x: 210,
-    y: 150,
-    width: 200,
-    height: 230,
+    x: 140,
+    y: 90,
+    width: 340,
+    height: 390,
   },
 
   oversized: {
-    x: 205,
-    y: 145,
-    width: 210,
-    height: 240,
+    x: 135,
+    y: 80,
+    width: 350,
+    height: 400,
   },
 
   tshirt: {
-    x: 205,
-    y: 145,
-    width: 210,
-    height: 240,
+    x: 145,
+    y: 85,
+    width: 330,
+    height: 390,
   },
+  
 } as const;
+export const SNAP_THRESHOLD = 40;
