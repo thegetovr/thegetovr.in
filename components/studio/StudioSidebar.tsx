@@ -78,15 +78,38 @@ img.onload = () => {
   height *= scale;
 
   const newElement: DesignElement = {
-    id: crypto.randomUUID(),
-    type: "image",
-    src: reader.result as string,
-    x: 250 - width / 2,
-    y: 220 - height / 2,
-    width,
-    height,
-    rotation: 0,
-  };
+  id: crypto.randomUUID(),
+
+  type: "image",
+
+  src: reader.result as string,
+
+  x: 250 - width / 2,
+  y: 220 - height / 2,
+
+  width,
+  height,
+
+  rotation: 0,
+
+  name: `Image ${elements.filter((e) => e.type === "image").length + 1}`,
+
+  visible: true,
+
+  locked: false,
+
+  originalWidth: width,
+  originalHeight: height,
+
+  printStyle: "original",
+
+  adjustments: {
+    brightness: 0,
+    contrast: 0,
+    saturation: 0,
+    opacity: 100,
+  },
+};
 
   setElements((prev) => [...prev, newElement]);
   setSelectedElementId(newElement.id);
@@ -103,15 +126,29 @@ img.onload = () => {
   const handleAddText = () => {
     const newText: TextElement = {
       id: crypto.randomUUID(),
+
       type: "text",
+
       text: "Your Text",
+
       x: 170,
       y: 180,
+
       width: 200,
       height: 50,
+
       rotation: 0,
+
+      name: `Text ${elements.filter((e) => e.type === "text").length + 1}`,
+
+      visible: true,
+
+      locked: false,
+
       fontSize: 32,
+
       fill: "#000000",
+
       fontFamily: "Arial",
     };
 
