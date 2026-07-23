@@ -16,7 +16,7 @@ interface ImageElementProps {
 
   onDragEnd: (id: string, x: number, y: number) => void;
 
-  onDragMove?: (x: number, y: number, width: number, height: number) => void;
+  onDragMove?: (node: any, width: number, height: number) => void;
 
   onTransformEnd: (
     id: string,
@@ -55,8 +55,12 @@ export default function ImageElement({
       draggable
       dragBoundFunc={dragBoundFunc}
       onDragMove={(e) => {
-        onDragMove?.(e.target.x(), e.target.y(), element.width, element.height);
-      }}
+  onDragMove?.(
+    e.target,
+    element.width,
+    element.height,
+  );
+}}
       onClick={onSelect}
       onTap={onSelect}
       onDragEnd={(e) => {

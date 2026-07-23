@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Stage, Layer, Transformer, Rect } from "react-konva";
-
+import { snapToElements } from "./snap";
 import ProductMockup from "./ProductMockup";
 import ImageElement from "./ImageElement";
 import TextElement from "./TextElement";
@@ -35,8 +35,8 @@ export default function DesignCanvas({
   >({});
   const [zoom, setZoom] = useState(1);
   const [guides, setGuides] = useState({
-    vertical: false,
-    horizontal: false,
+    vertical: null as number | null,
+    horizontal: null as number | null,
   });
   const elementRefs = useRef<Record<string, any>>({});
   const transformerRef = useRef<any>(null);
@@ -173,37 +173,33 @@ export default function DesignCanvas({
                     dragBoundFunc={(pos) =>
                       clampPosition(pos.x, pos.y, element.width, element.height)
                     }
-                    onDragMove={(x, y, width, height) => {
-  const centerX = PRINT_AREA.x + PRINT_AREA.width / 2;
-  const centerY = PRINT_AREA.y + PRINT_AREA.height / 2;
+                    onDragMove={(node, width, height) => {
+                      const moving = {
+                        ...element,
+                        x: node.x(),
+                        y: node.y(),
+                        width,
+                        height,
+                      };
+                      const snapped = snapToElements(
+                        moving,
+                        elements,
+                        SNAP_THRESHOLD,
+                        PRINT_AREA,
+                      );
 
-  const elementCenterX = x + width / 2;
-  const elementCenterY = y + height / 2;
+                      node.position({
+                        x: snapped.x,
+                        y: snapped.y,
+                      });
 
-  const vertical =
-    Math.abs(elementCenterX - centerX) < SNAP_THRESHOLD;
+                      setGuides({
+                        vertical: snapped.verticalGuide,
+                        horizontal: snapped.horizontalGuide,
+                      });
 
-  const horizontal =
-    Math.abs(elementCenterY - centerY) < SNAP_THRESHOLD;
-
-  setGuides({
-    vertical,
-    horizontal,
-  });
-
-  if (vertical) {
-    x = centerX - width / 2;
-  }
-
-  if (horizontal) {
-    y = centerY - height / 2;
-  }
-
-  updateElement(element.id, {
-    x,
-    y,
-  });
-}}
+                      node.getLayer()?.batchDraw();
+                    }}
                     onDragEnd={(id, x, y) => {
                       const clamped = clampPosition(
                         x,
@@ -219,8 +215,8 @@ export default function DesignCanvas({
                         element.height,
                       );
                       setGuides({
-                        vertical: false,
-                        horizontal: false,
+                        vertical: null,
+                        horizontal: null,
                       });
                       updateElement(id, {
                         x: position.x,
@@ -284,9 +280,9 @@ export default function DesignCanvas({
               );
             })}
             <>
-              {guides.vertical && (
+              {guides.vertical !== null && (
                 <Rect
-                  x={PRINT_AREA.x + PRINT_AREA.width / 2}
+                  x={guides.vertical}
                   y={PRINT_AREA.y}
                   width={2}
                   height={PRINT_AREA.height}
@@ -295,39 +291,10 @@ export default function DesignCanvas({
                 />
               )}
 
-              {guides.horizontal && (
+              {guides.horizontal !== null && (
                 <Rect
                   x={PRINT_AREA.x}
-                  y={PRINT_AREA.y + PRINT_AREA.height / 2}
-                  width={PRINT_AREA.width}
-                  height={2}
-                  fill="#3b82f6"
-                  listening={false}
-                />
-              )}
-
-              <Transformer
-                ref={transformerRef}
-                rotateEnabled
-                keepRatio={false}
-              />
-            </>
-            <>
-              {guides.vertical && (
-                <Rect
-                  x={PRINT_AREA.x + PRINT_AREA.width / 2}
-                  y={PRINT_AREA.y}
-                  width={2}
-                  height={PRINT_AREA.height}
-                  fill="#3b82f6"
-                  listening={false}
-                />
-              )}
-
-              {guides.horizontal && (
-                <Rect
-                  x={PRINT_AREA.x}
-                  y={PRINT_AREA.y + PRINT_AREA.height / 2}
+                  y={guides.horizontal}
                   width={PRINT_AREA.width}
                   height={2}
                   fill="#3b82f6"
