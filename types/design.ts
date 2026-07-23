@@ -1,5 +1,5 @@
 export type Product = "hoodie" | "oversized" | "tshirt";
-
+export type ProductSize = "S" | "M" | "L" | "XL" | "XXL";
 export type PrintStyle =
   | "original"
   | "cutout"
@@ -58,3 +58,5 @@ export interface TextElement extends BaseElement {
 }
 
 export type DesignElement = ImageElement | TextElement;
+export type ProductQuantity = 1 | 2 | 3 | 4 | 5;
+export type PrintSide = "front" | "back" | "both";

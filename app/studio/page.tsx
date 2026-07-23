@@ -4,7 +4,13 @@ import { useEffect, useState } from "react";
 import LayersPanel from "@/components/studio/LayersPanel";
 import DesignCanvas from "@/components/studio/canvas/DesignCanvas";
 import StudioSidebar from "@/components/studio/StudioSidebar";
-import type { Product, DesignElement } from "@/types/design";
+import type {
+  Product,
+  ProductSize,
+  ProductQuantity,
+  PrintSide,
+  DesignElement,
+} from "@/types/design";
 import StudioLayout from "@/components/studio/layout/StudioLayout";
 import ToolRail, {
   type StudioTool,
@@ -14,31 +20,13 @@ export default function StudioPage() {
   const [product, setProduct] = useState<Product>("hoodie");
   const [view, setView] = useState<"front" | "back">("front");
   const [activeTool, setActiveTool] = useState<StudioTool>("product");
-  const [productColor, setProductColor] = useState<
-    "black" | "white" | "gray" | "green"
-  >("black");
-  const [designs, setDesigns] = useState<{
-    front: DesignElement[];
-    back: DesignElement[];
-  }>({
-    front: [],
-    back: [],
-  });
-  const [history, setHistory] = useState<{
-    front: DesignElement[][];
-    back: DesignElement[][];
-  }>({
-    front: [],
-    back: [],
-  });
-
-  const [redoHistory, setRedoHistory] = useState<{
-    front: DesignElement[][];
-    back: DesignElement[][];
-  }>({
-    front: [],
-    back: [],
-  });
+  const [productColor, setProductColor] = useState<"black" | "white" | "gray" | "green">("black");
+  const [productSize, setProductSize] = useState<ProductSize>("M");
+  const [quantity, setQuantity] = useState<ProductQuantity>(1);
+  const [printSide, setPrintSide] = useState<PrintSide>("front");
+  const [designs, setDesigns] = useState<{ front: DesignElement[]; back: DesignElement[]; }>({ front: [], back: [], });
+  const [history, setHistory] = useState<{ front: DesignElement[][]; back: DesignElement[][]; }>({ front: [], back: [], });
+  const [redoHistory, setRedoHistory] = useState<{ front: DesignElement[][]; back: DesignElement[][]; }>({ front: [], back: [], });
   const currentHistory = history[view];
   const currentRedoHistory = redoHistory[view];
   const elements = designs[view];
@@ -248,6 +236,12 @@ export default function StudioPage() {
                 product={product}
                 setProduct={setProduct}
                 productColor={productColor}
+                productSize={productSize}
+                quantity={quantity}
+                setQuantity={setQuantity}
+                printSide={printSide}
+                setPrintSide={setPrintSide}
+                setProductSize={setProductSize}
                 setProductColor={setProductColor}
                 elements={elements}
                 setElements={setElements}
@@ -283,17 +277,17 @@ export default function StudioPage() {
                   setSelectedElementId(null);
                 }}
                 onToggleVisibility={(id) => {
-  setElements((prev) =>
-    prev.map((element) =>
-      element.id === id
-        ? {
-            ...element,
-            visible: !element.visible,
-          }
-        : element
-    )
-  );
-}}
+                  setElements((prev) =>
+                    prev.map((element) =>
+                      element.id === id
+                        ? {
+                          ...element,
+                          visible: !element.visible,
+                        }
+                        : element
+                    )
+                  );
+                }}
               />
             }
             toolbar={

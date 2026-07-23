@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Image } from "react-konva";
-import { CANVAS } from "./constants";
+import { CANVAS, PRODUCT_CONFIG } from "./constants";
 
 type Product = "hoodie" | "oversized" | "tshirt";
 
@@ -44,14 +44,16 @@ export default function ProductMockup({
   // Preserve aspect ratio
   const aspect = image.naturalWidth / image.naturalHeight;
 
-  const targetHeight = 560;
+  const layout = PRODUCT_CONFIG[product].mockup;
+
+  const targetHeight = layout.height;
   const targetWidth = targetHeight * aspect;
 
   return (
     <Image
       image={image}
       x={(CANVAS.width - targetWidth) / 2}
-      y={30}
+      y={layout.offsetY}
       width={targetWidth}
       height={targetHeight}
       listening={false}

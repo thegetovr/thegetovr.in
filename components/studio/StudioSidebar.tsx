@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import OrderSummary from "./OrderSummary";
 import {
   Shirt,
   ImagePlus,
@@ -12,13 +13,23 @@ import type { StudioTool } from "./layout/ToolRail";
 import type {
   DesignElement,
   Product,
+  ProductQuantity,
+  PrintSide,
+  ProductSize,
   TextElement,
 } from "@/types/design";
 
 interface StudioSidebarProps {
   product: Product;
   productColor: "black" | "white" | "gray" | "green";
-
+  productSize: ProductSize;
+  setProductSize: React.Dispatch<React.SetStateAction<ProductSize>>;
+  quantity: ProductQuantity;
+  setQuantity: React.Dispatch<
+    React.SetStateAction<ProductQuantity>
+  >;
+  printSide: PrintSide;
+  setPrintSide: React.Dispatch<React.SetStateAction<PrintSide>>;
   setProductColor: React.Dispatch<
     React.SetStateAction<
       "black" | "white" | "gray" | "green"
@@ -45,6 +56,12 @@ export default function StudioSidebar({
   productColor,
   setProductColor,
   setProduct,
+  productSize,
+  setProductSize,
+  quantity,
+  setQuantity,
+  printSide,
+  setPrintSide,
   elements,
   setElements,
   selectedElementId,
@@ -222,8 +239,8 @@ export default function StudioSidebar({
             <button
               onClick={() => setProduct("hoodie")}
               className={`flex w-full items-center gap-4 rounded-2xl border p-4 transition ${product === "hoodie"
-                  ? "border-white bg-white text-black shadow-lg"
-                  : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
+                ? "border-white bg-white text-black shadow-lg"
+                : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
                 }`}
             >
               <span className="text-2xl">🧥</span>
@@ -239,8 +256,8 @@ export default function StudioSidebar({
             <button
               onClick={() => setProduct("oversized")}
               className={`flex w-full items-center gap-4 rounded-2xl border p-4 transition ${product === "oversized"
-                  ? "border-white bg-white text-black shadow-lg"
-                  : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
+                ? "border-white bg-white text-black shadow-lg"
+                : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
                 }`}
             >
               <span className="text-2xl">👕</span>
@@ -256,8 +273,8 @@ export default function StudioSidebar({
             <button
               onClick={() => setProduct("tshirt")}
               className={`flex w-full items-center gap-4 rounded-2xl border p-4 transition ${product === "tshirt"
-                  ? "border-white bg-white text-black shadow-lg"
-                  : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
+                ? "border-white bg-white text-black shadow-lg"
+                : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
                 }`}
             >
               <span className="text-2xl">👕</span>
@@ -271,11 +288,121 @@ export default function StudioSidebar({
             </button>
 
           </div>
+          <div className="mt-8">
+            <div className="mb-4">
+              <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-gray-500">
+                Size
+              </h3>
+            </div>
 
+            <div className="grid grid-cols-5 gap-2">
+              {(["S", "M", "L", "XL", "XXL"] as const).map((size) => (
+                <button
+                  key={size}
+                  onClick={() => setProductSize(size)}
+                  className={`rounded-xl border py-3 text-sm font-semibold transition ${productSize === size
+                    ? "border-white bg-white text-black"
+                    : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
+                    }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="mt-8">
+            <div className="mb-4">
+              <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-gray-500">
+                Print Side
+              </h3>
+            </div>
+
+            <div className="space-y-3">
+              <button
+                type="button"
+                onClick={() => setPrintSide("front")}
+                className={`w-full rounded-2xl border p-4 text-left transition ${printSide === "front"
+                  ? "border-white bg-white text-black"
+                  : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
+                  }`}
+              >
+                <p className="font-semibold">Front Only</p>
+                <p className="text-sm opacity-70">
+                  Single side Print
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setPrintSide("back")}
+                className={`w-full rounded-2xl border p-4 text-left transition ${printSide === "back"
+                  ? "border-white bg-white text-black"
+                  : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
+                  }`}
+              >
+                <p className="font-semibold">Back Only</p>
+                <p className="text-sm opacity-70">
+                  Single side Print
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setPrintSide("both")}
+                className={`w-full rounded-2xl border p-4 text-left transition ${printSide === "both"
+                  ? "border-white bg-white text-black"
+                  : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
+                  }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold">Front + Back</p>
+                    <p className="text-sm opacity-70">
+                      Double-sided Prints
+                    </p>
+                  </div>
+
+                  <span className="rounded-full bg-yellow-500/20 px-3 py-1 text-xs font-semibold text-yellow-300">
+                    Extra Charge
+                  </span>
+                </div>
+              </button>
+            </div>
+          </div>
+          <div className="mt-8">
+            <div className="mb-4">
+              <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-gray-500">
+                Quantity
+              </h3>
+            </div>
+
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#232329] px-4 py-3">
+              <button
+                type="button"
+                onClick={() => quantity > 1 && setQuantity((quantity - 1) as ProductQuantity)}
+                className="h-10 w-10 rounded-lg bg-[#2d2d33] text-lg font-bold transition hover:bg-[#3a3a42]"
+              >
+                -
+              </button>
+
+              <span className="text-lg font-semibold">
+                {quantity}
+              </span>
+
+              <button
+                type="button"
+                onClick={() => quantity < 5 && setQuantity((quantity + 1) as ProductQuantity)}
+                className="h-10 w-10 rounded-lg bg-[#2d2d33] text-lg font-bold transition hover:bg-[#3a3a42]"
+              >
+                +
+              </button>
+            </div>
+          </div>
           <div className="mt-8">
 
             <div className="mb-4 flex items-center gap-2">
               <Palette size={16} />
+
               <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-gray-500">
                 Colors
               </h3>
@@ -286,38 +413,44 @@ export default function StudioSidebar({
               <button
                 onClick={() => setProductColor("black")}
                 className={`h-12 rounded-xl bg-black transition hover:scale-105 ${productColor === "black"
-                    ? "border-2 border-white"
-                    : ""
+                  ? "border-2 border-white"
+                  : ""
                   }`}
               />
 
               <button
                 onClick={() => setProductColor("white")}
                 className={`h-12 rounded-xl bg-white transition hover:scale-105 ${productColor === "white"
-                    ? "border-2 border-blue-500"
-                    : ""
+                  ? "border-2 border-blue-500"
+                  : ""
                   }`}
               />
 
               <button
                 onClick={() => setProductColor("gray")}
                 className={`h-12 rounded-xl bg-gray-400 transition hover:scale-105 ${productColor === "gray"
-                    ? "border-2 border-white"
-                    : ""
+                  ? "border-2 border-white"
+                  : ""
                   }`}
               />
 
               <button
                 onClick={() => setProductColor("green")}
                 className={`h-12 rounded-xl bg-green-700 transition hover:scale-105 ${productColor === "green"
-                    ? "border-2 border-white"
-                    : ""
+                  ? "border-2 border-white"
+                  : ""
                   }`}
               />
 
             </div>
 
           </div>
+          <OrderSummary
+            product={product}
+            size={productSize}
+            quantity={quantity}
+            printSide={printSide}
+          />
 
         </>
       )}
@@ -347,7 +480,7 @@ export default function StudioSidebar({
                 className="hidden"
                 onChange={handleUpload}
               />
-                        </label>
+            </label>
           </div>
 
         </>

@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Stage, Layer, Transformer, Rect } from "react-konva";
+import { Stage, Layer, Transformer, Rect, Text } from "react-konva";
 import { snapToElements } from "./snap";
 import ProductMockup from "./ProductMockup";
 import ImageElement from "./ImageElement";
 import TextElement from "./TextElement";
 
-import { CANVAS, PRINT_AREAS, SNAP_THRESHOLD } from "./constants";
+import { CANVAS, PRODUCT_CONFIG, SNAP_THRESHOLD } from "./constants";
 
 import type { DesignElement, Product } from "@/types/design";
 
@@ -105,7 +105,7 @@ export default function DesignCanvas({
     return () =>
       window.removeEventListener("resize", updateScale);
   }, []);
-  const PRINT_AREA = PRINT_AREAS[product];
+  const PRINT_AREA = PRODUCT_CONFIG[product].printArea;
 
   const clampPosition = (
     x: number,
@@ -197,6 +197,66 @@ export default function DesignCanvas({
               productColor={productColor}
               view={view}
             />
+            <Rect
+              x={PRINT_AREA.x}
+              y={PRINT_AREA.y}
+              width={PRINT_AREA.width}
+              height={PRINT_AREA.height}
+              fill="rgba(96,165,250,0.03)"
+              stroke="rgba(96,165,250,0.85)"
+              strokeWidth={1.5}
+              dash={[8, 6]}
+              cornerRadius={10}
+              listening={false}
+            />
+            {elements.length === 0 && (
+              <>
+                <Text
+                  x={PRINT_AREA.x}
+                  y={PRINT_AREA.y + PRINT_AREA.height / 2 - 42}
+                  width={PRINT_AREA.width}
+                  align="center"
+                  text="Printable Area"
+                  fontSize={20}
+                  fontStyle="bold"
+                  fill="#64748b"
+                  listening={false}
+                />
+
+                <Text
+                  x={PRINT_AREA.x}
+                  y={PRINT_AREA.y + PRINT_AREA.height / 2 - 8}
+                  width={PRINT_AREA.width}
+                  align="center"
+                  text="Drag artwork here"
+                  fontSize={16}
+                  fill="#94a3b8"
+                  listening={false}
+                />
+
+                <Text
+                  x={PRINT_AREA.x}
+                  y={PRINT_AREA.y + PRINT_AREA.height / 2 + 18}
+                  width={PRINT_AREA.width}
+                  align="center"
+                  text="or upload a design"
+                  fontSize={14}
+                  fill="#94a3b8"
+                  listening={false}
+                />
+
+                <Text
+                  x={PRINT_AREA.x}
+                  y={PRINT_AREA.y + PRINT_AREA.height / 2 + 48}
+                  width={PRINT_AREA.width}
+                  align="center"
+                  text="Maximum print size: A3"
+                  fontSize={13}
+                  fill="#cbd5e1"
+                  listening={false}
+                />
+              </>
+            )}
             {elements.map((element) => {
               if (element.type === "image") {
                 return (
