@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useCartStore } from "@/stores/cartStore";
 import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import { useCheckoutStore } from "@/stores/checkoutStore";
 export default function OrderSummary() {
     const items = useCartStore((state) => state.items);
-
+    const { isValid, isSubmitting } = useCheckoutStore();
     const subtotal = items.reduce(
         (sum, item) => sum + item.totalPrice,
         0
@@ -15,7 +17,10 @@ export default function OrderSummary() {
     const total = subtotal + shipping;
 
     return (
-        <aside className="sticky top-6 h-fit rounded-2xl border border-white/10 bg-[#1B1B22] p-6">
+        <Card
+            as={undefined}
+            className="sticky top-6 h-fit bg-[#1B1B22]"
+        >
             <h2 className="text-2xl font-semibold text-white">
                 Order Summary
             </h2>
@@ -74,6 +79,17 @@ export default function OrderSummary() {
                     </div>
                 </div>
             </div>
+            <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-900 p-4">
+                <div className="flex items-center justify-between text-sm text-zinc-400">
+                    <span>Items</span>
+                    <span>{items.length}</span>
+                </div>
+
+                <div className="mt-2 flex items-center justify-between text-sm text-zinc-400">
+                    <span>Estimated Delivery</span>
+                    <span>3–5 Days</span>
+                </div>
+            </div>
             <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-900 p-4 text-sm text-zinc-300">
                 <p>🔒 Secure SSL Checkout</p>
                 <p>🚚 Free Shipping</p>
@@ -82,7 +98,8 @@ export default function OrderSummary() {
             <Button
                 className="mt-8"
                 fullWidth
-                disabled={items.length === 0}
+                loading={isSubmitting}
+                disabled={!isValid || items.length === 0}
             >
                 Place Order
             </Button>
@@ -93,6 +110,6 @@ export default function OrderSummary() {
             >
                 Back to Cart
             </Link>
-        </aside>
+        </Card>
     );
 }
