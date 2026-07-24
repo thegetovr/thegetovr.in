@@ -9,11 +9,11 @@ import TextElement from "./TextElement";
 
 import { CANVAS, PRODUCT_CONFIG, SNAP_THRESHOLD } from "./constants";
 
-import type { DesignElement, Product } from "@/types/design";
+import type { DesignElement, Product, ProductColor } from "@/types/design";
 
 interface DesignCanvasProps {
   product: Product;
-  productColor: "black" | "white" | "gray" | "green";
+  productColor: ProductColor;
   view: "front" | "back";
   elements: DesignElement[];
   setElements: React.Dispatch<React.SetStateAction<DesignElement[]>>;

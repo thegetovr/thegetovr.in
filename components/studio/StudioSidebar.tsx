@@ -17,22 +17,22 @@ import type {
   PrintSide,
   ProductSize,
   TextElement,
+  ProductColor,
 } from "@/types/design";
 
 interface StudioSidebarProps {
   product: Product;
-  productColor: "black" | "white" | "gray" | "green";
+  productColor: ProductColor;
   productSize: ProductSize;
   setProductSize: React.Dispatch<React.SetStateAction<ProductSize>>;
   quantity: ProductQuantity;
   setQuantity: React.Dispatch<
-    React.SetStateAction<ProductQuantity>
-  >;
+    React.SetStateAction<ProductQuantity>>;
   printSide: PrintSide;
   setPrintSide: React.Dispatch<React.SetStateAction<PrintSide>>;
   setProductColor: React.Dispatch<
     React.SetStateAction<
-      "black" | "white" | "gray" | "green"
+      ProductColor
     >
   >;
 
@@ -49,8 +49,8 @@ interface StudioSidebarProps {
   setSelectedElementId: (id: string | null) => void;
 
   activeTool: StudioTool;
+  onAddToCart: () => void;
 }
-
 export default function StudioSidebar({
   product,
   productColor,
@@ -67,6 +67,7 @@ export default function StudioSidebar({
   selectedElementId,
   setSelectedElementId,
   activeTool,
+  onAddToCart
 }: StudioSidebarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -451,6 +452,14 @@ export default function StudioSidebar({
             quantity={quantity}
             printSide={printSide}
           />
+
+          <button
+            type="button"
+            onClick={onAddToCart}
+            className="mt-6 w-full rounded-2xl bg-white px-5 py-4 font-semibold text-black transition hover:scale-[1.02]"
+          >
+            Add to Cart
+          </button>
 
         </>
       )}

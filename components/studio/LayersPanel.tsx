@@ -15,6 +15,7 @@ interface LayersPanelProps {
   onDelete: () => void;
   onToggleVisibility: (id: string) => void;
 }
+
 export default function LayersPanel({
   elements,
   selectedId,
@@ -38,15 +39,22 @@ export default function LayersPanel({
               : `Image ${index + 1}`;
 
           return (
-            <button
+            <div
               key={element.id}
+              role="button"
+              tabIndex={0}
               onClick={() => onSelect(element.id)}
-              className={`flex w-full items-center gap-3 border-b px-4 py-3 text-left transition
-                ${
-                  isSelected
-                    ? "bg-white/10 border-l-4 border-l-blue-500"
-                    : "hover:bg-white/5"
-                }`}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onSelect(element.id);
+                }
+              }}
+              className={`flex w-full cursor-pointer items-center gap-3 border-b px-4 py-3 text-left transition ${
+                isSelected
+                  ? "border-l-4 border-l-blue-500 bg-white/10"
+                  : "hover:bg-white/5"
+              }`}
             >
               {element.type === "text" ? (
                 <Type size={18} />
@@ -55,45 +63,44 @@ export default function LayersPanel({
               )}
 
               <div className="flex flex-1 items-center justify-between">
-  <span
-    className={`truncate text-sm font-medium ${
-      !element.visible ? "opacity-50" : ""
-    }`}
-  >
-    {label}
-  </span>
+                <span
+                  className={`truncate text-sm font-medium ${
+                    !element.visible ? "opacity-50" : ""
+                  }`}
+                >
+                  {label}
+                </span>
 
-  <button
-    type="button"
-    onClick={(e) => {
-      e.stopPropagation();
-      onToggleVisibility(element.id);
-    }}
-    className="rounded p-1 text-gray-400 transition hover:bg-white/10 hover:text-white"
-  >
-    {element.visible ? (
-      <Eye size={16} />
-    ) : (
-      <EyeOff size={16} />
-    )}
-  </button>
-</div>
-            </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleVisibility(element.id);
+                  }}
+                  className="rounded p-1 text-gray-400 transition hover:bg-white/10 hover:text-white"
+                >
+                  {element.visible ? (
+                    <Eye size={16} />
+                  ) : (
+                    <EyeOff size={16} />
+                  )}
+                </button>
+              </div>
+            </div>
           );
         })}
-            </div>
+      </div>
 
       <div className="border-t border-white/10 p-4 space-y-3">
-  <button
-    type="button"
-    onClick={onDelete}
-    disabled={!selectedId}
-    className="w-full rounded-xl bg-red-600 px-4 py-3 font-semibold transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
-  >
-    Delete Selected
-  </button>
-</div>
-    
+        <button
+          type="button"
+          onClick={onDelete}
+          disabled={!selectedId}
+          className="w-full rounded-xl bg-red-600 px-4 py-3 font-semibold transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Delete Selected
+        </button>
+      </div>
     </aside>
   );
 }

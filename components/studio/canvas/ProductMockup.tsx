@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import { Image } from "react-konva";
 import { CANVAS, PRODUCT_CONFIG } from "./constants";
+import { ProductColor } from "@/types/design";
 
 type Product = "hoodie" | "oversized" | "tshirt";
 
 interface ProductMockupProps {
   product: Product;
-  productColor: "black" | "white" | "gray" | "green";
+  productColor: ProductColor;
   view: "front" | "back";
 }
 

@@ -1,5 +1,7 @@
 export type Product = "hoodie" | "oversized" | "tshirt";
 export type ProductSize = "S" | "M" | "L" | "XL" | "XXL";
+export type ProductColor = "black" | "white" | "gray" | "green";
+
 export type PrintStyle =
   | "original"
   | "cutout"

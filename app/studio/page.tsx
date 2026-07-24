@@ -4,10 +4,14 @@ import { useEffect, useState } from "react";
 import LayersPanel from "@/components/studio/LayersPanel";
 import DesignCanvas from "@/components/studio/canvas/DesignCanvas";
 import StudioSidebar from "@/components/studio/StudioSidebar";
+import { useCartStore } from "@/stores/cartStore";
+import { calculatePrice } from "@/lib/store/pricing";
+import { useRouter } from "next/navigation";
 import type {
   Product,
   ProductSize,
   ProductQuantity,
+  ProductColor,
   PrintSide,
   DesignElement,
 } from "@/types/design";
@@ -20,16 +24,45 @@ export default function StudioPage() {
   const [product, setProduct] = useState<Product>("hoodie");
   const [view, setView] = useState<"front" | "back">("front");
   const [activeTool, setActiveTool] = useState<StudioTool>("product");
-  const [productColor, setProductColor] = useState<"black" | "white" | "gray" | "green">("black");
+  const [productColor, setProductColor] = useState<ProductColor>("black");
   const [productSize, setProductSize] = useState<ProductSize>("M");
   const [quantity, setQuantity] = useState<ProductQuantity>(1);
   const [printSide, setPrintSide] = useState<PrintSide>("front");
+  const addItem = useCartStore((state) => state.addItem);
   const [designs, setDesigns] = useState<{ front: DesignElement[]; back: DesignElement[]; }>({ front: [], back: [], });
   const [history, setHistory] = useState<{ front: DesignElement[][]; back: DesignElement[][]; }>({ front: [], back: [], });
   const [redoHistory, setRedoHistory] = useState<{ front: DesignElement[][]; back: DesignElement[][]; }>({ front: [], back: [], });
   const currentHistory = history[view];
   const currentRedoHistory = redoHistory[view];
   const elements = designs[view];
+  const router = useRouter();
+
+  const handleAddToCart = () => {
+    const { unitPrice, totalPrice } = calculatePrice(
+      product,
+      printSide,
+      quantity
+    );
+
+    addItem({
+      id: crypto.randomUUID(),
+
+      product,
+      color: productColor,
+      size: productSize,
+      quantity,
+      printSide,
+
+      frontElements: designs.front,
+      backElements: designs.back,
+
+      unitPrice,
+      totalPrice,
+
+      createdAt: new Date().toISOString(),
+    });
+    router.push("/cart");
+  };
 
   const setElements: React.Dispatch<React.SetStateAction<DesignElement[]>> = (
     value,
@@ -248,6 +281,7 @@ export default function StudioPage() {
                 selectedElementId={selectedElementId}
                 setSelectedElementId={setSelectedElementId}
                 activeTool={activeTool}
+                onAddToCart={handleAddToCart}
               />
             }
             canvas={
