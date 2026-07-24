@@ -14,6 +14,11 @@ export interface CheckoutData {
 
 interface CheckoutStore {
   customer: CheckoutData;
+  coupon: string;
+  discount: number;
+
+  applyCoupon: (code: string, discount: number) => void;
+  removeCoupon: () => void;
 
   isValid: boolean;
   isSubmitting: boolean;
@@ -40,6 +45,8 @@ export const useCheckoutStore = create<CheckoutStore>()(
   persist(
     (set) => ({
       customer: initialCustomer,
+      coupon: "",
+      discount: 0,
 
       isValid: false,
       isSubmitting: false,
@@ -58,16 +65,29 @@ export const useCheckoutStore = create<CheckoutStore>()(
         set({
           isSubmitting: value,
         }),
+      applyCoupon: (code, discount) =>
+        set({
+          coupon: code,
+          discount,
+        }),
+
+      removeCoupon: () =>
+        set({
+          coupon: "",
+          discount: 0,
+        }),
 
       clearCustomer: () =>
-        set({
-          customer: initialCustomer,
-          isValid: false,
-          isSubmitting: false,
-        }),
+  set({
+    customer: initialCustomer,
+    coupon: "",
+    discount: 0,
+    isValid: false,
+    isSubmitting: false,
+  }),
     }),
     {
       name: "thegetovr-checkout",
-    }
-  )
+    },
+  ),
 );
