@@ -1,109 +1,136 @@
 "use client";
 
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import FormField from "@/components/ui/FormField";
+import {
+    checkoutSchema,
+    CheckoutFormData,
+} from "@/lib/validation/checkoutSchema";
+import { useCheckoutStore } from "@/stores/checkoutStore";
+
 export default function CustomerForm() {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-[#1B1B22] p-8">
-      <h2 className="mb-8 text-2xl font-semibold text-white">
-        Customer Details
-      </h2>
+    const {
+        customer,
+        setCustomer,
+        setIsValid,
+    } = useCheckoutStore();
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <div>
-          <label className="mb-2 block text-sm text-gray-400">
-            First Name
-          </label>
+    const {
+        register,
+        watch,
+        formState: { errors, isValid },
+    } = useForm<CheckoutFormData>({
+        resolver: zodResolver(checkoutSchema),
+        mode: "onChange",
+        defaultValues: customer,
+    });
 
-          <input
-            type="text"
-            placeholder="John"
-            className="w-full rounded-xl border border-white/10 bg-[#111118] px-4 py-3 text-white outline-none transition focus:border-white/30"
-          />
+    useEffect(() => {
+        const subscription = watch((value) => {
+            setCustomer({
+                firstName: value.firstName ?? "",
+                lastName: value.lastName ?? "",
+                email: value.email ?? "",
+                phone: value.phone ?? "",
+                address: value.address ?? "",
+                city: value.city ?? "",
+                state: value.state ?? "",
+                pincode: value.pincode ?? "",
+            });
+        });
+
+        return () => subscription.unsubscribe();
+    }, [watch, setCustomer]);
+
+    useEffect(() => {
+        setIsValid(isValid);
+    }, [isValid, setIsValid]);
+
+    return (
+        <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-8 shadow-xl">
+            <h2 className="mb-6 text-2xl font-semibold">
+                Customer Details
+            </h2>
+
+            <div className="grid gap-4 md:grid-cols-2">
+
+                <FormField
+                    label="First Name"
+                    required
+                    placeholder="John"
+                    registration={register("firstName")}
+                    error={errors.firstName?.message}
+                />
+
+                <FormField
+                    label="Last Name"
+                    required
+                    placeholder="Doe"
+                    registration={register("lastName")}
+                    error={errors.lastName?.message}
+                />
+
+                <FormField
+                    label="Email"
+                    type="email"
+                    required
+                    placeholder="john@example.com"
+                    registration={register("email")}
+                    error={errors.email?.message}
+                />
+
+                <FormField
+                    label="Phone"
+                    required
+                    placeholder="9876543210"
+                    registration={register("phone")}
+                    error={errors.phone?.message}
+                />
+
+            </div>
+
+            <div className="mt-4">
+
+                <FormField
+                    label="Address"
+                    required
+                    placeholder="House No, Street, Area"
+                    registration={register("address")}
+                    error={errors.address?.message}
+                />
+
+            </div>
+
+            <div className="mt-4 grid gap-4 md:grid-cols-3">
+
+                <FormField
+                    label="City"
+                    required
+                    placeholder="Jaipur"
+                    registration={register("city")}
+                    error={errors.city?.message}
+                />
+
+                <FormField
+                    label="State"
+                    required
+                    placeholder="Rajasthan"
+                    registration={register("state")}
+                    error={errors.state?.message}
+                />
+
+                <FormField
+                    label="Pincode"
+                    required
+                    placeholder="302001"
+                    registration={register("pincode")}
+                    error={errors.pincode?.message}
+                />
+
+            </div>
         </div>
-
-        <div>
-          <label className="mb-2 block text-sm text-gray-400">
-            Last Name
-          </label>
-
-          <input
-            type="text"
-            placeholder="Doe"
-            className="w-full rounded-xl border border-white/10 bg-[#111118] px-4 py-3 text-white outline-none transition focus:border-white/30"
-          />
-        </div>
-
-        <div className="md:col-span-2">
-          <label className="mb-2 block text-sm text-gray-400">
-            Email Address
-          </label>
-
-          <input
-            type="email"
-            placeholder="john@example.com"
-            className="w-full rounded-xl border border-white/10 bg-[#111118] px-4 py-3 text-white outline-none transition focus:border-white/30"
-          />
-        </div>
-
-        <div className="md:col-span-2">
-          <label className="mb-2 block text-sm text-gray-400">
-            Phone Number
-          </label>
-
-          <input
-            type="tel"
-            placeholder="+91 9876543210"
-            className="w-full rounded-xl border border-white/10 bg-[#111118] px-4 py-3 text-white outline-none transition focus:border-white/30"
-          />
-        </div>
-
-        <div className="md:col-span-2">
-          <label className="mb-2 block text-sm text-gray-400">
-            Address
-          </label>
-
-          <textarea
-            rows={4}
-            placeholder="House No, Street, Area..."
-            className="w-full rounded-xl border border-white/10 bg-[#111118] px-4 py-3 text-white outline-none transition focus:border-white/30"
-          />
-        </div>
-
-        <div>
-          <label className="mb-2 block text-sm text-gray-400">
-            City
-          </label>
-
-          <input
-            type="text"
-            placeholder="Jaipur"
-            className="w-full rounded-xl border border-white/10 bg-[#111118] px-4 py-3 text-white outline-none transition focus:border-white/30"
-          />
-        </div>
-
-        <div>
-          <label className="mb-2 block text-sm text-gray-400">
-            State
-          </label>
-
-          <input
-            type="text"
-            placeholder="Rajasthan"
-            className="w-full rounded-xl border border-white/10 bg-[#111118] px-4 py-3 text-white outline-none transition focus:border-white/30"
-          />
-        </div>
-
-        <div>
-          <label className="mb-2 block text-sm text-gray-400">
-            Pincode
-          </label>
-
-          <input
-            type="text"
-            placeholder="302001"
-            className="w-full rounded-xl border border-white/10 bg-[#111118] px-4 py-3 text-white outline-none transition focus:border-white/30"
-          />
-        </div>
-      </div>
-    </div>
-  );
+    );
 }
