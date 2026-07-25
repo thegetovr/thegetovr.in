@@ -109,6 +109,11 @@ Rules
 - Disabled coupons are rejected.
 - Minimum order value must be satisfied.
 - Coupon usage limits are enforced.
+- Coupon validation is performed server-side.
+- Coupon codes are case-insensitive.
+- Percentage discounts are calculated using the current subtotal.
+- Removing a coupon immediately restores the original total.
+- Discount values are recalculated every validation request.
 
 ---
 

@@ -1,19 +1,30 @@
 "use client";
 
 import Link from "next/link";
+import { createOrder } from "@/lib/generateOrder";
 import { useState } from "react";
+import { useFormContext } from "react-hook-form";
+import type { CheckoutFormData } from "@/lib/validation/checkoutSchema";
 import { useCartStore } from "@/stores/cartStore";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import { useCheckoutStore } from "@/stores/checkoutStore";
 export default function OrderSummary() {
-  const items = useCartStore((state) => state.items);
+  const { items, clearCart } = useCartStore();
   const checkout = useCheckoutStore();
+  const { reset } = useFormContext<CheckoutFormData>();
 
-  console.log(checkout);
+  const {
+    customer,
+    isValid,
+    isSubmitting,
+    coupon,
+    discount,
+    applyCoupon,
+    removeCoupon,
+    setIsSubmitting,
+  } = checkout;
 
-  const { isValid, isSubmitting, coupon, discount, applyCoupon, removeCoupon } =
-    checkout;
   const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
 
   const shipping = 0;
@@ -23,7 +34,47 @@ export default function OrderSummary() {
   const [couponMessage, setCouponMessage] = useState("");
 
   const finalTotal = total - discount;
-  console.log({ total, discount, finalTotal, coupon });
+  const handlePlaceOrder = async () => {
+    setIsSubmitting(true);
+
+    try {
+      const order = createOrder(customer, items, subtotal, discount, coupon);
+
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(order),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+  clearCart();
+
+  const emptyCustomer = {
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+    state: "",
+    pincode: "",
+  };
+
+  reset(emptyCustomer);
+  checkout.setCustomer(emptyCustomer);
+  checkout.clearCustomer();
+
+  setCouponCode("");
+  setCouponMessage("");
+}
+      console.log(data);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <Card as={undefined} className="sticky top-6 h-fit bg-[#1B1B22]">
@@ -118,25 +169,25 @@ export default function OrderSummary() {
           <span className="text-green-400">FREE</span>
         </div>
         {discount > 0 && (
-  <div className="flex items-center justify-between text-green-400">
-    <span>Coupon ({coupon})</span>
+          <div className="flex items-center justify-between text-green-400">
+            <span>Coupon ({coupon})</span>
 
-    <div className="flex items-center gap-3">
-      <span>-₹{discount}</span>
+            <div className="flex items-center gap-3">
+              <span>-₹{discount}</span>
 
-      <button
-        onClick={() => {
-          removeCoupon();
-          setCouponCode("");
-          setCouponMessage("");
-        }}
-        className="text-sm text-red-400 hover:text-red-300"
-      >
-        Remove
-      </button>
-    </div>
-  </div>
-)}
+              <button
+                onClick={() => {
+                  removeCoupon();
+                  setCouponCode("");
+                  setCouponMessage("");
+                }}
+                className="text-sm text-red-400 hover:text-red-300"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="border-t border-white/10 pt-4">
           <div className="flex justify-between text-xl font-semibold text-white">
@@ -166,6 +217,7 @@ export default function OrderSummary() {
         fullWidth
         loading={isSubmitting}
         disabled={!isValid || items.length === 0}
+        onClick={handlePlaceOrder}
       >
         Place Order
       </Button>

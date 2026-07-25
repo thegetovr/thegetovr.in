@@ -66,6 +66,8 @@ Never trust frontend validation.
 
 Always validate again on the server.
 
+Coupon validation must always occur on the server.
+
 ---
 
 # File Upload Security
@@ -120,6 +122,9 @@ Rules
 - Request validation.
 - Structured error responses.
 - HTTPS only in production.
+- Coupon endpoints must never trust client-provided discount values.
+- Only coupon codes and subtotal may be accepted from the client.
+- The server is responsible for calculating the final discount.
 
 ---
 

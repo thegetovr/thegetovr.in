@@ -277,14 +277,49 @@ Return product reviews.
 
 ## POST /coupon/validate
 
-Validate coupon.
+Purpose
 
-Returns
+Validate a coupon before checkout and calculate the applicable discount.
 
-- Valid
-- Discount
-- Expiry
-- Reason
+### Request
+
+```json
+{
+  "code": "WELCOME10",
+  "subtotal": 1499
+}
+```
+
+### Success Response
+
+```json
+{
+  "success": true,
+  "coupon": {
+    "code": "WELCOME10",
+    "type": "percentage",
+    "value": 10
+  },
+  "discount": 150
+}
+```
+
+### Invalid Response
+
+```json
+{
+  "success": false,
+  "message": "Invalid coupon code"
+}
+```
+
+### Rules
+
+- Coupon validation is performed on the server.
+- Coupon codes are case-insensitive.
+- Percentage coupons are calculated from the provided subtotal.
+- Flat coupons return a fixed discount amount.
+- Only one coupon may be applied to an order.
 
 ---
 

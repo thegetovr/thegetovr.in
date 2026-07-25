@@ -54,8 +54,10 @@ This roadmap tracks the overall progress of The Getovr from foundation to public
 - [x] Customer Details
 - [x] Live Order Summary
 - [x] Checkout Store
-- [ ] Form Validation
-- [ ] Coupon System
+- [x] Form Validation
+- [x] Coupon System
+- [x] Coupon Removal
+- [x] Dynamic Discount Calculation
 - [ ] Shipping Address
 - [ ] Order Review
 

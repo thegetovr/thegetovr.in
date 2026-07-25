@@ -57,22 +57,25 @@ Responsibilities
 - Customer information
 - Shipping address
 - Checkout progress
+- Coupon management
+- Discount calculation
 
 State
 
-- firstName
-- lastName
-- email
-- phone
-- address
-- city
-- state
-- pincode
+- customer
+- coupon
+- discount
+- isValid
+- isSubmitting
 
 Actions
 
-- updateField()
-- clearCheckout()
+- setCustomer()
+- setIsValid()
+- setIsSubmitting()
+- applyCoupon()
+- removeCoupon()
+- clearCustomer()
 
 Persistence
 

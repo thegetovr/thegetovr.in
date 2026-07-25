@@ -78,13 +78,13 @@ export const useCheckoutStore = create<CheckoutStore>()(
         }),
 
       clearCustomer: () =>
-  set({
-    customer: initialCustomer,
-    coupon: "",
-    discount: 0,
-    isValid: false,
-    isSubmitting: false,
-  }),
+        set({
+          customer: initialCustomer,
+          coupon: "",
+          discount: 0,
+          isValid: false,
+          isSubmitting: false,
+        }),
     }),
     {
       name: "thegetovr-checkout",

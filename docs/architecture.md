@@ -168,7 +168,8 @@ Responsible for:
 
 - Customer details
 - Shipping address
-- Coupons
+- Coupon validation
+- Discount calculation
 - Order review
 
 ---
@@ -208,6 +209,12 @@ Cart
     │
     ▼
 Checkout
+    │
+    ▼
+Coupon Validation
+    │
+    ▼
+Order Summary   
     │
     ▼
 Payment
