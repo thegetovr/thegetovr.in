@@ -7,25 +7,14 @@ interface Props {
   onSelect: (product: Product) => void;
 }
 
-export default function ProductSelector({
-  selected,
-  onSelect,
-}: Props) {
-  const products: Product[] = [
-    "hoodie",
-    "oversized",
-    "tshirt",
-  ];
+export default function ProductSelector({ selected, onSelect }: Props) {
+  const products: Product[] = ["hoodie", "oversized", "tshirt"];
 
   return (
     <div className="rounded-3xl bg-zinc-900 p-6">
-
-      <h2 className="mb-6 text-2xl font-bold">
-        Choose Product
-      </h2>
+      <h2 className="mb-6 text-2xl font-bold">Choose Product</h2>
 
       <div className="space-y-4">
-
         {products.map((item) => (
           <button
             key={item}
@@ -39,9 +28,7 @@ export default function ProductSelector({
             {item.toUpperCase()}
           </button>
         ))}
-
       </div>
-
     </div>
   );
 }
