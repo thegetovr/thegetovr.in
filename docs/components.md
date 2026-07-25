@@ -122,6 +122,7 @@ Current
 
 - CartItemCard
 - CartSummary
+- CheckoutActions (placeholder)
 
 Future
 
@@ -137,6 +138,12 @@ Current
 
 - CustomerForm
 - OrderSummary
+
+Shared UI
+
+- Button
+- Card
+- FormField
 
 Future
 

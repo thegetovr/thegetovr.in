@@ -11,15 +11,20 @@ import {
   type CheckoutFormData,
 } from "@/lib/validation/checkoutSchema";
 
-import { useCheckoutStore } from "@/stores/checkoutStore";
-
 export default function CheckoutPage() {
-  const { customer } = useCheckoutStore();
-
   const methods = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
     mode: "onChange",
-    defaultValues: customer,
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      address: "",
+      city: "",
+      state: "",
+      pincode: "",
+    },
   });
 
   return (

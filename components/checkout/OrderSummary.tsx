@@ -9,10 +9,13 @@ import { useCartStore } from "@/stores/cartStore";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import { useCheckoutStore } from "@/stores/checkoutStore";
+import { useRouter } from "next/navigation";
+
 export default function OrderSummary() {
   const { items, clearCart } = useCartStore();
   const checkout = useCheckoutStore();
   const { reset } = useFormContext<CheckoutFormData>();
+  const router = useRouter();
 
   const {
     customer,
@@ -50,26 +53,35 @@ export default function OrderSummary() {
 
       const data = await response.json();
       if (data.success) {
-  clearCart();
+        clearCart();
 
-  const emptyCustomer = {
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    address: "",
-    city: "",
-    state: "",
-    pincode: "",
-  };
+        const emptyCustomer = {
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          address: "",
+          city: "",
+          state: "",
+          pincode: "",
+        };
 
-  reset(emptyCustomer);
-  checkout.setCustomer(emptyCustomer);
-  checkout.clearCustomer();
+        reset(emptyCustomer);
+        checkout.setCustomer(emptyCustomer);
+        checkout.clearCustomer();
 
-  setCouponCode("");
-  setCouponMessage("");
-}
+        setCouponCode("");
+        setCouponMessage("");
+
+        console.log(
+          "Redirecting to:",
+          `/order-success?orderNumber=${encodeURIComponent(order.orderNumber)}`,
+        );
+
+        router.replace(
+          `/order-success?orderNumber=${encodeURIComponent(order.orderNumber)}`,
+        );
+      }
       console.log(data);
     } finally {
       setIsSubmitting(false);
@@ -89,22 +101,44 @@ export default function OrderSummary() {
               key={item.id}
               className="rounded-xl border border-white/10 bg-[#111118] p-4"
             >
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="font-medium text-white">{item.product}</h3>
+              <div className="flex items-start justify-between gap-4">
+  <div className="min-w-0 flex-1">
+    <h3 className="truncate text-lg font-semibold text-white">
+      {item.product}
+    </h3>
 
-                  <div className="mt-2 space-y-1 text-sm text-gray-400">
-                    <p>Color: {item.color}</p>
-                    <p>Size: {item.size}</p>
-                    <p>Print: {item.printSide}</p>
-                    <p>Quantity: {item.quantity}</p>
-                  </div>
-                </div>
+    <div className="mt-3 flex flex-wrap gap-2">
+      <span className="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300">
+        {item.color}
+      </span>
 
-                <span className="font-semibold text-white">
-                  ₹{item.totalPrice}
-                </span>
-              </div>
+      <span className="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300">
+        Size {item.size}
+      </span>
+
+      <span className="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300">
+        {item.printSide}
+      </span>
+    </div>
+
+    <p className="mt-3 text-sm text-zinc-400">
+      Quantity:{" "}
+      <span className="font-medium text-white">
+        {item.quantity}
+      </span>
+    </p>
+  </div>
+
+  <div className="text-right">
+    <p className="text-lg font-bold text-white">
+      ₹{item.totalPrice}
+    </p>
+
+    <p className="mt-1 text-sm text-zinc-500">
+      ₹{item.unitPrice} each
+    </p>
+  </div>
+</div>
             </div>
           ))
         )}

@@ -179,9 +179,29 @@ Issue refund.
 
 ## POST /orders
 
-Create customer order.
+POST /api/orders
+
+Creates a new order.
+
+Response
+
+{
+  success: true
+}
 
 ---
+
+POST /api/coupons/validate
+
+Validates coupon.
+
+Returns
+
+valid
+
+coupon
+
+discount
 
 ## GET /orders
 

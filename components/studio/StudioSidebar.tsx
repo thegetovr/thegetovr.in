@@ -1,14 +1,9 @@
 "use client";
 
 import { useRef } from "react";
+import { PRODUCTS, COLORS } from "@/lib/product";
 import OrderSummary from "./OrderSummary";
-import {
-  Shirt,
-  ImagePlus,
-  Type,
-  Trash2,
-  Palette,
-} from "lucide-react";
+import { ImagePlus, Type, Trash2, Palette } from "lucide-react";
 import type { StudioTool } from "./layout/ToolRail";
 import type {
   DesignElement,
@@ -26,23 +21,16 @@ interface StudioSidebarProps {
   productSize: ProductSize;
   setProductSize: React.Dispatch<React.SetStateAction<ProductSize>>;
   quantity: ProductQuantity;
-  setQuantity: React.Dispatch<
-    React.SetStateAction<ProductQuantity>>;
+  setQuantity: React.Dispatch<React.SetStateAction<ProductQuantity>>;
   printSide: PrintSide;
   setPrintSide: React.Dispatch<React.SetStateAction<PrintSide>>;
-  setProductColor: React.Dispatch<
-    React.SetStateAction<
-      ProductColor
-    >
-  >;
+  setProductColor: React.Dispatch<React.SetStateAction<ProductColor>>;
 
   setProduct: (product: Product) => void;
 
   elements: DesignElement[];
 
-  setElements: React.Dispatch<
-    React.SetStateAction<DesignElement[]>
-  >;
+  setElements: React.Dispatch<React.SetStateAction<DesignElement[]>>;
 
   selectedElementId: string | null;
 
@@ -67,20 +55,15 @@ export default function StudioSidebar({
   selectedElementId,
   setSelectedElementId,
   activeTool,
-  onAddToCart
+  onAddToCart,
 }: StudioSidebarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const selectedText =
-    elements.find(
-      (element) =>
-        element.id === selectedElementId &&
-        element.type === "text"
-    ) as TextElement | undefined;
+  const selectedText = elements.find(
+    (element) => element.id === selectedElementId && element.type === "text",
+  ) as TextElement | undefined;
 
-  const handleUpload = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
 
     if (!file) return;
@@ -98,11 +81,7 @@ export default function StudioSidebar({
         let width = img.naturalWidth;
         let height = img.naturalHeight;
 
-        const scale = Math.min(
-          maxSize / width,
-          maxSize / height,
-          1
-        );
+        const scale = Math.min(maxSize / width, maxSize / height, 1);
 
         width *= scale;
         height *= scale;
@@ -186,9 +165,7 @@ export default function StudioSidebar({
     setSelectedElementId(newText.id);
   };
 
-  const updateSelectedText = (
-    updates: Partial<TextElement>
-  ) => {
+  const updateSelectedText = (updates: Partial<TextElement>) => {
     if (!selectedText) return;
 
     setElements((prev) =>
@@ -201,7 +178,7 @@ export default function StudioSidebar({
           ...element,
           ...updates,
         } as TextElement;
-      })
+      }),
     );
   };
 
@@ -209,9 +186,7 @@ export default function StudioSidebar({
     if (!selectedElementId) return;
 
     setElements((prev) =>
-      prev.filter(
-        (element) => element.id !== selectedElementId
-      )
+      prev.filter((element) => element.id !== selectedElementId),
     );
 
     setSelectedElementId(null);
@@ -219,6 +194,11 @@ export default function StudioSidebar({
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+  };
+  const PRODUCT_ICONS: Record<Product, string> = {
+    hoodie: "🧥",
+    oversized: "👕",
+    tshirt: "👕",
   };
 
   return (
@@ -230,64 +210,35 @@ export default function StudioSidebar({
               Products
             </p>
 
-            <h2 className="mt-2 text-2xl font-bold">
-              Choose Apparel
-            </h2>
+            <h2 className="mt-2 text-2xl font-bold">Choose Apparel</h2>
           </div>
 
           <div className="space-y-3">
+            {(Object.keys(PRODUCTS) as Product[]).map((productKey) => (
+  <button
+    key={productKey}
+    onClick={() => setProduct(productKey)}
+    className={`flex w-full items-center gap-4 rounded-2xl border p-4 transition ${
+      product === productKey
+        ? "border-white bg-white text-black shadow-lg"
+        : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
+    }`}
+  >
+    <span className="text-2xl">
+      {PRODUCT_ICONS[productKey]}
+    </span>
 
-            <button
-              onClick={() => setProduct("hoodie")}
-              className={`flex w-full items-center gap-4 rounded-2xl border p-4 transition ${product === "hoodie"
-                ? "border-white bg-white text-black shadow-lg"
-                : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
-                }`}
-            >
-              <span className="text-2xl">🧥</span>
+    <div className="text-left">
+      <p className="font-semibold">
+        {PRODUCTS[productKey].label}
+      </p>
 
-              <div className="text-left">
-                <p className="font-semibold">Hoodie</p>
-                <p className="text-xs opacity-70">
-                  Premium Hoodie
-                </p>
-              </div>
-            </button>
-
-            <button
-              onClick={() => setProduct("oversized")}
-              className={`flex w-full items-center gap-4 rounded-2xl border p-4 transition ${product === "oversized"
-                ? "border-white bg-white text-black shadow-lg"
-                : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
-                }`}
-            >
-              <span className="text-2xl">👕</span>
-
-              <div className="text-left">
-                <p className="font-semibold">Oversized</p>
-                <p className="text-xs opacity-70">
-                  Oversized Tee
-                </p>
-              </div>
-            </button>
-
-            <button
-              onClick={() => setProduct("tshirt")}
-              className={`flex w-full items-center gap-4 rounded-2xl border p-4 transition ${product === "tshirt"
-                ? "border-white bg-white text-black shadow-lg"
-                : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
-                }`}
-            >
-              <span className="text-2xl">👕</span>
-
-              <div className="text-left">
-                <p className="font-semibold">T-Shirt</p>
-                <p className="text-xs opacity-70">
-                  Regular Fit
-                </p>
-              </div>
-            </button>
-
+      <p className="text-xs opacity-70">
+        {PRODUCTS[productKey].label}
+      </p>
+    </div>
+  </button>
+))}
           </div>
           <div className="mt-8">
             <div className="mb-4">
@@ -297,14 +248,15 @@ export default function StudioSidebar({
             </div>
 
             <div className="grid grid-cols-5 gap-2">
-              {(["S", "M", "L", "XL", "XXL"] as const).map((size) => (
+              {PRODUCTS[product].sizes.map((size) => (
                 <button
                   key={size}
                   onClick={() => setProductSize(size)}
-                  className={`rounded-xl border py-3 text-sm font-semibold transition ${productSize === size
-                    ? "border-white bg-white text-black"
-                    : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
-                    }`}
+                  className={`rounded-xl border py-3 text-sm font-semibold transition ${
+                    productSize === size
+                      ? "border-white bg-white text-black"
+                      : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
+                  }`}
                 >
                   {size}
                 </button>
@@ -322,45 +274,42 @@ export default function StudioSidebar({
               <button
                 type="button"
                 onClick={() => setPrintSide("front")}
-                className={`w-full rounded-2xl border p-4 text-left transition ${printSide === "front"
-                  ? "border-white bg-white text-black"
-                  : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
-                  }`}
+                className={`w-full rounded-2xl border p-4 text-left transition ${
+                  printSide === "front"
+                    ? "border-white bg-white text-black"
+                    : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
+                }`}
               >
                 <p className="font-semibold">Front Only</p>
-                <p className="text-sm opacity-70">
-                  Single side Print
-                </p>
+                <p className="text-sm opacity-70">Single side Print</p>
               </button>
 
               <button
                 type="button"
                 onClick={() => setPrintSide("back")}
-                className={`w-full rounded-2xl border p-4 text-left transition ${printSide === "back"
-                  ? "border-white bg-white text-black"
-                  : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
-                  }`}
+                className={`w-full rounded-2xl border p-4 text-left transition ${
+                  printSide === "back"
+                    ? "border-white bg-white text-black"
+                    : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
+                }`}
               >
                 <p className="font-semibold">Back Only</p>
-                <p className="text-sm opacity-70">
-                  Single side Print
-                </p>
+                <p className="text-sm opacity-70">Single side Print</p>
               </button>
 
               <button
                 type="button"
                 onClick={() => setPrintSide("both")}
-                className={`w-full rounded-2xl border p-4 text-left transition ${printSide === "both"
-                  ? "border-white bg-white text-black"
-                  : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
-                  }`}
+                className={`w-full rounded-2xl border p-4 text-left transition ${
+                  printSide === "both"
+                    ? "border-white bg-white text-black"
+                    : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
+                }`}
               >
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-semibold">Front + Back</p>
-                    <p className="text-sm opacity-70">
-                      Double-sided Prints
-                    </p>
+                    <p className="text-sm opacity-70">Double-sided Prints</p>
                   </div>
 
                   <span className="rounded-full bg-yellow-500/20 px-3 py-1 text-xs font-semibold text-yellow-300">
@@ -380,19 +329,21 @@ export default function StudioSidebar({
             <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#232329] px-4 py-3">
               <button
                 type="button"
-                onClick={() => quantity > 1 && setQuantity((quantity - 1) as ProductQuantity)}
+                onClick={() =>
+                  quantity > 1 && setQuantity((quantity - 1) as ProductQuantity)
+                }
                 className="h-10 w-10 rounded-lg bg-[#2d2d33] text-lg font-bold transition hover:bg-[#3a3a42]"
               >
                 -
               </button>
 
-              <span className="text-lg font-semibold">
-                {quantity}
-              </span>
+              <span className="text-lg font-semibold">{quantity}</span>
 
               <button
                 type="button"
-                onClick={() => quantity < 5 && setQuantity((quantity + 1) as ProductQuantity)}
+                onClick={() =>
+                  quantity < 5 && setQuantity((quantity + 1) as ProductQuantity)
+                }
                 className="h-10 w-10 rounded-lg bg-[#2d2d33] text-lg font-bold transition hover:bg-[#3a3a42]"
               >
                 +
@@ -400,7 +351,6 @@ export default function StudioSidebar({
             </div>
           </div>
           <div className="mt-8">
-
             <div className="mb-4 flex items-center gap-2">
               <Palette size={16} />
 
@@ -410,41 +360,17 @@ export default function StudioSidebar({
             </div>
 
             <div className="grid grid-cols-4 gap-3">
-
-              <button
-                onClick={() => setProductColor("black")}
-                className={`h-12 rounded-xl bg-black transition hover:scale-105 ${productColor === "black"
-                  ? "border-2 border-white"
-                  : ""
-                  }`}
-              />
-
-              <button
-                onClick={() => setProductColor("white")}
-                className={`h-12 rounded-xl bg-white transition hover:scale-105 ${productColor === "white"
-                  ? "border-2 border-blue-500"
-                  : ""
-                  }`}
-              />
-
-              <button
-                onClick={() => setProductColor("gray")}
-                className={`h-12 rounded-xl bg-gray-400 transition hover:scale-105 ${productColor === "gray"
-                  ? "border-2 border-white"
-                  : ""
-                  }`}
-              />
-
-              <button
-                onClick={() => setProductColor("green")}
-                className={`h-12 rounded-xl bg-green-700 transition hover:scale-105 ${productColor === "green"
-                  ? "border-2 border-white"
-                  : ""
-                  }`}
-              />
-
+              {PRODUCTS[product].colors.map((color) => (
+                <button
+                  key={color}
+                  onClick={() => setProductColor(color)}
+                  title={COLORS[color].label}
+                  className={`h-12 rounded-xl transition hover:scale-105 ${
+                    COLORS[color].className
+                  } ${productColor === color ? "border-2 border-white" : ""}`}
+                />
+              ))}
             </div>
-
           </div>
           <OrderSummary
             product={product}
@@ -460,7 +386,6 @@ export default function StudioSidebar({
           >
             Add to Cart
           </button>
-
         </>
       )}
 
@@ -472,13 +397,9 @@ export default function StudioSidebar({
                 <ImagePlus size={24} />
 
                 <div>
-                  <p className="font-semibold">
-                    Upload Design
-                  </p>
+                  <p className="font-semibold">Upload Design</p>
 
-                  <p className="text-sm text-gray-400">
-                    PNG or JPG
-                  </p>
+                  <p className="text-sm text-gray-400">PNG or JPG</p>
                 </div>
               </>
 
@@ -491,7 +412,6 @@ export default function StudioSidebar({
               />
             </label>
           </div>
-
         </>
       )}
 
@@ -506,13 +426,9 @@ export default function StudioSidebar({
               <Type size={24} />
 
               <div className="text-left">
-                <p className="font-semibold">
-                  Add Text
-                </p>
+                <p className="font-semibold">Add Text</p>
 
-                <p className="text-sm text-gray-400">
-                  Headlines & slogans
-                </p>
+                <p className="text-sm text-gray-400">Headlines & slogans</p>
               </div>
             </button>
           </div>
@@ -533,9 +449,7 @@ export default function StudioSidebar({
               />
 
               <div>
-                <label className="mb-2 block text-sm">
-                  Font Size
-                </label>
+                <label className="mb-2 block text-sm">Font Size</label>
 
                 <input
                   type="range"
@@ -552,9 +466,7 @@ export default function StudioSidebar({
               </div>
 
               <div>
-                <label className="mb-2 block text-sm">
-                  Font
-                </label>
+                <label className="mb-2 block text-sm">Font</label>
 
                 <select
                   value={selectedText.fontFamily}
@@ -573,9 +485,7 @@ export default function StudioSidebar({
                   <option value="Bebas Neue">Bebas Neue</option>
                 </select>
 
-                <label className="mb-2 block text-sm">
-                  Text Color
-                </label>
+                <label className="mb-2 block text-sm">Text Color</label>
 
                 <input
                   type="color"

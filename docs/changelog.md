@@ -100,3 +100,38 @@ All notable changes to The Getovr are documented in this file.
 - Fixed coupon response mapping.
 - Fixed subtotal not being passed to coupon validation.
 - Fixed discount calculation returning null.
+
+---
+
+# Sprint 5.1 — Checkout Complete
+
+## Added
+
+- Customer checkout form with React Hook Form.
+- Zod-based customer validation.
+- Shared FormProvider architecture.
+- Zustand checkout persistence.
+- Coupon validation API integration.
+- Order generation utility.
+- Orders API endpoint.
+- Order persistence using `data/orders.json`.
+
+## Improved
+
+- CustomerForm and OrderSummary now share the same form state.
+- Live order summary updates.
+- Coupon application and removal workflow.
+- Checkout state synchronization.
+
+## Fixed
+
+- Customer form resets after successful order placement.
+- Cart clears after successful order placement.
+- Coupon state clears after successful order placement.
+- Checkout validation flow stabilized.
+
+## Decisions
+
+- Customer information persists while shopping.
+- Customer information clears only after a successful order.
+- Sprint 5.1 is considered MVP complete.

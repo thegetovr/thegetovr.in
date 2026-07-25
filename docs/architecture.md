@@ -211,13 +211,22 @@ Cart
 Checkout
     │
     ▼
+Customer Validation
+    │
+    ▼
 Coupon Validation
     │
     ▼
-Order Summary   
+Order Generation
     │
     ▼
-Payment
+Order Persistence
+    │
+    ▼
+Order Success
+    │
+    ▼
+Payment (Next Phase)
     │
     ▼
 Order Database

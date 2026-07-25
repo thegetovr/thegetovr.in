@@ -54,14 +54,18 @@ This roadmap tracks the overall progress of The Getovr from foundation to public
 - [x] Customer Details
 - [x] Live Order Summary
 - [x] Checkout Store
+- [x] Shared React Hook Form Architecture
 - [x] Form Validation
+- [x] Customer State Persistence
 - [x] Coupon System
 - [x] Coupon Removal
 - [x] Dynamic Discount Calculation
+- [x] Order Creation API
+- [x] Order Persistence (JSON)
+- [x] Successful Order Reset Flow
 - [ ] Shipping Address
 - [ ] Order Review
 
----
 
 # Phase 6 — Payments
 
@@ -117,3 +121,23 @@ This roadmap tracks the overall progress of The Getovr from foundation to public
 - [ ] Testing
 - [ ] Deployment
 - [ ] Public Release
+
+## Current Sprint
+
+Sprint 5.2
+
+Order Success Page
+
+- Success UI
+- Order Number
+- Continue Shopping
+- Order Details (future)
+
+---
+
+## Upcoming
+
+- Orders
+- Payments
+- Authentication
+- Admin Dashboard
