@@ -1,9 +1,10 @@
-import OrderHeader from "@/components/orders/OrderHeader";
 import { getOrderByNumber } from "@/lib/orders";
 import CustomerCard from "@/components/orders/CustomerCard";
 import OrderItems from "@/components/orders/OrderItems";
 import PaymentSummary from "@/components/orders/PaymentSummary";
 import ShippingCard from "@/components/orders/ShippingCard";
+import OrderTrackingCard from "@/components/orders/OrderTrackingCard";
+
 type OrderPageProps = {
   params: Promise<{
     orderNumber: string;
@@ -31,24 +32,33 @@ export default async function OrderDetailsPage({ params }: OrderPageProps) {
 
           <p className="mt-2 text-zinc-400">Track and review your purchase.</p>
         </div>
-        <OrderHeader
+        <OrderTrackingCard
           orderNumber={order.orderNumber}
           status={order.status}
           createdAt={order.createdAt}
         />
 
-        <div className="mt-8"></div>
-        <div className="mt-10">
-          <CustomerCard customer={order.customer} />
-          <ShippingCard customer={order.customer} />
-          <OrderItems items={order.items} />
-            <PaymentSummary
-              subtotal={order.subtotal}
-              discount={order.discount}
-              total={order.total}
-              coupon={order.coupon}
-            />
-        </div>
+        <div className="mt-10 space-y-8">
+  {/* Customer + Shipping */}
+  <div className="grid gap-8 lg:grid-cols-2">
+    <CustomerCard customer={order.customer} />
+    <ShippingCard customer={order.customer} />
+  </div>
+
+  {/* Items + Payment */}
+  <div className="grid gap-8 lg:grid-cols-3">
+    <div className="lg:col-span-2">
+      <OrderItems items={order.items} />
+    </div>
+
+    <PaymentSummary
+      subtotal={order.subtotal}
+      discount={order.discount}
+      total={order.total}
+      coupon={order.coupon}
+    />
+  </div>
+</div>
       </div>
     </main>
   );

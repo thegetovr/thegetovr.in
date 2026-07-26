@@ -12,7 +12,7 @@ export default function OrderHeader({
   createdAt,
 }: OrderHeaderProps) {
   return (
-    <section className="rounded-2xl border border-zinc-800 bg-zinc-950 p-8">
+    <div>
       <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
         <div>
           <p className="text-sm uppercase tracking-widest text-zinc-500">
@@ -23,7 +23,7 @@ export default function OrderHeader({
             {orderNumber}
           </h1>
 
-          <p className="mt-4 text-sm text-zinc-400">
+          <p className="mt-2 text-sm text-zinc-400">
             Placed on{" "}
             {new Date(createdAt).toLocaleDateString("en-IN", {
               day: "numeric",
@@ -32,9 +32,7 @@ export default function OrderHeader({
             })}
           </p>
         </div>
-
-        <StatusBadge status={status} />
       </div>
-    </section>
+    </div>
   );
 }
