@@ -1,11 +1,32 @@
 "use client";
-import orders from "@/data/orders.json";
+import initialOrders from "@/data/orders.json";
 import { useState } from "react";
 
 export default function AdminOrdersPage() {
+  const [orderList, setOrderList] = useState(initialOrders);
   const [selectedOrder, setSelectedOrder] = useState<
-    (typeof orders)[number] | null
+    (typeof orderList)[number] | null
   >(null);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const handleStatusUpdate = () => {
+    if (!selectedOrder) return;
+
+    const updatedOrders = orderList.map((order) =>
+      order.id === selectedOrder.id
+        ? { ...order, status: selectedStatus }
+        : order,
+    );
+
+    setOrderList(updatedOrders);
+
+    const updatedOrder = updatedOrders.find(
+      (order) => order.id === selectedOrder.id,
+    );
+
+    if (updatedOrder) {
+      setSelectedOrder(updatedOrder);
+    }
+  };
   return (
     <main className="mx-auto max-w-7xl px-6 py-12">
       <div className="mb-8">
@@ -21,7 +42,7 @@ export default function AdminOrdersPage() {
           <h2 className="text-xl font-semibold text-white">All Orders</h2>
 
           <span className="rounded-full border border-zinc-700 bg-zinc-900 px-3 py-1 text-sm text-zinc-300">
-            {orders.length} Orders
+            {orderList.length} Orders
           </span>
         </div>
         <div className="overflow-x-auto rounded-xl border border-zinc-800">
@@ -34,7 +55,7 @@ export default function AdminOrdersPage() {
             <div>Actions</div>
           </div>
 
-          {orders.map((order) => (
+          {orderList.map((order) => (
             <div
               key={order.orderNumber}
               className="grid grid-cols-6 items-center border-b border-zinc-800 px-6 py-4 last:border-b-0"
@@ -74,7 +95,10 @@ export default function AdminOrdersPage() {
               </div>
               <div>
                 <button
-                  onClick={() => setSelectedOrder(order)}
+                  onClick={() => {
+                    setSelectedOrder(order);
+                    setSelectedStatus(order.status);
+                  }}
                   className="rounded-lg border border-zinc-700 px-3 py-1.5 text-sm text-white transition hover:border-zinc-500 hover:bg-zinc-800"
                 >
                   View
@@ -87,8 +111,10 @@ export default function AdminOrdersPage() {
           <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-950 p-6">
             <h3 className="text-lg font-semibold text-white">Selected Order</h3>
             <div className="mt-5 flex items-center gap-4">
+            
               <select
-                defaultValue={selectedOrder.status}
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
                 className="rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm text-white outline-none"
               >
                 <option value="pending">Pending</option>
@@ -102,7 +128,10 @@ export default function AdminOrdersPage() {
                 <option value="cancelled">Cancelled</option>
               </select>
 
-              <button className="rounded-lg bg-white px-5 py-2 text-sm font-medium text-black transition hover:bg-zinc-200">
+              <button
+                onClick={handleStatusUpdate}
+                className="rounded-lg bg-white px-5 py-2 text-sm font-medium text-black transition hover:bg-zinc-200"
+              >
                 Update Status
               </button>
             </div>
