@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Logo from "@/components/ui/Logo";
-import { ShoppingBag, Search } from "lucide-react";
+import { ShoppingBag, Search, User } from "lucide-react";
 import { useState } from "react";
 
 const navLinks = [
@@ -17,7 +17,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/30 bg-black backdrop-blur-xl">
-      <div className="mx-auto flex items-center h-20 max-w-7xl items-center justify-between px-8">
+      <div className="mx-auto flex items-center h-20 max-w-7xl justify-between px-8">
         {/* Logo */}
         <Logo />
 
@@ -40,11 +40,11 @@ export default function Navbar() {
         </nav>
 
         {/* Right Side */}
-        <div className="flex items-center gap-6">
+        <div className="flex h-full items-center gap-6">
           {/* Search Bar */}
           <div className=" group relative hidden lg:block">
             <Search
-              size={22}
+              size={24}
               className="absolute left-2 top-1/2 -translate-y-1/2
                text-gray-400 z-10 transition-colors duration-300
                group-focus-within:text-white"
@@ -75,14 +75,83 @@ export default function Navbar() {
                      duration-300
                      backdrop-blur-md
                     
-                   focus:border-white/60
-                   focus:bg-white/15
-      "
+                   focus:border-white/60"
             />
           </div>
 
-          <div className="relative cursor-pointer">
-            <button className="text-gray-300 transition hover:text-white">
+          {/* Profile */}
+          <div className="relative group h-full ">
+            <button
+              className="flex h-full items-center justify-center px-2
+               text-gray-300 transition hover:text-white"
+            >
+              <User size={24} strokeWidth={1.8} />
+            </button>
+
+            <span
+              className="
+                absolute
+                bottom-0
+                left-1/2
+                h-[2px]
+                w-0
+                -translate-x-1/2
+                bg-white
+                transition-all
+                duration-300
+                ease-out
+                group-hover:w-full
+              "
+            />
+
+            {/* Dropdown */}
+            <div
+              className="absolute
+                         left-1/2
+                        top-full 
+                        -translate-x-1/2 
+                        hidden
+                        group-hover:block 
+                        z-50 
+                        
+                        "
+            >
+              <div className="  w-72 rounded-xl border border-white/20 bg-black shadow-2xl">
+                <div className="px-5 py-4">
+                  <h3 className="text-base font-semibold text-white">
+                    Welcome
+                  </h3>
+
+                  <p className="mt-1 text-sm leading-5 text-gray-400">
+                    To access account and manage orders
+                  </p>
+
+                  <button
+                    className="
+                  mt-4
+                  rounded-md
+                  border
+                border-red-500
+                  py-2.5
+                  px-8
+                  text-sm
+                  font-semibold
+                text-red-500
+                  transition-all
+                  duration-300
+                hover:bg-red-500
+                hover:text-white"
+                  >
+                    LOGIN / SIGNUP
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/*Carrt */}
+          <div className="relative group">
+            <button className="flex items-center justify-center text-gray-300 transition hover:text-white">
               <ShoppingBag size={24} strokeWidth={1.8} />
             </button>
 
