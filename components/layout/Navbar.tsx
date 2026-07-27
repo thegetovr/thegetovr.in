@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import Logo from "@/components/ui/Logo";
+
 import { ShoppingBag, Search, User } from "lucide-react";
 import { useState } from "react";
 
@@ -26,8 +27,8 @@ export default function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className="group relative flex h-full items-center t
-              ransition-colors duration-200 hover:text-white"
+              className="group relative flex h-full items-center 
+              transition-colors duration-200 hover:text-white"
             >
               {link.name}
 
@@ -80,7 +81,7 @@ export default function Navbar() {
           </div>
 
           {/* Profile */}
-          <div className="relative group h-full ">
+          <div className="group relative flex h-full ">
             <button
               className="flex h-full items-center justify-center px-2
                text-gray-300 transition hover:text-white"
@@ -126,24 +127,14 @@ export default function Navbar() {
                     To access account and manage orders
                   </p>
 
-                  <button
-                    className="
-                  mt-4
-                  rounded-md
-                  border
-                border-red-500
-                  py-2.5
-                  px-8
-                  text-sm
-                  font-semibold
-                text-red-500
-                  transition-all
-                  duration-300
-                hover:bg-red-500
-                hover:text-white"
+                  <Link
+                    href="/login"
+                    className="mt-4 inline-flex items-center justify-center
+                     rounded-md border border-[#F4B400] py-2.5 px-8 text-sm font-semibold
+                    text-[#F4B400] transition-all duration-300 hover:bg-[#F4B400] hover:text-white"
                   >
                     LOGIN / SIGNUP
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
