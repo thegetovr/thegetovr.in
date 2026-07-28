@@ -1,6 +1,7 @@
 
 import { getOrderByNumber } from "@/lib/orderService";
 import { notFound } from "next/navigation";
+import type { Order } from "@/types/order";
 import Link from "next/link";
 
 interface PageProps {
