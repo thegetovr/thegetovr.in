@@ -21,7 +21,23 @@ export interface CustomerInfo {
   state: string;
   pincode: string;
 }
+export interface OrderItem {
+  id: string;
 
+  product: string;
+  color: string;
+  size: string;
+  quantity: number;
+  printSide: string;
+
+  frontElements: unknown[];
+  backElements: unknown[];
+
+  unitPrice: number;
+  totalPrice: number;
+
+  createdAt: string;
+}
 export interface Order {
   id: string;
   orderNumber: string;

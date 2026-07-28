@@ -1,10 +1,9 @@
 "use client";
-import initialOrders from "@/data/orders.json";
-import { useState } from "react";
+import { getOrders } from "@/lib/orderService";
 import Link from "next/link";
 
 export default function AdminOrdersPage() {
-  const [orderList] = useState(initialOrders);
+  const orderList = getOrders();
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-12">

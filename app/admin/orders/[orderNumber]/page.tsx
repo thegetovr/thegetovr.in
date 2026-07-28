@@ -1,5 +1,5 @@
 
-import orders from "@/data/orders.json";
+import { getOrderByNumber } from "@/lib/orderService";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
@@ -12,7 +12,7 @@ interface PageProps {
 export default async function AdminOrderDetailsPage({ params }: PageProps) {
   const { orderNumber } = await params;
 
-  const order = orders.find((o) => o.orderNumber === orderNumber);
+  const order = getOrderByNumber(orderNumber);
 
   if (!order) {
     notFound();

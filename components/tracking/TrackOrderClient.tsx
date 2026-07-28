@@ -1,7 +1,7 @@
 "use client";
 import CustomerCard from "@/components/orders/CustomerCard";
 import { useState } from "react";
-import orders from "@/data/orders.json";
+import { getOrderByNumberAndEmail } from "@/lib/orderService";
 import type { Order } from "@/types/order";
 import PaymentSummary from "@/components/orders/PaymentSummary";
 import OrderItems from "@/components/orders/OrderItems";
@@ -15,16 +15,10 @@ export default function TrackOrderClient() {
   const [searched, setSearched] = useState(false);
 
   function handleSearch(orderNumber: string, email: string) {
-    const order = (orders as Order[]).find(
-      (order) =>
-        order.orderNumber.toLowerCase() === orderNumber.toLowerCase() &&
-        order.customer.email.toLowerCase() === email.toLowerCase(),
-    );
+    const order = getOrderByNumberAndEmail(orderNumber, email);
 
     setMatchedOrder(order ?? null);
     setSearched(true);
-
-    console.log("Matched Order:", order);
   }
 
   return (
