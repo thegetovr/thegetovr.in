@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getOrderByNumber } from "@/lib/orders";
+import { getOrderByNumber } from "@/lib/orderService";
 
 export async function GET(
   request: Request,

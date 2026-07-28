@@ -1,9 +1,9 @@
-"use client";
+
 import { getOrders } from "@/lib/orderService";
 import Link from "next/link";
 
-export default function AdminOrdersPage() {
-  const orderList = getOrders();
+export default async function AdminOrdersPage() {
+  const orderList = await getOrders();
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-12">

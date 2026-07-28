@@ -1,23 +1,30 @@
-import orders from "@/data/orders.json";
-import type { Order } from "@/types/order";
+import { connectToDatabase } from "@/lib/mongodb";
+import { Order } from "@/models/Order";
 
-export function getOrders(): Order[] {
-  return orders as unknown as Order[];
+export async function getOrders() {
+  await connectToDatabase();
+  return await Order.find().sort({ createdAt: -1 }).lean();
 }
 
-export function getOrderByNumber(orderNumber: string): Order | undefined {
-  return getOrders().find(
-    (order) => order.orderNumber === orderNumber
-  );
-  
+export async function getOrderByNumber(orderNumber: string) {
+  await connectToDatabase();
+  return await Order.findOne({ orderNumber }).lean();
 }
-export function getOrderByNumberAndEmail(
+export async function getOrderByNumberAndEmail(
   orderNumber: string,
   email: string
-): Order | undefined {
-  return getOrders().find(
-    (order) =>
-      order.orderNumber.toLowerCase() === orderNumber.toLowerCase() &&
-      order.customer.email.toLowerCase() === email.toLowerCase()
-  );
+) {
+  await connectToDatabase();
+
+  return await Order.findOne({
+    orderNumber,
+    "customer.email": email,
+  }).lean();
+}
+export async function createOrder(orderData: Record<string, unknown>) {
+  await connectToDatabase();
+
+  const order = await Order.create(orderData);
+
+  return order.toObject();
 }

@@ -12,7 +12,7 @@ interface PageProps {
 export default async function AdminOrderDetailsPage({ params }: PageProps) {
   const { orderNumber } = await params;
 
-  const order = getOrderByNumber(orderNumber);
+  const order = await getOrderByNumber(orderNumber);
 
   if (!order) {
     notFound();

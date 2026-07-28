@@ -1,17 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { saveOrder } from "@/lib/orders";
+import { createOrder } from "@/lib/orderService";
+
 export async function POST(request: NextRequest) {
   try {
     const order = await request.json();
 
-   await saveOrder(order);
+    const savedOrder = await createOrder(order);
 
     return NextResponse.json({
       success: true,
       message: "Order saved successfully.",
-      order,
+      order: savedOrder,
     });
-  } catch {
+  } catch (error) {
+    console.error("Order API Error:", error);
+
     return NextResponse.json(
       {
         success: false,
@@ -19,7 +22,7 @@ export async function POST(request: NextRequest) {
       },
       {
         status: 400,
-      },
+      }
     );
   }
 }

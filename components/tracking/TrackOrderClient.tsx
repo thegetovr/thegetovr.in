@@ -1,7 +1,6 @@
 "use client";
 import CustomerCard from "@/components/orders/CustomerCard";
 import { useState } from "react";
-import { getOrderByNumberAndEmail } from "@/lib/orderService";
 import type { Order } from "@/types/order";
 import PaymentSummary from "@/components/orders/PaymentSummary";
 import OrderItems from "@/components/orders/OrderItems";
@@ -11,15 +10,39 @@ import OrderTrackingSearch from "./OrderTrackingSearch";
 
 
 export default function TrackOrderClient() {
+  
   const [matchedOrder, setMatchedOrder] = useState<Order | null>(null);
   const [searched, setSearched] = useState(false);
 
-  function handleSearch(orderNumber: string, email: string) {
-    const order = getOrderByNumberAndEmail(orderNumber, email);
+  async function handleSearch(orderNumber: string, email: string) {
+  const response = await fetch("/api/orders/track", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      orderNumber,
+      email,
+    }),
+  });
 
-    setMatchedOrder(order ?? null);
+  console.log("Status:", response.status);
+
+  const text = await response.text();
+
+  console.log("Response Body:", text);
+
+  try {
+    const data = JSON.parse(text);
+
+    setMatchedOrder(data.order ?? null);
+    setSearched(true);
+  } catch (error) {
+    console.error("Invalid JSON:", error);
+    setMatchedOrder(null);
     setSearched(true);
   }
+}
 
   return (
     <>

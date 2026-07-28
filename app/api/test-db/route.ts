@@ -1,17 +1,14 @@
 import { NextResponse } from "next/server";
-import clientPromise from "@/lib/mongodb";
+import { connectToDatabase } from "@/lib/mongodb";
 
 export async function GET() {
   try {
-    const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB);
-
-    await db.command({ ping: 1 });
+    await connectToDatabase();
 
     return NextResponse.json({
       success: true,
       message: "MongoDB Connected!",
-      database: process.env.MONGODB_DB,
+      database: "Connected",
     });
   } catch (error) {
     console.error("MongoDB Error:", error);
