@@ -30,7 +30,7 @@ export default function TimelineStep({
         </div>
 
         <p
-          className={`mt-4 max-w-[72px] text-center text-[11px] font-medium leading-4 md:max-w-none md:text-sm
+          className={`mt-4 max-w-18 text-center text-[11px] font-medium leading-4 md:max-w-none md:text-sm
             ${completed || current ? "text-white" : "text-zinc-500"}`}
         >
           {title}

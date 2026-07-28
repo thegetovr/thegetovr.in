@@ -14,7 +14,7 @@ export default function OrderProgressBar({ status }: OrderProgressBarProps) {
     <div>
       <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-zinc-800">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-white via-zinc-200 to-zinc-100 transition-all duration-700 ease-out"
+          className="h-full rounded-full bg-linear-to-r from-white via-zinc-200 to-zinc-100 transition-all duration-700 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>

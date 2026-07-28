@@ -56,7 +56,7 @@ export const COLORS: Record<
   },
 };
 export const COLOR_LABELS = Object.fromEntries(
-  Object.entries(COLORS).map(([key, value]) => [key, value.label])
+  Object.entries(COLORS).map(([key, value]) => [key, value.label]),
 ) as Record<ProductColor, string>;
 export const PRINT_SIDE_LABELS = {
   front: "Front Print",

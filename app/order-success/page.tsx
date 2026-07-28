@@ -55,8 +55,8 @@ export default async function OrderSuccessPage({
             </Link>
 
             <Link href={`/orders/${orderNumber}`}>
-    <Button>View Order</Button>
-  </Link>
+              <Button>View Order</Button>
+            </Link>
           </div>
         </Card>
       </div>

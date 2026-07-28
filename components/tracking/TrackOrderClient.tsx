@@ -2,19 +2,20 @@
 import CustomerCard from "@/components/orders/CustomerCard";
 import { useState } from "react";
 import orders from "@/data/orders.json";
+import type { Order } from "@/types/order";
 import PaymentSummary from "@/components/orders/PaymentSummary";
 import OrderItems from "@/components/orders/OrderItems";
 import OrderTrackingCard from "@/components/orders/OrderTrackingCard";
 import ShippingCard from "@/components/orders/ShippingCard";
 import OrderTrackingSearch from "./OrderTrackingSearch";
-type Order = (typeof orders)[number];
+
 
 export default function TrackOrderClient() {
   const [matchedOrder, setMatchedOrder] = useState<Order | null>(null);
   const [searched, setSearched] = useState(false);
 
   function handleSearch(orderNumber: string, email: string) {
-    const order = orders.find(
+    const order = (orders as Order[]).find(
       (order) =>
         order.orderNumber.toLowerCase() === orderNumber.toLowerCase() &&
         order.customer.email.toLowerCase() === email.toLowerCase(),

@@ -66,6 +66,7 @@ This roadmap tracks the overall progress of The Getovr from foundation to public
 - [ ] Shipping Address
 - [ ] Order Review
 
+---
 
 # Phase 6 — Payments
 
@@ -78,7 +79,7 @@ This roadmap tracks the overall progress of The Getovr from foundation to public
 
 # Phase 7 — Orders
 
-- [ ] Order Creation
+- [x] Order Creation
 - [ ] Order Success
 - [ ] Order History
 - [ ] Order Tracking
@@ -121,6 +122,20 @@ This roadmap tracks the overall progress of The Getovr from foundation to public
 - [ ] Testing
 - [ ] Deployment
 - [ ] Public Release
+
+
+## Completed
+
+✅ Branding
+
+✅ Landing Page
+
+✅ Design Studio
+
+✅ Shopping Cart
+
+✅ Checkout
+
 
 ## Current Sprint
 
