@@ -1,4 +1,6 @@
 "use client";
+
+import Link from "next/link";
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { useRef, useState } from "react";
 import Image from "next/image";
@@ -13,7 +15,7 @@ export default function LoginForm() {
       <div className="mx-auto w-full max-w-5xl">
         <section
           className=" w-full max-w-5xl max-h-[calc(100vh-140px)] overflow-hidden rounded-[32px]
-            border border-white/20 bg-black shadow-2xl"
+            border border-white/30 bg-black shadow-2xl"
         >
           <div className="flex flex-col lg:flex-row">
             {/* Left Side - Image */}
@@ -35,7 +37,7 @@ export default function LoginForm() {
                 </p>
 
                 {/* Heading */}
-                <h1 className="mt-3 text-4xl font-bold leading-tight text-white">
+                <h1 className="mt-3 text-4xl font-bold leading-[1.1] text-white">
                   Log in to <br />
                   <span className="text-[#F4B400]">The GetOvr</span>
                 </h1>
@@ -185,7 +187,7 @@ export default function LoginForm() {
                       });
                     }}
                     className="absolute right-5 top-1/2 -translate-y-1/2
-                     text-zinc-500 
+                     text-zinc-400 
                      transition-all duration-300 
                      hover:scale-110 
                      hover:text-white active:scale-95"
@@ -263,12 +265,12 @@ export default function LoginForm() {
                   <div className="mt-8 text-center">
                     <p className="text-sm text-zinc-300">
                       Don't have an account?{" "}
-                      <button
-                        type="button"
+                      <Link
+                        href="/register"
                         className="font-semibold text-[#F4B400] transition-colors duration-300 hover:text-[#FFD54A]"
                       >
                         Register Here
-                      </button>
+                      </Link>
                     </p>
                   </div>
                 </div>
