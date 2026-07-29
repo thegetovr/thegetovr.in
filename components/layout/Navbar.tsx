@@ -1,17 +1,18 @@
 "use client";
-
+import { usePathname } from "next/navigation";
 import Link from "next/link";
-
 import Logo from "@/components/ui/Logo";
 import { useCartStore } from "@/stores/cartStore";
 
 export default function Navbar() {
   const items = useCartStore((state) => state.items);
+  const pathname = usePathname();
 
-  const totalQuantity = items.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
+
+  const totalQuantity = items.reduce((total, item) => total + item.quantity, 0);
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-black/70 backdrop-blur-xl">
@@ -19,24 +20,15 @@ export default function Navbar() {
         <Logo />
 
         <nav className="hidden items-center gap-8 text-sm font-medium text-gray-300 md:flex">
-          <Link
-            href="/"
-            className="transition-colors hover:text-white"
-          >
+          <Link href="/" className="transition-colors hover:text-white">
             Shop
           </Link>
 
-          <Link
-            href="/studio"
-            className="transition-colors hover:text-white"
-          >
+          <Link href="/studio" className="transition-colors hover:text-white">
             Studio
           </Link>
 
-          <Link
-            href="/about"
-            className="transition-colors hover:text-white"
-          >
+          <Link href="/about" className="transition-colors hover:text-white">
             About
           </Link>
         </nav>
@@ -68,7 +60,7 @@ export default function Navbar() {
             </svg>
 
             {totalQuantity > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1 text-[11px] font-bold text-white">
+              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[11px] font-bold text-white">
                 {totalQuantity}
               </span>
             )}
