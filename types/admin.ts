@@ -7,3 +7,10 @@ export interface AdminNavigationItem {
   href: string;
   icon: AdminIcon;
 }
+export interface RecentActivity {
+  id: string;
+  type: "order";
+  title: string;
+  description: string;
+  createdAt: string;
+}

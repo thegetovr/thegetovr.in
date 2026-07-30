@@ -1,33 +1,31 @@
 import { ReactNode } from "react";
 
-type QuickActionsCardProps = {
+type RecentActivityCardProps = {
   children: ReactNode;
 };
 
-export default function QuickActionsCard({
+export default function RecentActivityCard({
   children,
-}: QuickActionsCardProps) {
+}: RecentActivityCardProps) {
   return (
     <section
-  aria-labelledby="quick-actions-heading"
+  aria-labelledby="recent-activity-heading"
   className="rounded-2xl border border-zinc-800 bg-zinc-900"
 >
       <div className="border-b border-zinc-800 px-6 py-4">
         <h2
-  id="quick-actions-heading"
+  id="recent-activity-heading"
   className="text-lg font-semibold text-white"
 >
-          Quick Actions
+          Recent Activity
         </h2>
 
         <p className="mt-1 text-sm text-zinc-400">
-          Frequently used admin shortcuts.
+          Latest activity across your store.
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 p-4">
-        {children}
-      </div>
+      <div>{children}</div>
     </section>
   );
 }

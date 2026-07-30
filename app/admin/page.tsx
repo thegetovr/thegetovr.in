@@ -6,6 +6,8 @@ import ProductionQueueItem from "@/components/admin/dashboard/ProductionQueueIte
 import QuickActionsCard from "@/components/admin/dashboard/QuickActionsCard";
 import QuickActionItem from "@/components/admin/dashboard/QuickActionItem";
 import { getDashboardStats } from "@/lib/dashboardService";
+import RecentActivityCard from "@/components/admin/dashboard/RecentActivityCard";
+import RecentActivityItem from "@/components/admin/dashboard/RecentActivityItem";
 import {
   OrdersIcon,
   ProductsIcon,
@@ -29,7 +31,7 @@ export default async function AdminDashboardPage() {
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         <StatsCard
           title="Total Orders"
-          value={stats.totalOrders.toString()}
+          value={stats.totalOrders}
           subtitle="Orders received"
         />
 
@@ -41,13 +43,13 @@ export default async function AdminDashboardPage() {
 
         <StatsCard
           title="Customers"
-          value={stats.customers.toString()}
+          value={stats.customers}
           subtitle="Registered customers"
         />
 
         <StatsCard
           title="Pending"
-          value={stats.pendingOrders.toString()}
+          value={stats.pendingOrders}
           subtitle="Awaiting production"
         />
       </div>
@@ -141,9 +143,20 @@ export default async function AdminDashboardPage() {
               href="/admin/coupons"
               title="Coupons"
               description="Manage discounts"
-             icon={CouponsIcon}
+              icon={CouponsIcon}
             />
           </QuickActionsCard>
+          <RecentActivityCard>
+            {stats.recentActivity.length > 0 ? (
+              stats.recentActivity.map((activity) => (
+                <RecentActivityItem key={activity.id} activity={activity} />
+              ))
+            ) : (
+              <div className="py-8 text-center text-zinc-400">
+                No recent activity yet.
+              </div>
+            )}
+          </RecentActivityCard>
         </div>
       </div>
     </div>

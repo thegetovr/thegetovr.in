@@ -7,4 +7,5 @@ export {
   BarChart3 as AnalyticsIcon,
   Settings as SettingsIcon,
   Package as PackageIcon,
+  CheckCircle2 as SuccessIcon,
 } from "lucide-react";

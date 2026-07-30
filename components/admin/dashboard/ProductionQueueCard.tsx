@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-
+import { SuccessIcon } from "@/components/admin/icons";
 type ProductionQueueCardProps = {
   children: ReactNode;
   isEmpty: boolean;
@@ -10,9 +10,15 @@ export default function ProductionQueueCard({
   isEmpty,
 }: ProductionQueueCardProps) {
   return (
-    <div className="rounded-2xl border border-zinc-800 bg-zinc-900">
+    <section
+      aria-labelledby="production-queue-heading"
+      className="rounded-2xl border border-zinc-800 bg-zinc-900"
+    >
       <div className="border-b border-zinc-800 px-6 py-4">
-        <h2 className="text-lg font-semibold text-white">
+        <h2
+          id="production-queue-heading"
+          className="text-lg font-semibold text-white"
+        >
           Production Queue
         </h2>
 
@@ -23,7 +29,12 @@ export default function ProductionQueueCard({
 
       {isEmpty ? (
         <div className="px-6 py-10 text-center">
-          <div className="text-3xl">✅</div>
+          <div className="flex justify-center">
+  <SuccessIcon
+    className="h-10 w-10 text-emerald-500"
+    aria-hidden="true"
+  />
+</div>
 
           <p className="mt-3 font-medium text-white">
             Production queue is clear
@@ -36,6 +47,6 @@ export default function ProductionQueueCard({
       ) : (
         <div>{children}</div>
       )}
-    </div>
+    </section>
   );
 }
