@@ -3,7 +3,15 @@ import RecentOrdersCard from "@/components/admin/dashboard/RecentOrdersCard";
 import RecentOrderItem from "@/components/admin/dashboard/RecentOrderItem";
 import ProductionQueueCard from "@/components/admin/dashboard/ProductionQueueCard";
 import ProductionQueueItem from "@/components/admin/dashboard/ProductionQueueItem";
+import QuickActionsCard from "@/components/admin/dashboard/QuickActionsCard";
+import QuickActionItem from "@/components/admin/dashboard/QuickActionItem";
 import { getDashboardStats } from "@/lib/dashboardService";
+import {
+  OrdersIcon,
+  ProductsIcon,
+  CustomersIcon,
+  CouponsIcon,
+} from "@/components/admin/icons";
 
 export default async function AdminDashboardPage() {
   const stats = await getDashboardStats();
@@ -11,9 +19,7 @@ export default async function AdminDashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-4xl font-bold text-white">
-          Dashboard
-        </h1>
+        <h1 className="text-4xl font-bold text-white">Dashboard</h1>
 
         <p className="mt-2 text-zinc-400">
           Welcome to The Getovr Admin Dashboard.
@@ -63,7 +69,7 @@ export default async function AdminDashboardPage() {
                       day: "2-digit",
                       month: "short",
                       year: "numeric",
-                    }
+                    },
                   )}
                 />
               ))
@@ -75,38 +81,70 @@ export default async function AdminDashboardPage() {
           </RecentOrdersCard>
         </div>
 
-        <ProductionQueueCard
-  isEmpty={
-    stats.productionQueue.printing === 0 &&
-    stats.productionQueue.qualityCheck === 0 &&
-    stats.productionQueue.packaging === 0 &&
-    stats.productionQueue.shipped === 0
-  }
->
-          <ProductionQueueItem
-            label="Printing"
-            status="printing"
-            count={stats.productionQueue.printing}
-          />
+        <div className="space-y-6">
+          <ProductionQueueCard
+            isEmpty={
+              stats.productionQueue.printing === 0 &&
+              stats.productionQueue.qualityCheck === 0 &&
+              stats.productionQueue.packaging === 0 &&
+              stats.productionQueue.shipped === 0
+            }
+          >
+            <ProductionQueueItem
+              label="Printing"
+              status="printing"
+              count={stats.productionQueue.printing}
+            />
 
-          <ProductionQueueItem
-            label="Quality Check"
-            status="quality-check"
-            count={stats.productionQueue.qualityCheck}
-          />
+            <ProductionQueueItem
+              label="Quality Check"
+              status="quality-check"
+              count={stats.productionQueue.qualityCheck}
+            />
 
-          <ProductionQueueItem
-            label="Packaging"
-            status="packaging"
-            count={stats.productionQueue.packaging}
-          />
+            <ProductionQueueItem
+              label="Packaging"
+              status="packaging"
+              count={stats.productionQueue.packaging}
+            />
 
-          <ProductionQueueItem
-            label="Shipped"
-            status="shipped"
-            count={stats.productionQueue.shipped}
-          />
-        </ProductionQueueCard>
+            <ProductionQueueItem
+              label="Shipped"
+              status="shipped"
+              count={stats.productionQueue.shipped}
+            />
+          </ProductionQueueCard>
+
+          <QuickActionsCard>
+            <QuickActionItem
+              href="/admin/orders"
+              title="Orders"
+              description="Manage customer orders"
+              icon={OrdersIcon}
+            />
+
+            <QuickActionItem
+              href="/admin/products"
+              title="Products"
+              description="Manage catalog"
+              icon={ProductsIcon}
+            />
+
+            <QuickActionItem
+              href="/admin/customers"
+              title="Customers"
+              description="View customers"
+              icon={CustomersIcon}
+            />
+
+            <QuickActionItem
+              href="/admin/coupons"
+              title="Coupons"
+              description="Manage discounts"
+             icon={CouponsIcon}
+            />
+          </QuickActionsCard>
+        </div>
       </div>
     </div>
   );
