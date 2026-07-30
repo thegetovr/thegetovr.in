@@ -7,7 +7,14 @@ export type DashboardStats = {
   customers: number;
   pendingOrders: number;
   recentOrders: Order[];
+  productionQueue: {
+  printing: number;
+  qualityCheck: number;
+  packaging: number;
+  shipped: number;
 };
+};
+
 
 export async function getDashboardStats(): Promise<DashboardStats> {
   const orders = await getOrders();
@@ -34,12 +41,30 @@ export async function getDashboardStats(): Promise<DashboardStats> {
         new Date(a.createdAt).getTime()
     )
     .slice(0, 5);
+    const productionQueue = {
+  printing: orders.filter(
+    (order) => order.status === "printing"
+  ).length,
+
+  qualityCheck: orders.filter(
+    (order) => order.status === "quality-check"
+  ).length,
+
+  packaging: orders.filter(
+    (order) => order.status === "packaging"
+  ).length,
+
+  shipped: orders.filter(
+    (order) => order.status === "shipped"
+  ).length,
+};
 
   return {
-    totalOrders,
-    revenue,
-    customers,
-    pendingOrders,
-    recentOrders,
-  };
+  totalOrders,
+  revenue,
+  customers,
+  pendingOrders,
+  recentOrders,
+  productionQueue,
+};
 }
