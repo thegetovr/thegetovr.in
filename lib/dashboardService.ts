@@ -32,38 +32,57 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   const orders = await getOrders();
 
   const sortedOrders = [...orders].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    (a, b) =>
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
-  const totalOrders = orders.length;
+  const customers = new Set<string>();
 
-  const revenue = orders.reduce((sum, order) => sum + (order.total ?? 0), 0);
+  let revenue = 0;
+  let pendingOrders = 0;
 
-  const customers = new Set(orders.map((order) => order.customer.email)).size;
-
-  const pendingOrders = orders.filter(
-    (order) => order.status === "pending",
-  ).length;
-
-  const recentOrders = sortedOrders.slice(0, 5);
   const productionQueue = {
-    printing: orders.filter((order) => order.status === "printing").length,
-
-    qualityCheck: orders.filter((order) => order.status === "quality-check")
-      .length,
-
-    packaging: orders.filter((order) => order.status === "packaging").length,
-
-    shipped: orders.filter((order) => order.status === "shipped").length,
+    printing: 0,
+    qualityCheck: 0,
+    packaging: 0,
+    shipped: 0,
   };
-  const recentActivity = getRecentActivity(orders);
+
+  for (const order of orders) {
+    revenue += order.total ?? 0;
+
+    customers.add(order.customer.email);
+
+    switch (order.status) {
+      case "pending":
+        pendingOrders++;
+        break;
+
+      case "printing":
+        productionQueue.printing++;
+        break;
+
+      case "quality-check":
+        productionQueue.qualityCheck++;
+        break;
+
+      case "packaging":
+        productionQueue.packaging++;
+        break;
+
+      case "shipped":
+        productionQueue.shipped++;
+        break;
+    }
+  }
+
   return {
-    totalOrders,
+    totalOrders: orders.length,
     revenue,
-    customers,
+    customers: customers.size,
     pendingOrders,
-    recentOrders,
+    recentOrders: sortedOrders.slice(0, 5),
     productionQueue,
-    recentActivity,
+    recentActivity: getRecentActivity(sortedOrders),
   };
 }

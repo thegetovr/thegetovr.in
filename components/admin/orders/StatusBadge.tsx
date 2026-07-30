@@ -31,7 +31,7 @@ export default function StatusBadge({
     "bg-zinc-700 text-zinc-300 border-zinc-600";
 
   const label = status
-    .replace("-", " ")
+    .replaceAll("-", " ")
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
   return (

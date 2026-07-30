@@ -4,18 +4,62 @@ import type { Order as OrderType } from "@/types/order";
 
 export async function getOrders(): Promise<OrderType[]> {
   await connectToDatabase();
-  return await Order.find().sort({ createdAt: -1 }).lean();
+
+  return await Order.find().lean();
+}
+
+export async function searchOrders(
+  search: string,
+): Promise<OrderType[]> {
+  await connectToDatabase();
+
+  if (!search.trim()) {
+    return await getOrders();
+  }
+
+  const query = {
+    $or: [
+      {
+        orderNumber: {
+          $regex: search,
+          $options: "i",
+        },
+      },
+      {
+        "customer.firstName": {
+          $regex: search,
+          $options: "i",
+        },
+      },
+      {
+        "customer.lastName": {
+          $regex: search,
+          $options: "i",
+        },
+      },
+      {
+        "customer.email": {
+          $regex: search,
+          $options: "i",
+        },
+      },
+    ],
+  };
+
+  return await Order.find(query).lean();
 }
 
 export async function getOrderByNumber(
-  orderNumber: string
+  orderNumber: string,
 ): Promise<OrderType | null> {
   await connectToDatabase();
+
   return await Order.findOne({ orderNumber }).lean();
 }
+
 export async function getOrderByNumberAndEmail(
   orderNumber: string,
-  email: string
+  email: string,
 ): Promise<OrderType | null> {
   await connectToDatabase();
 
@@ -24,7 +68,10 @@ export async function getOrderByNumberAndEmail(
     "customer.email": email,
   }).lean();
 }
-export async function createOrder(orderData: Record<string, unknown>) {
+
+export async function createOrder(
+  orderData: Record<string, unknown>,
+) {
   await connectToDatabase();
 
   const order = await Order.create(orderData);
