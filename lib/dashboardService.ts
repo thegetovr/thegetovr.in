@@ -1,10 +1,12 @@
 import { getOrders } from "@/lib/orderService";
+import { Order } from "@/types/order";
 
 export type DashboardStats = {
   totalOrders: number;
   revenue: number;
   customers: number;
   pendingOrders: number;
+  recentOrders: Order[];
 };
 
 export async function getDashboardStats(): Promise<DashboardStats> {
@@ -13,7 +15,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   const totalOrders = orders.length;
 
   const revenue = orders.reduce(
-    (sum, order) => sum + order.total,
+    (sum, order) => sum + (order.total ?? 0),
     0
   );
 
@@ -25,10 +27,19 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     (order) => order.status === "pending"
   ).length;
 
+  const recentOrders = [...orders]
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() -
+        new Date(a.createdAt).getTime()
+    )
+    .slice(0, 5);
+
   return {
     totalOrders,
     revenue,
     customers,
     pendingOrders,
+    recentOrders,
   };
 }

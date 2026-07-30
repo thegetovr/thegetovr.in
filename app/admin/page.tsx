@@ -1,4 +1,6 @@
 import StatsCard from "@/components/admin/dashboard/StatsCard";
+import RecentOrdersCard from "@/components/admin/dashboard/RecentOrdersCard";
+import RecentOrderItem from "@/components/admin/dashboard/RecentOrderItem";
 import { getDashboardStats } from "@/lib/dashboardService";
 
 export default async function AdminDashboardPage() {
@@ -41,6 +43,32 @@ export default async function AdminDashboardPage() {
           subtitle="Awaiting production"
         />
       </div>
+
+      <RecentOrdersCard>
+        {stats.recentOrders.length > 0 ? (
+          stats.recentOrders.map((order) => (
+            <RecentOrderItem
+              key={order.orderNumber}
+              orderNumber={order.orderNumber}
+              customerName={`${order.customer.firstName} ${order.customer.lastName}`}
+              status={order.status}
+              total={order.total}
+              createdAt={new Date(order.createdAt).toLocaleDateString(
+                "en-IN",
+                {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                }
+              )}
+            />
+          ))
+        ) : (
+          <div className="py-8 text-center text-zinc-400">
+            No recent orders yet.
+          </div>
+        )}
+      </RecentOrdersCard>
     </div>
   );
 }
