@@ -1,10 +1,18 @@
 import Link from "next/link";
+
 import StatusBadge from "@/components/admin/orders/StatusBadge";
+
+import {
+  formatCurrency,
+  formatDate,
+} from "@/lib/format";
+
+import type { OrderStatus } from "@/types/order";
 
 type RecentOrderItemProps = {
   orderNumber: string;
   customerName: string;
-  status: string;
+  status: OrderStatus;
   total: number;
   createdAt: string;
 };
@@ -32,13 +40,13 @@ export default function RecentOrderItem({
           </p>
 
           <p className="mt-2 text-xs text-zinc-500">
-            {createdAt}
+            {formatDate(createdAt)}
           </p>
         </div>
 
         <div className="flex flex-col items-end gap-2">
           <p className="font-semibold text-white">
-            ₹{total.toLocaleString("en-IN")}
+            {formatCurrency(total)}
           </p>
 
           <StatusBadge status={status} />

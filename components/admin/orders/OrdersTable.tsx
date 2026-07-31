@@ -2,18 +2,43 @@ import Link from "next/link";
 
 import StatusBadge from "./StatusBadge";
 
+import { formatCurrency, formatDate } from "@/lib/format";
+
 import type { Order } from "@/types/order";
 
 type OrdersTableProps = {
   orders: Order[];
 };
 
+const tableGrid =
+  "grid min-w-[950px] grid-cols-[2fr_2fr_1.2fr_1fr_1.2fr_0.8fr] items-center";
+
 export default function OrdersTable({
   orders,
 }: OrdersTableProps) {
+  if (orders.length === 0) {
+    return (
+      <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 px-8 py-16 text-center">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-zinc-800 text-2xl">
+          📦
+        </div>
+
+        <h3 className="text-lg font-semibold text-white">
+          No orders found
+        </h3>
+
+        <p className="mt-2 text-sm text-zinc-400">
+          Try changing your search or resetting the current filters.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="overflow-x-auto rounded-xl border border-zinc-800">
-      <div className="grid grid-cols-6 border-b border-zinc-800 bg-zinc-900 px-6 py-4 text-sm font-medium text-zinc-400">
+      <div
+        className={`${tableGrid} border-b border-zinc-800 bg-zinc-900 px-6 py-4 text-sm font-medium text-zinc-400`}
+      >
         <div>Order</div>
         <div>Customer</div>
         <div>Status</div>
@@ -25,7 +50,7 @@ export default function OrdersTable({
       {orders.map((order) => (
         <div
           key={order.orderNumber}
-          className="grid grid-cols-6 items-center border-b border-zinc-800 px-6 py-4 last:border-b-0"
+          className={`${tableGrid} border-b border-zinc-800 px-6 py-4 last:border-b-0`}
         >
           <div>
             <p className="font-semibold text-white">
@@ -50,13 +75,13 @@ export default function OrdersTable({
 
           <div>
             <p className="font-medium text-white">
-              ₹{order.total}
+              {formatCurrency(order.total)}
             </p>
           </div>
 
           <div>
             <p className="text-sm text-zinc-400">
-              {new Date(order.createdAt).toLocaleDateString("en-IN")}
+              {formatDate(order.createdAt)}
             </p>
           </div>
 

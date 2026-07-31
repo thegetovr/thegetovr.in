@@ -1,24 +1,27 @@
 import { connectToDatabase } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
-import type { Order as OrderType } from "@/types/order";
+import { isValidOrderStatus } from "@/constants/orderStatuses";
+import type {
+  Order as OrderType,
+  OrderStatus,
+} from "@/types/order";
 
-export async function getOrders(): Promise<OrderType[]> {
-  await connectToDatabase();
+type GetOrdersOptions = {
+  search?: string;
+  status?: OrderStatus;
+};
 
-  return await Order.find().lean();
-}
-
-export async function searchOrders(
-  search: string,
+export async function getOrders(
+  options: GetOrdersOptions = {},
 ): Promise<OrderType[]> {
   await connectToDatabase();
 
-  if (!search.trim()) {
-    return await getOrders();
-  }
+  const { search, status } = options;
 
-  const query = {
-    $or: [
+  const query: Record<string, unknown> = {};
+
+  if (search?.trim()) {
+    query.$or = [
       {
         orderNumber: {
           $regex: search,
@@ -43,8 +46,12 @@ export async function searchOrders(
           $options: "i",
         },
       },
-    ],
-  };
+    ];
+  }
+
+  if (status && isValidOrderStatus(status)) {
+  query.status = status;
+}
 
   return await Order.find(query).lean();
 }

@@ -1,17 +1,29 @@
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "USD",
+    currency: "INR",
+    maximumFractionDigits: 0,
   }).format(amount);
 }
 
-export function formatDate(date: string): string {
-  return new Intl.DateTimeFormat("en-US", {
-    dateStyle: "medium",
-    timeStyle: "short",
+export function formatDate(
+  date: string | Date,
+): string {
+  return new Intl.DateTimeFormat("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
   }).format(new Date(date));
 }
 
-export function formatOrderNumber(orderNumber: string): string {
+export function formatOrderNumber(
+  orderNumber: string,
+): string {
   return orderNumber.toUpperCase();
+}
+
+export function formatOrderShortId(
+  orderNumber: string,
+): string {
+  return `#${orderNumber.slice(-4)}`;
 }
