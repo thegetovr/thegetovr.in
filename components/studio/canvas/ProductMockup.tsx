@@ -11,12 +11,14 @@ interface ProductMockupProps {
   product: Product;
   productColor: ProductColor;
   view: "front" | "back";
+  offsetY?: number;
 }
 
 export default function ProductMockup({
   product,
   productColor,
   view,
+  offsetY,
 }: ProductMockupProps) {
   const [image, setImage] =
     useState<HTMLImageElement | null>(null);
@@ -54,7 +56,7 @@ export default function ProductMockup({
     <Image
       image={image}
       x={(CANVAS.width - targetWidth) / 2}
-      y={layout.offsetY}
+      y={offsetY ?? layout.offsetY}
       width={targetWidth}
       height={targetHeight}
       listening={false}

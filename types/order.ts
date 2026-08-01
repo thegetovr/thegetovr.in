@@ -38,6 +38,10 @@ export interface OrderItem {
 
   createdAt: string;
 }
+export interface StatusHistoryEntry {
+  status: OrderStatus;
+  updatedAt: string;
+}
 export interface Order {
   id: string;
   orderNumber: string;
@@ -55,4 +59,7 @@ export interface Order {
   status: OrderStatus;
 
   createdAt: string;
+  statusHistory?: StatusHistoryEntry[];
+  adminNotes?: string;
+
 }

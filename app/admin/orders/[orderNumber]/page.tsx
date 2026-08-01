@@ -1,8 +1,14 @@
-
-import { getOrderByNumber } from "@/lib/orderService";
-import { notFound } from "next/navigation";
-import type { Order } from "@/types/order";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+import StatusTimeline from "@/components/admin/orders/StatusTimeline";
+import AdminNotesCard from "@/components/admin/orders/AdminNotesCard";
+import DesignPreviewCard from "@/components/admin/orders/DesignPreviewCard";
+
+import CustomerDetailsCard from "@/components/admin/orders/CustomerDetailsCard";
+import OrderStatusCard from "@/components/admin/orders/OrderStatusCard";
+
+import { formatCurrency, formatDate } from "@/lib/format";
+import { getOrderByNumber } from "@/lib/orderService";
 
 interface PageProps {
   params: Promise<{
@@ -20,91 +26,120 @@ export default async function AdminOrderDetailsPage({ params }: PageProps) {
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-12">
-      <div className="mb-8">
+    <main className="mx-auto max-w-7xl space-y-8 px-6 py-12">
+      <div>
         <Link
           href="/admin/orders"
-          className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-4 py-2 text-sm text-zinc-300 transition hover:border-zinc-500 hover:bg-zinc-900"
+          className="mb-4 inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-4 py-2 text-sm text-zinc-300 transition hover:border-zinc-500 hover:bg-zinc-900"
         >
           ← Back to Orders
         </Link>
+
+        <h1 className="text-3xl font-bold text-white">{order.orderNumber}</h1>
+
+        <p className="mt-2 text-zinc-400">
+          Order placed on {formatDate(order.createdAt)}
+        </p>
       </div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">
-          Order {order.orderNumber}
-        </h1>
 
-        <p className="mt-2 text-zinc-400">Customer order details.</p>
-      </div>
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          <section className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
+            <h2 className="mb-5 text-lg font-semibold text-white">
+              Order Items
+            </h2>
 
-      <section className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
-        <div className="grid grid-cols-2 gap-6 text-sm">
-          <div>
-            <p className="text-zinc-500">Customer</p>
-
-            <p className="mt-1 font-medium text-white">
-              {order.customer.firstName} {order.customer.lastName}
-            </p>
-
-            <p className="text-zinc-400">{order.customer.email}</p>
-
-            <p className="text-zinc-400">{order.customer.phone}</p>
-          </div>
-
-          <div>
-            <p className="text-zinc-500">Status</p>
-
-            <p className="mt-1 inline-flex rounded-full border border-zinc-700 px-3 py-1 text-white">
-              {order.status}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-zinc-500">Total</p>
-
-            <p className="mt-1 text-xl font-semibold text-white">
-              ₹{order.total}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-zinc-500">Shipping Address</p>
-
-            <div className="mt-1 space-y-1 text-white">
-              <p>{order.customer.address}</p>
-              <p>
-                {order.customer.city}, {order.customer.state}
-              </p>
-              <p>{order.customer.pincode}</p>
-            </div>
-          </div>
-
-          <div className="col-span-2">
-            <p className="mb-3 text-zinc-500">Order Items</p>
-
-            <div className="space-y-3">
+            <div className="space-y-4">
               {order.items.map((item) => (
-                <div
-                  key={item.id}
-                  className="rounded-xl border border-zinc-800 bg-zinc-900 p-4"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-white">{item.product}</p>
+  <div
+    key={item.id}
+    className="rounded-xl border border-zinc-800 bg-zinc-900 p-5"
+  >
+    <div className="flex items-start justify-between">
+      <div>
+        <h3 className="text-xl font-semibold capitalize text-white">
+          {item.product}
+        </h3>
 
-                      <p className="text-sm text-zinc-400">
-                        {item.color.toUpperCase()} • Size {item.size}
-                      </p>
-                    </div>
+        <p className="mt-2 text-sm text-zinc-400">
+          {item.color.toUpperCase()} • Size {item.size} •{" "}
+          {item.printSide}
+        </p>
+      </div>
 
-                    <p className="text-zinc-300">Qty {item.quantity}</p>
-                  </div>
-                </div>
-              ))}
+      <div className="text-right">
+        <p className="text-lg font-semibold text-white">
+          Qty {item.quantity}
+        </p>
+
+        <p className="mt-2 text-zinc-400">
+          {formatCurrency(item.totalPrice)}
+        </p>
+      </div>
+    </div>
+
+    <div className="mt-6">
+      <DesignPreviewCard
+        product={item.product}
+        productColor={item.color}
+        frontElements={item.frontElements}
+        backElements={item.backElements}
+      />
+    </div>
+  </div>
+))}
             </div>
-          </div>
+          </section>
         </div>
-      </section>
+
+        <div className="space-y-6">
+          <OrderStatusCard
+            orderNumber={order.orderNumber}
+            currentStatus={order.status}
+          />
+
+          <StatusTimeline history={order.statusHistory} />
+
+          <CustomerDetailsCard customer={order.customer} />
+
+          <AdminNotesCard
+            orderNumber={order.orderNumber}
+            initialNotes={order.adminNotes ?? ""}
+          />
+
+          <section className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
+            <h2 className="mb-5 text-lg font-semibold text-white">
+              Order Summary
+            </h2>
+
+            <div className="space-y-4 text-sm">
+              <div className="flex justify-between">
+                <span className="text-zinc-400">Subtotal</span>
+                <span className="text-white">
+                  {formatCurrency(order.subtotal)}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-zinc-400">Discount</span>
+                <span className="text-white">
+                  {formatCurrency(order.discount)}
+                </span>
+              </div>
+
+              <div className="border-t border-zinc-800 pt-4">
+                <div className="flex justify-between">
+                  <span className="font-medium text-white">Total</span>
+
+                  <span className="font-semibold text-white">
+                    {formatCurrency(order.total)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
     </main>
   );
 }
