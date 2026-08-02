@@ -7,31 +7,21 @@ type StatusTimelineProps = {
 };
 
 function getStatusLabel(status: string) {
-  return (
-    ORDER_STATUSES.find(
-      (item) => item.value === status,
-    )?.label ?? status
-  );
+  return ORDER_STATUSES.find((item) => item.value === status)?.label ?? status;
 }
 
-export default function StatusTimeline({
-  history = [],
-}: StatusTimelineProps) {
+export default function StatusTimeline({ history = [] }: StatusTimelineProps) {
   if (history.length === 0) {
     return null;
   }
 
   const sortedHistory = [...history].sort(
-    (a, b) =>
-      new Date(b.updatedAt).getTime() -
-      new Date(a.updatedAt).getTime(),
+    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
   );
 
   return (
     <section className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
-      <h2 className="mb-5 text-lg font-semibold text-white">
-        Status Timeline
-      </h2>
+      <h2 className="mb-5 text-lg font-semibold text-white">Status Timeline</h2>
 
       <div className="space-y-4">
         {sortedHistory.map((entry, index) => (
@@ -47,11 +37,11 @@ export default function StatusTimeline({
               </p>
 
               <p className="mt-1 text-sm text-zinc-400">
-  {new Intl.DateTimeFormat("en-IN", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(entry.updatedAt))}
-</p>
+                {new Intl.DateTimeFormat("en-IN", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                }).format(new Date(entry.updatedAt))}
+              </p>
             </div>
           </div>
         ))}

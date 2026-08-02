@@ -4,19 +4,17 @@ type QuickActionsCardProps = {
   children: ReactNode;
 };
 
-export default function QuickActionsCard({
-  children,
-}: QuickActionsCardProps) {
+export default function QuickActionsCard({ children }: QuickActionsCardProps) {
   return (
     <section
-  aria-labelledby="quick-actions-heading"
-  className="rounded-2xl border border-zinc-800 bg-zinc-900"
->
+      aria-labelledby="quick-actions-heading"
+      className="rounded-2xl border border-zinc-800 bg-zinc-900"
+    >
       <div className="border-b border-zinc-800 px-6 py-4">
         <h2
-  id="quick-actions-heading"
-  className="text-lg font-semibold text-white"
->
+          id="quick-actions-heading"
+          className="text-lg font-semibold text-white"
+        >
           Quick Actions
         </h2>
 
@@ -25,9 +23,7 @@ export default function QuickActionsCard({
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 p-4">
-        {children}
-      </div>
+      <div className="grid grid-cols-2 gap-3 p-4">{children}</div>
     </section>
   );
 }

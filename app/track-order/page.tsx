@@ -1,8 +1,5 @@
 import TrackOrderClient from "@/components/tracking/TrackOrderClient";
 export default function TrackOrderPage() {
-  function handleSearch(orderNumber: string, email: string) {
-    console.log("Track Order:", { orderNumber, email });
-  }
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
       <section className="mx-auto max-w-3xl px-6 py-16">

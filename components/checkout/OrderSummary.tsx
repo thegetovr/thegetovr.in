@@ -102,43 +102,43 @@ export default function OrderSummary() {
               className="rounded-xl border border-white/10 bg-[#111118] p-4"
             >
               <div className="flex items-start justify-between gap-4">
-  <div className="min-w-0 flex-1">
-    <h3 className="truncate text-lg font-semibold text-white">
-      {item.product}
-    </h3>
+                <div className="min-w-0 flex-1">
+                  <h3 className="truncate text-lg font-semibold text-white">
+                    {item.product}
+                  </h3>
 
-    <div className="mt-3 flex flex-wrap gap-2">
-      <span className="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300">
-        {item.color}
-      </span>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <span className="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300">
+                      {item.color}
+                    </span>
 
-      <span className="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300">
-        Size {item.size}
-      </span>
+                    <span className="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300">
+                      Size {item.size}
+                    </span>
 
-      <span className="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300">
-        {item.printSide}
-      </span>
-    </div>
+                    <span className="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300">
+                      {item.printSide}
+                    </span>
+                  </div>
 
-    <p className="mt-3 text-sm text-zinc-400">
-      Quantity:{" "}
-      <span className="font-medium text-white">
-        {item.quantity}
-      </span>
-    </p>
-  </div>
+                  <p className="mt-3 text-sm text-zinc-400">
+                    Quantity:{" "}
+                    <span className="font-medium text-white">
+                      {item.quantity}
+                    </span>
+                  </p>
+                </div>
 
-  <div className="text-right">
-    <p className="text-lg font-bold text-white">
-      ₹{item.totalPrice}
-    </p>
+                <div className="text-right">
+                  <p className="text-lg font-bold text-white">
+                    ₹{item.totalPrice}
+                  </p>
 
-    <p className="mt-1 text-sm text-zinc-500">
-      ₹{item.unitPrice} each
-    </p>
-  </div>
-</div>
+                  <p className="mt-1 text-sm text-zinc-500">
+                    ₹{item.unitPrice} each
+                  </p>
+                </div>
+              </div>
             </div>
           ))
         )}

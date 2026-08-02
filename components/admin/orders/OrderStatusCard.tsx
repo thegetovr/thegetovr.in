@@ -16,16 +16,14 @@ export default function OrderStatusCard({
   orderNumber,
   currentStatus,
 }: OrderStatusCardProps) {
-  const [status, setStatus] =
-    useState<OrderStatus>(currentStatus);
+  const [status, setStatus] = useState<OrderStatus>(currentStatus);
 
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
 
-  const [isPending, startTransition] =
-    useTransition();
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     if (!message) return;
@@ -42,38 +40,30 @@ export default function OrderStatusCard({
   function handleUpdate() {
     startTransition(async () => {
       try {
-        await updateOrderStatusAction(
-          orderNumber,
-          status,
-        );
+        await updateOrderStatusAction(orderNumber, status);
 
         setMessage({
           type: "success",
           text: "Order status updated successfully.",
         });
       } catch (error) {
-  console.error(error);
+        console.error(error);
 
-  setMessage({
-    type: "error",
-    text: "Failed to update order status.",
-  });
-}
+        setMessage({
+          type: "error",
+          text: "Failed to update order status.",
+        });
+      }
     });
   }
 
   return (
     <section className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
-      <h2 className="mb-5 text-lg font-semibold text-white">
-        Order Status
-      </h2>
+      <h2 className="mb-5 text-lg font-semibold text-white">Order Status</h2>
 
       <div className="space-y-5">
         <div>
-          <label
-            htmlFor="status"
-            className="mb-2 block text-sm text-zinc-400"
-          >
+          <label htmlFor="status" className="mb-2 block text-sm text-zinc-400">
             Current Status
           </label>
 
@@ -81,18 +71,11 @@ export default function OrderStatusCard({
             id="status"
             value={status}
             disabled={isPending}
-            onChange={(e) =>
-              setStatus(
-                e.target.value as OrderStatus,
-              )
-            }
+            onChange={(e) => setStatus(e.target.value as OrderStatus)}
             className="w-full rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-2.5 text-sm text-white focus:border-white focus:outline-none disabled:opacity-60"
           >
             {ORDER_STATUSES.map((item) => (
-              <option
-                key={item.value}
-                value={item.value}
-              >
+              <option key={item.value} value={item.value}>
                 {item.label}
               </option>
             ))}
@@ -105,9 +88,7 @@ export default function OrderStatusCard({
           onClick={handleUpdate}
           className="w-full rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black shadow-sm transition-all duration-200 hover:scale-[1.02] hover:bg-zinc-100 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
         >
-          {isPending
-            ? "Updating..."
-            : "Update Status"}
+          {isPending ? "Updating..." : "Update Status"}
         </button>
 
         {message && (
@@ -123,13 +104,9 @@ export default function OrderStatusCard({
         )}
 
         <div className="rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2">
-          <p className="text-xs text-zinc-500">
-            Order Number
-          </p>
+          <p className="text-xs text-zinc-500">Order Number</p>
 
-          <p className="mt-1 break-all text-sm text-zinc-300">
-            {orderNumber}
-          </p>
+          <p className="mt-1 break-all text-sm text-zinc-300">{orderNumber}</p>
         </div>
       </div>
     </section>

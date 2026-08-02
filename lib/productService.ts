@@ -1,4 +1,3 @@
-
 import { connectToDatabase } from "@/lib/mongodb";
 import Product from "@/models/Product";
 import {
@@ -24,26 +23,26 @@ export async function getProducts(
     query.status = filters.status;
   }
   if (filters.category) {
-  query.category = filters.category;
-}
-if (filters.search) {
-  const search = filters.search.trim();
+    query.category = filters.category;
+  }
+  if (filters.search) {
+    const search = filters.search.trim();
 
-  query.$or = [
-    {
-      name: {
-        $regex: search,
-        $options: "i",
+    query.$or = [
+      {
+        name: {
+          $regex: search,
+          $options: "i",
+        },
       },
-    },
-    {
-      sku: {
-        $regex: search,
-        $options: "i",
+      {
+        sku: {
+          $regex: search,
+          $options: "i",
+        },
       },
-    },
-  ];
-}
+    ];
+  }
 
   const products = await Product.find(query).lean();
 
@@ -56,4 +55,25 @@ if (filters.search) {
     stock: product.stock,
     status: product.status,
   }));
+}
+export async function getProduct(
+  id: string,
+): Promise<ProductType | null> {
+  await connectToDatabase();
+
+  const product = await Product.findById(id).lean();
+
+  if (!product) {
+    return null;
+  }
+
+  return {
+    id: String(product._id),
+    name: product.name,
+    sku: product.sku,
+    category: product.category,
+    price: product.price,
+    stock: product.stock,
+    status: product.status,
+  };
 }

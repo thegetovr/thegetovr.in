@@ -1,10 +1,7 @@
 import ProductTable from "@/components/admin/products/ProductTable";
 import ProductToolbar from "@/components/admin/products/ProductToolbar";
 import { getProducts } from "@/lib/productService";
-import {
-  ProductCategory,
-  ProductStatus,
-} from "@/types/product";
+import { ProductCategory, ProductStatus } from "@/types/product";
 
 interface AdminProductsPageProps {
   searchParams: Promise<{
@@ -24,10 +21,10 @@ export default async function AdminProductsPage({
   const status = params.status ?? "";
 
   const products = await getProducts({
-  search,
-  category,
-  status,
-});
+    search,
+    category,
+    status,
+  });
 
   return (
     <div className="space-y-8">

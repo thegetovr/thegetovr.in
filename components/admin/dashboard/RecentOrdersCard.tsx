@@ -19,12 +19,12 @@ export default function RecentOrdersCard({ children }: RecentOrdersCardProps) {
         </h2>
 
         <Link
-  href="/admin/orders"
-  aria-label="View all recent orders"
-  className="text-sm font-medium text-zinc-400 transition hover:text-white"
->
-  View All →
-</Link>
+          href="/admin/orders"
+          aria-label="View all recent orders"
+          className="text-sm font-medium text-zinc-400 transition hover:text-white"
+        >
+          View All →
+        </Link>
       </div>
 
       <div className="p-2">{children}</div>

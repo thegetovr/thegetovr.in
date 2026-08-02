@@ -9,7 +9,6 @@ export default function TimelineStep({
   title,
   completed,
   current,
-  isLast,
 }: TimelineStepProps) {
   return (
     <div className="flex flex-1 flex-col items-center">

@@ -30,11 +30,11 @@ export default function ProductionQueueCard({
       {isEmpty ? (
         <div className="px-6 py-10 text-center">
           <div className="flex justify-center">
-  <SuccessIcon
-    className="h-10 w-10 text-emerald-500"
-    aria-hidden="true"
-  />
-</div>
+            <SuccessIcon
+              className="h-10 w-10 text-emerald-500"
+              aria-hidden="true"
+            />
+          </div>
 
           <p className="mt-3 font-medium text-white">
             Production queue is clear

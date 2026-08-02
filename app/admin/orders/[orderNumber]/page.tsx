@@ -51,43 +51,43 @@ export default async function AdminOrderDetailsPage({ params }: PageProps) {
 
             <div className="space-y-4">
               {order.items.map((item) => (
-  <div
-    key={item.id}
-    className="rounded-xl border border-zinc-800 bg-zinc-900 p-5"
-  >
-    <div className="flex items-start justify-between">
-      <div>
-        <h3 className="text-xl font-semibold capitalize text-white">
-          {item.product}
-        </h3>
+                <div
+                  key={item.id}
+                  className="rounded-xl border border-zinc-800 bg-zinc-900 p-5"
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="text-xl font-semibold capitalize text-white">
+                        {item.product}
+                      </h3>
 
-        <p className="mt-2 text-sm text-zinc-400">
-          {item.color.toUpperCase()} • Size {item.size} •{" "}
-          {item.printSide}
-        </p>
-      </div>
+                      <p className="mt-2 text-sm text-zinc-400">
+                        {item.color.toUpperCase()} • Size {item.size} •{" "}
+                        {item.printSide}
+                      </p>
+                    </div>
 
-      <div className="text-right">
-        <p className="text-lg font-semibold text-white">
-          Qty {item.quantity}
-        </p>
+                    <div className="text-right">
+                      <p className="text-lg font-semibold text-white">
+                        Qty {item.quantity}
+                      </p>
 
-        <p className="mt-2 text-zinc-400">
-          {formatCurrency(item.totalPrice)}
-        </p>
-      </div>
-    </div>
+                      <p className="mt-2 text-zinc-400">
+                        {formatCurrency(item.totalPrice)}
+                      </p>
+                    </div>
+                  </div>
 
-    <div className="mt-6">
-      <DesignPreviewCard
-        product={item.product}
-        productColor={item.color}
-        frontElements={item.frontElements}
-        backElements={item.backElements}
-      />
-    </div>
-  </div>
-))}
+                  <div className="mt-6">
+                    <DesignPreviewCard
+                      product={item.product}
+                      productColor={item.color}
+                      frontElements={item.frontElements}
+                      backElements={item.backElements}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           </section>
         </div>

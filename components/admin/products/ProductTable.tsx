@@ -2,6 +2,7 @@ import { Product } from "@/types/product";
 import ProductStatusBadge from "./ProductStatusBadge";
 import ProductTableEmptyState from "./ProductTableEmptyState";
 import { PRODUCT_TABLE_COLUMNS } from "./productTableColumns";
+import ProductRowActions from "./ProductRowActions";
 
 interface ProductTableProps {
   products: Product[];
@@ -61,9 +62,9 @@ export default function ProductTable({
                     <ProductStatusBadge status={product.status} />
                   </td>
 
-                  <td className="px-6 py-4 text-right text-zinc-500">
-                    —
-                  </td>
+                  <td className="px-6 py-4 text-right">
+  <ProductRowActions productId={product.id} />
+</td>
                 </tr>
               ))
             )}

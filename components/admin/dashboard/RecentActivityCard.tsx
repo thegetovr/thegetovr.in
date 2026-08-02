@@ -9,14 +9,14 @@ export default function RecentActivityCard({
 }: RecentActivityCardProps) {
   return (
     <section
-  aria-labelledby="recent-activity-heading"
-  className="rounded-2xl border border-zinc-800 bg-zinc-900"
->
+      aria-labelledby="recent-activity-heading"
+      className="rounded-2xl border border-zinc-800 bg-zinc-900"
+    >
       <div className="border-b border-zinc-800 px-6 py-4">
         <h2
-  id="recent-activity-heading"
-  className="text-lg font-semibold text-white"
->
+          id="recent-activity-heading"
+          className="text-lg font-semibold text-white"
+        >
           Recent Activity
         </h2>
 

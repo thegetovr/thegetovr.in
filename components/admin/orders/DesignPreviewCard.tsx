@@ -13,6 +13,7 @@ type DesignPreviewCardProps = {
   backElements: DesignElement[];
 };
 
+
 export default function DesignPreviewCard({
   product,
   productColor,
