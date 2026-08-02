@@ -7,11 +7,8 @@ import { connectToDatabase } from "@/lib/mongodb";
 import Product from "@/models/Product";
 import { productSchema } from "@/lib/validation/product";
 
-export async function updateProduct(
-  productId: string,
-  formData: FormData,
-) {
-  const parsed = productSchema.safeParse({
+async function parseProductForm(formData: FormData) {
+  return productSchema.safeParse({
     name: formData.get("name"),
     sku: formData.get("sku"),
     category: formData.get("category"),
@@ -19,6 +16,41 @@ export async function updateProduct(
     stock: formData.get("stock"),
     status: formData.get("status"),
   });
+}
+
+export async function createProduct(
+  formData: FormData,
+) {
+  const parsed = await parseProductForm(formData);
+
+  if (!parsed.success) {
+    console.error(parsed.error.flatten().fieldErrors);
+    return;
+  }
+
+  await connectToDatabase();
+
+  const existingProduct = await Product.findOne({
+    sku: parsed.data.sku,
+  });
+
+  if (existingProduct) {
+    console.error("A product with this SKU already exists.");
+    return;
+  }
+
+  const product = await Product.create(parsed.data);
+
+  revalidatePath("/admin/products");
+
+  redirect(`/admin/products/${product.id}`);
+}
+
+export async function updateProduct(
+  productId: string,
+  formData: FormData,
+) {
+  const parsed = await parseProductForm(formData);
 
   if (!parsed.success) {
     console.error(parsed.error.flatten().fieldErrors);

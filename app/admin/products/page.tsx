@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import ProductTable from "@/components/admin/products/ProductTable";
 import ProductToolbar from "@/components/admin/products/ProductToolbar";
 import { getProducts } from "@/lib/productService";
@@ -28,12 +30,23 @@ export default async function AdminProductsPage({
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-4xl font-bold text-white">Products</h1>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-bold text-white">
+            Products
+          </h1>
 
-        <p className="mt-2 text-zinc-400">
-          Manage your store products, inventory, and product information.
-        </p>
+          <p className="mt-2 text-zinc-400">
+            Manage your store products, inventory, and product information.
+          </p>
+        </div>
+
+        <Link
+          href="/admin/products/new"
+          className="rounded-lg bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:bg-zinc-200"
+        >
+          + Add Product
+        </Link>
       </div>
 
       <ProductToolbar
