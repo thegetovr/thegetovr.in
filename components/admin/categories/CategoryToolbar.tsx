@@ -1,31 +1,26 @@
-import { ProductCategory, ProductStatus } from "@/types/product";
-import Link from "next/link";
-import ProductCategoryFilter from "./ProductCategoryFilter";
-import ProductSearch from "./ProductSearch";
-import ProductStatusFilter from "./ProductStatusFilter";
+import { CategoryStatus } from "@/types/category";
 
-interface ProductToolbarProps {
+import CategorySearch from "./CategorySearch";
+import CategoryStatusFilter from "./CategoryStatusFilter";
+
+interface CategoryToolbarProps {
   defaultSearch?: string;
-  defaultCategory?: ProductCategory | "";
-  defaultStatus?: ProductStatus | "";
+  defaultStatus?: CategoryStatus | "";
 }
 
-export default function ProductToolbar({
+export default function CategoryToolbar({
   defaultSearch = "",
-  defaultCategory = "",
   defaultStatus = "",
-}: ProductToolbarProps) {
+}: CategoryToolbarProps) {
   return (
     <form
       method="GET"
       className="flex flex-col gap-4 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 lg:flex-row lg:items-center lg:justify-between"
     >
       <div className="flex flex-col gap-4 md:flex-row md:items-center">
-        <ProductSearch defaultValue={defaultSearch} />
+        <CategorySearch defaultValue={defaultSearch} />
 
-        <ProductCategoryFilter defaultValue={defaultCategory} />
-
-        <ProductStatusFilter defaultValue={defaultStatus} />
+        <CategoryStatusFilter defaultValue={defaultStatus} />
       </div>
 
       <div className="flex gap-3">
@@ -36,12 +31,12 @@ export default function ProductToolbar({
           Apply
         </button>
 
-        <Link
-          href="/admin/products"
+        <a
+          href="/admin/categories"
           className="rounded-lg border border-zinc-700 px-4 py-2 text-sm text-zinc-300 transition hover:border-zinc-500 hover:text-white"
         >
           Reset
-        </Link>
+        </a>
       </div>
     </form>
   );

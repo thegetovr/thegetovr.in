@@ -8,9 +8,7 @@ interface ProductTableProps {
   products: Product[];
 }
 
-export default function ProductTable({
-  products,
-}: ProductTableProps) {
+export default function ProductTable({ products }: ProductTableProps) {
   return (
     <div className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50">
       <div className="overflow-x-auto">
@@ -32,9 +30,7 @@ export default function ProductTable({
 
           <tbody className="divide-y divide-zinc-800">
             {products.length === 0 ? (
-              <ProductTableEmptyState
-                colSpan={PRODUCT_TABLE_COLUMNS.length}
-              />
+              <ProductTableEmptyState colSpan={PRODUCT_TABLE_COLUMNS.length} />
             ) : (
               products.map((product) => (
                 <tr key={product.id} className="hover:bg-zinc-900/40">
@@ -42,9 +38,7 @@ export default function ProductTable({
                     {product.name}
                   </td>
 
-                  <td className="px-6 py-4 text-zinc-300">
-                    {product.sku}
-                  </td>
+                  <td className="px-6 py-4 text-zinc-300">{product.sku}</td>
 
                   <td className="px-6 py-4 text-zinc-300">
                     {product.category}
@@ -54,17 +48,15 @@ export default function ProductTable({
                     ₹{product.price.toLocaleString("en-IN")}
                   </td>
 
-                  <td className="px-6 py-4 text-zinc-300">
-                    {product.stock}
-                  </td>
+                  <td className="px-6 py-4 text-zinc-300">{product.stock}</td>
 
                   <td className="px-6 py-4">
                     <ProductStatusBadge status={product.status} />
                   </td>
 
                   <td className="px-6 py-4 text-right">
-  <ProductRowActions productId={product.id} />
-</td>
+                    <ProductRowActions productId={product.id} />
+                  </td>
                 </tr>
               ))
             )}

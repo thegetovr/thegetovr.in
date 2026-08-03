@@ -22,19 +22,12 @@ export default async function EditProductPage({
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-4xl font-bold text-white">
-          Edit Product
-        </h1>
+        <h1 className="text-4xl font-bold text-white">Edit Product</h1>
 
-        <p className="mt-2 text-zinc-400">
-          Update product information.
-        </p>
+        <p className="mt-2 text-zinc-400">Update product information.</p>
       </div>
 
-     <ProductForm
-  mode="edit"
-  product={product}
-/>
+      <ProductForm mode="edit" product={product} />
     </div>
   );
 }

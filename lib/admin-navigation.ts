@@ -3,6 +3,7 @@ import {
   DashboardIcon,
   OrdersIcon,
   ProductsIcon,
+  PackageIcon,
   CustomersIcon,
   CouponsIcon,
   AnalyticsIcon,
@@ -25,6 +26,11 @@ export const adminNavigation: AdminNavigationItem[] = [
     href: "/admin/products",
     icon: ProductsIcon,
   },
+  {
+  name: "Categories",
+  href: "/admin/categories",
+  icon: PackageIcon,
+},
   {
     name: "Customers",
     href: "/admin/customers",
