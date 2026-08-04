@@ -1,13 +1,13 @@
-import {
-  PRODUCT_CATEGORIES,
-  ProductCategory,
-} from "@/types/product";
+import { Category } from "@/types/category";
+import { ProductCategory } from "@/types/product";
 
 interface ProductCategoryFilterProps {
+  categories: Category[];
   defaultValue?: ProductCategory | "";
 }
 
 export default function ProductCategoryFilter({
+  categories,
   defaultValue = "",
 }: ProductCategoryFilterProps) {
   return (
@@ -18,12 +18,12 @@ export default function ProductCategoryFilter({
     >
       <option value="">All Categories</option>
 
-      {PRODUCT_CATEGORIES.map((category) => (
+      {categories.map((category) => (
         <option
-          key={category}
-          value={category}
+          key={category.id}
+          value={category.name}
         >
-          {category}
+          {category.name}
         </option>
       ))}
     </select>

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import ProductStatusBadge from "@/components/admin/products/ProductStatusBadge";
 import { getProduct } from "@/lib/productService";
 import ProductActionsCard from "@/components/admin/products/ProductActionsCard";
+import ProductImageCard from "@/components/admin/products/media/ProductImageCard";
 
 interface AdminProductDetailsPageProps {
   params: Promise<{
@@ -29,7 +30,8 @@ export default async function AdminProductDetailsPage({
       </div>
 
       <div className="grid gap-6 xl:grid-cols-3">
-        <div className="xl:col-span-2">
+        <ProductImageCard media={product.media} />
+        <div>
           <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
             <dl className="grid gap-6 sm:grid-cols-2">
               <div>

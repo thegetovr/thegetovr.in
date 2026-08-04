@@ -3,14 +3,17 @@ import Link from "next/link";
 import ProductCategoryFilter from "./ProductCategoryFilter";
 import ProductSearch from "./ProductSearch";
 import ProductStatusFilter from "./ProductStatusFilter";
+import { Category } from "@/types/category";
 
 interface ProductToolbarProps {
+  categories: Category[];
   defaultSearch?: string;
   defaultCategory?: ProductCategory | "";
   defaultStatus?: ProductStatus | "";
 }
 
 export default function ProductToolbar({
+  categories,
   defaultSearch = "",
   defaultCategory = "",
   defaultStatus = "",
@@ -23,7 +26,10 @@ export default function ProductToolbar({
       <div className="flex flex-col gap-4 md:flex-row md:items-center">
         <ProductSearch defaultValue={defaultSearch} />
 
-        <ProductCategoryFilter defaultValue={defaultCategory} />
+        <ProductCategoryFilter
+  categories={categories}
+  defaultValue={defaultCategory}
+/>
 
         <ProductStatusFilter defaultValue={defaultStatus} />
       </div>

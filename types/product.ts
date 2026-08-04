@@ -1,12 +1,17 @@
-export const PRODUCT_CATEGORIES = [
-  "Oversized T-Shirt",
-  "Classic T-Shirt",
-  "Hoodie",
-] as const;
+export interface ProductMedia {
+  url: string;
+  publicId: string;
+  alt: string;
+  isCover: boolean;
+  order: number;
+}
 
-export type ProductCategory = (typeof PRODUCT_CATEGORIES)[number];
+export type ProductStatus =
+  | "active"
+  | "draft"
+  | "archived";
 
-export type ProductStatus = "active" | "draft" | "archived";
+export type ProductCategory = string;
 
 export interface Product {
   id: string;
@@ -16,4 +21,5 @@ export interface Product {
   price: number;
   stock: number;
   status: ProductStatus;
+  media: ProductMedia[];
 }

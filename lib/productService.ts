@@ -47,14 +47,15 @@ export async function getProducts(
   const products = await Product.find(query).lean();
 
   return products.map((product) => ({
-    id: String(product._id),
-    name: product.name,
-    sku: product.sku,
-    category: product.category,
-    price: product.price,
-    stock: product.stock,
-    status: product.status,
-  }));
+  id: String(product._id),
+  name: product.name,
+  sku: product.sku,
+  category: product.category,
+  price: product.price,
+  stock: product.stock,
+  status: product.status,
+  media: product.media ?? [],
+}));
 }
 export async function getProduct(
   id: string,
@@ -68,12 +69,13 @@ export async function getProduct(
   }
 
   return {
-    id: String(product._id),
-    name: product.name,
-    sku: product.sku,
-    category: product.category,
-    price: product.price,
-    stock: product.stock,
-    status: product.status,
-  };
+  id: String(product._id),
+  name: product.name,
+  sku: product.sku,
+  category: product.category,
+  price: product.price,
+  stock: product.stock,
+  status: product.status,
+  media: product.media ?? [],
+};
 }

@@ -4,6 +4,8 @@ import SubmitButton from "@/components/admin/common/SubmitButton";
 import { Category } from "@/types/category";
 import { createProduct, updateProduct } from "@/lib/productActions";
 import { Product } from "@/types/product";
+import FileField from "@/components/admin/forms/FileField";
+import ProductImageCard from "@/components/admin/products/media/ProductImageCard";
 
 interface ProductFormProps {
   mode: "create" | "edit";
@@ -25,7 +27,8 @@ export default function ProductForm({
     >
       <h2 className="text-xl font-semibold text-white">Product Information</h2>
 
-      <div className="mt-6 space-y-6">
+      <div className="mt-6 grid gap-8 xl:grid-cols-3">
+        <div className="space-y-6 xl:col-span-2">
         <TextField
           id="name"
           name="name"
@@ -92,6 +95,17 @@ export default function ProductForm({
             { value: "archived", label: "Archived" },
           ]}
         />
+        <FileField id="media" name="media" label="Product Image" /> 
+        </div>
+        <div className="space-y-6">
+  {mode === "edit" && (
+    <ProductImageCard
+      title="Current Product Image"
+      media={product?.media ?? []}
+      fallbackText="No product image uploaded"
+    />
+  )}
+</div>
       </div>
 
       <div className="mt-8 flex justify-end">

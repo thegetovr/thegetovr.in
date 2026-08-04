@@ -43,6 +43,34 @@ const ProductSchema = new Schema(
       enum: PRODUCT_STATUSES,
       default: "draft",
     },
+    media: [
+      {
+        url: {
+          type: String,
+          required: true,
+        },
+
+        publicId: {
+          type: String,
+          required: true,
+        },
+
+        alt: {
+          type: String,
+          default: "",
+        },
+
+        isCover: {
+          type: Boolean,
+          default: false,
+        },
+
+        order: {
+          type: Number,
+          default: 0,
+        },
+      },
+    ],
   },
   {
     timestamps: true,
