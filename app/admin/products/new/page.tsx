@@ -1,6 +1,9 @@
 import ProductForm from "@/components/admin/products/ProductForm";
+import { getActiveCategories } from "@/lib/categoryService";
 
-export default function NewProductPage() {
+export default async function NewProductPage() {
+  const categories = await getActiveCategories();
+
   return (
     <div className="space-y-8">
       <div>
@@ -13,7 +16,10 @@ export default function NewProductPage() {
         </p>
       </div>
 
-      <ProductForm mode="create" />
+      <ProductForm
+        mode="create"
+        categories={categories}
+      />
     </div>
   );
 }

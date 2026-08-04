@@ -68,3 +68,19 @@ export async function getCategory(
     status: category.status,
   };
 }
+export async function getActiveCategories(): Promise<Category[]> {
+  await connectToDatabase();
+
+  const categories = await CategoryModel.find({
+    status: "active",
+  })
+    .sort({ name: 1 })
+    .lean();
+
+  return categories.map((category) => ({
+    id: String(category._id),
+    name: category.name,
+    slug: category.slug,
+    status: category.status,
+  }));
+}

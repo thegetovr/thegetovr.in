@@ -1,14 +1,7 @@
 import { Schema, model, models } from "mongoose";
-import {
-  PRODUCT_CATEGORIES,
-  ProductStatus,
-} from "@/types/product";
+import { ProductStatus } from "@/types/product";
 
-const PRODUCT_STATUSES: ProductStatus[] = [
-  "active",
-  "draft",
-  "archived",
-];
+const PRODUCT_STATUSES: ProductStatus[] = ["active", "draft", "archived"];
 
 const ProductSchema = new Schema(
   {
@@ -29,7 +22,7 @@ const ProductSchema = new Schema(
     category: {
       type: String,
       required: true,
-      enum: PRODUCT_CATEGORIES,
+      trim: true,
     },
 
     price: {

@@ -27,10 +27,10 @@ export const adminNavigation: AdminNavigationItem[] = [
     icon: ProductsIcon,
   },
   {
-  name: "Categories",
-  href: "/admin/categories",
-  icon: PackageIcon,
-},
+    name: "Categories",
+    href: "/admin/categories",
+    icon: PackageIcon,
+  },
   {
     name: "Customers",
     href: "/admin/customers",

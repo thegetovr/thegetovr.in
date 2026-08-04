@@ -28,7 +28,7 @@ export default function ProductRowActions({
       <DropdownMenu.Portal>
         <DropdownMenu.Content
           sideOffset={6}
-          className="min-w-[180px] rounded-lg border border-zinc-800 bg-zinc-900 p-1 shadow-xl"
+          className="min-w-45 rounded-lg border border-zinc-800 bg-zinc-900 p-1 shadow-xl"
         >
           <DropdownMenu.Item asChild>
             <Link

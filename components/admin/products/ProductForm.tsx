@@ -1,35 +1,29 @@
 import SelectField from "@/components/admin/forms/SelectField";
 import TextField from "@/components/admin/forms/TextField";
 import SubmitButton from "@/components/admin/common/SubmitButton";
-
-import {
-  createProduct,
-  updateProduct,
-} from "@/lib/productActions";
+import { Category } from "@/types/category";
+import { createProduct, updateProduct } from "@/lib/productActions";
 import { Product } from "@/types/product";
 
 interface ProductFormProps {
   mode: "create" | "edit";
   product?: Product;
+  categories: Category[];
 }
-
 export default function ProductForm({
   mode,
   product,
+  categories,
 }: ProductFormProps) {
   const action =
-    mode === "create"
-      ? createProduct
-      : updateProduct.bind(null, product!.id);
+    mode === "create" ? createProduct : updateProduct.bind(null, product!.id);
 
   return (
     <form
       action={action}
       className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6"
     >
-      <h2 className="text-xl font-semibold text-white">
-        Product Information
-      </h2>
+      <h2 className="text-xl font-semibold text-white">Product Information</h2>
 
       <div className="mt-6 space-y-6">
         <TextField
@@ -54,19 +48,14 @@ export default function ProductForm({
           label="Category"
           defaultValue={product?.category ?? ""}
           options={[
-            { value: "", label: "Select category" },
             {
-              value: "Oversized T-Shirt",
-              label: "Oversized T-Shirt",
+              value: "",
+              label: "Select category",
             },
-            {
-              value: "Classic T-Shirt",
-              label: "Classic T-Shirt",
-            },
-            {
-              value: "Hoodie",
-              label: "Hoodie",
-            },
+            ...categories.map((category) => ({
+              value: category.name,
+              label: category.name,
+            })),
           ]}
         />
 
@@ -108,11 +97,7 @@ export default function ProductForm({
       <div className="mt-8 flex justify-end">
         <SubmitButton
           label={mode === "create" ? "Add Product" : "Save Changes"}
-          pendingLabel={
-            mode === "create"
-              ? "Creating..."
-              : "Saving..."
-          }
+          pendingLabel={mode === "create" ? "Creating..." : "Saving..."}
         />
       </div>
     </form>
