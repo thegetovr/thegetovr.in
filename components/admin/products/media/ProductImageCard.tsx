@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import ProductPreview from "./ProductPreview";
-import GalleryThumbnail from "./GalleryThumbnail";
 import GalleryGrid from "./GalleryGrid";
 
 interface ProductMedia {
@@ -25,12 +24,24 @@ export default function ProductImageCard({
   media,
   fallbackText = "No product images",
 }: ProductImageCardProps) {
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedPublicId, setSelectedPublicId] = useState(
+    media[0]?.publicId ?? "",
+  );
+
+  const selectedImage = useMemo(() => {
+    const image = media.find(
+      (item) => item.publicId === selectedPublicId,
+    );
+
+    return image ?? media[0];
+  }, [media, selectedPublicId]);
 
   if (media.length === 0) {
     return (
       <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
-        <h2 className="mb-4 text-lg font-semibold text-white">{title}</h2>
+        <h2 className="mb-4 text-lg font-semibold text-white">
+          {title}
+        </h2>
 
         <div className="flex aspect-square items-center justify-center rounded-lg border border-dashed border-zinc-700 text-sm text-zinc-500">
           {fallbackText}
@@ -39,19 +50,22 @@ export default function ProductImageCard({
     );
   }
 
-  const selectedImage = media[selectedIndex];
-
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
-      <h2 className="mb-4 text-lg font-semibold text-white">{title}</h2>
+      <h2 className="mb-4 text-lg font-semibold text-white">
+        {title}
+      </h2>
 
-      <ProductPreview src={selectedImage.url} alt={selectedImage.alt} />
+      <ProductPreview
+        src={selectedImage.url}
+        alt={selectedImage.alt}
+      />
 
       <GalleryGrid
         productId={productId}
         media={media}
-        selectedIndex={selectedIndex}
-        onSelect={setSelectedIndex}
+        selectedPublicId={selectedPublicId}
+        onSelect={setSelectedPublicId}
       />
     </div>
   );

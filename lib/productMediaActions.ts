@@ -75,3 +75,48 @@ export async function deleteProductImage(
   revalidatePath(`/admin/products/${productId}/edit`);
   revalidatePath("/admin/products");
 }
+
+export async function reorderProductImages(
+  productId: string,
+  orderedPublicIds: string[],
+) {
+  await connectToDatabase();
+
+  const product = await Product.findById(productId);
+
+  if (!product) {
+    return;
+  }
+
+  if (orderedPublicIds.length !== product.media.length) {
+    return;
+  }
+
+  const mediaMap = new Map(
+    product.media.map((image: typeof product.media[number]) => [
+      image.publicId,
+      image,
+    ]),
+  );
+
+  const reorderedMedia = orderedPublicIds.map((publicId, index) => {
+  const image = mediaMap.get(publicId);
+
+  if (!image) {
+    throw new Error(`Image not found: ${publicId}`);
+  }
+
+  return {
+    ...(image as (typeof product.media)[number]).toObject(),
+    order: index,
+  };
+});
+
+  product.media = reorderedMedia;
+
+  await product.save();
+
+  revalidatePath(`/admin/products/${productId}`);
+  revalidatePath(`/admin/products/${productId}/edit`);
+  revalidatePath("/admin/products");
+}
