@@ -29,83 +29,84 @@ export default function ProductForm({
 
       <div className="mt-6 grid gap-8 xl:grid-cols-3">
         <div className="space-y-6 xl:col-span-2">
-        <TextField
-          id="name"
-          name="name"
-          label="Product Name"
-          defaultValue={product?.name ?? ""}
-          placeholder="Enter product name"
-        />
-
-        <TextField
-          id="sku"
-          name="sku"
-          label="SKU"
-          defaultValue={product?.sku ?? ""}
-          placeholder="Enter SKU"
-        />
-
-        <SelectField
-          id="category"
-          name="category"
-          label="Category"
-          defaultValue={product?.category ?? ""}
-          options={[
-            {
-              value: "",
-              label: "Select category",
-            },
-            ...categories.map((category) => ({
-              value: category.name,
-              label: category.name,
-            })),
-          ]}
-        />
-
-        <div className="grid gap-6 sm:grid-cols-2">
           <TextField
-            id="price"
-            name="price"
-            label="Price"
-            type="number"
-            min={0}
-            defaultValue={product?.price ?? ""}
-            placeholder="0"
+            id="name"
+            name="name"
+            label="Product Name"
+            defaultValue={product?.name ?? ""}
+            placeholder="Enter product name"
           />
 
           <TextField
-            id="stock"
-            name="stock"
-            label="Stock"
-            type="number"
-            min={0}
-            defaultValue={product?.stock ?? ""}
-            placeholder="0"
+            id="sku"
+            name="sku"
+            label="SKU"
+            defaultValue={product?.sku ?? ""}
+            placeholder="Enter SKU"
           />
-        </div>
 
-        <SelectField
-          id="status"
-          name="status"
-          defaultValue={product?.status ?? "draft"}
-          label="Status"
-          options={[
-            { value: "active", label: "Live" },
-            { value: "draft", label: "Hidden" },
-            { value: "archived", label: "Archived" },
-          ]}
-        />
-        <FileField id="media" name="media" label="Product Image" /> 
+          <SelectField
+            id="category"
+            name="category"
+            label="Category"
+            defaultValue={product?.category ?? ""}
+            options={[
+              {
+                value: "",
+                label: "Select category",
+              },
+              ...categories.map((category) => ({
+                value: category.name,
+                label: category.name,
+              })),
+            ]}
+          />
+
+          <div className="grid gap-6 sm:grid-cols-2">
+            <TextField
+              id="price"
+              name="price"
+              label="Price"
+              type="number"
+              min={0}
+              defaultValue={product?.price ?? ""}
+              placeholder="0"
+            />
+
+            <TextField
+              id="stock"
+              name="stock"
+              label="Stock"
+              type="number"
+              min={0}
+              defaultValue={product?.stock ?? ""}
+              placeholder="0"
+            />
+          </div>
+
+          <SelectField
+            id="status"
+            name="status"
+            defaultValue={product?.status ?? "draft"}
+            label="Status"
+            options={[
+              { value: "active", label: "Live" },
+              { value: "draft", label: "Hidden" },
+              { value: "archived", label: "Archived" },
+            ]}
+          />
+          <FileField id="media" name="media" label="Product Images" multiple />
         </div>
         <div className="space-y-6">
-  {mode === "edit" && (
-    <ProductImageCard
-      title="Current Product Image"
-      media={product?.media ?? []}
-      fallbackText="No product image uploaded"
-    />
-  )}
-</div>
+          {mode === "edit" && (
+            <ProductImageCard
+  productId={product!.id}
+  title="Current Product Image"
+  media={product?.media ?? []}
+  fallbackText="No product image uploaded"
+/>
+          )}
+        </div>
       </div>
 
       <div className="mt-8 flex justify-end">

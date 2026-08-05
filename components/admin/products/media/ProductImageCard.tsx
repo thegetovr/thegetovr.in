@@ -1,41 +1,58 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import ProductPreview from "./ProductPreview";
+import GalleryThumbnail from "./GalleryThumbnail";
+import GalleryGrid from "./GalleryGrid";
 
 interface ProductMedia {
   url: string;
+  publicId: string;
   alt: string;
+  isCover: boolean;
 }
 
 interface ProductImageCardProps {
+  productId: string;
   title?: string;
   media: ProductMedia[];
   fallbackText?: string;
 }
 
 export default function ProductImageCard({
-  title = "Product Image",
+  productId,
+  title = "Product Images",
   media,
-  fallbackText = "No product image",
+  fallbackText = "No product images",
 }: ProductImageCardProps) {
-  return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
-      <h2 className="mb-4 text-lg font-semibold text-white">
-        {title}
-      </h2>
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-      {media.length > 0 ? (
-        <div className="relative aspect-square overflow-hidden rounded-lg border border-zinc-800">
-          <Image
-            src={media[0].url}
-            alt={media[0].alt}
-            fill
-            className="object-cover"
-          />
-        </div>
-      ) : (
+  if (media.length === 0) {
+    return (
+      <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
+        <h2 className="mb-4 text-lg font-semibold text-white">{title}</h2>
+
         <div className="flex aspect-square items-center justify-center rounded-lg border border-dashed border-zinc-700 text-sm text-zinc-500">
           {fallbackText}
         </div>
-      )}
+      </div>
+    );
+  }
+
+  const selectedImage = media[selectedIndex];
+
+  return (
+    <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
+      <h2 className="mb-4 text-lg font-semibold text-white">{title}</h2>
+
+      <ProductPreview src={selectedImage.url} alt={selectedImage.alt} />
+
+      <GalleryGrid
+        productId={productId}
+        media={media}
+        selectedIndex={selectedIndex}
+        onSelect={setSelectedIndex}
+      />
     </div>
   );
 }

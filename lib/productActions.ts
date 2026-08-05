@@ -7,6 +7,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import Product from "@/models/Product";
 import { productSchema } from "@/lib/validation/product";
 import { deleteMedia, uploadFile } from "@/lib/mediaService";
+import { buildProductMedia } from "@/lib/productMedia";
 
 async function parseProductForm(formData: FormData) {
   return productSchema.safeParse({
@@ -38,39 +39,30 @@ export async function createProduct(formData: FormData) {
     return;
   }
 
-  const image = formData.get("media");
+  const files = formData.getAll("media");
 
-  let media: {
+  const media: {
     url: string;
     publicId: string;
     alt: string;
     isCover: boolean;
     order: number;
   }[] = [];
+  for (const [index, file] of files.entries()) {
+    if (!(file instanceof File) || file.size === 0) {
+      continue;
+    }
 
-  if (image instanceof File && image.size > 0) {
-    console.log("Image received:", {
-      name: image.name,
-      size: image.size,
-      type: image.type,
+    const uploaded = await uploadFile(file, "products");
+
+    const uploadedMedia = buildProductMedia(uploaded, parsed.data.name)[0];
+
+    media.push({
+      ...uploadedMedia,
+      isCover: index === 0,
+      order: index,
     });
-
-    const uploaded = await uploadFile(image, "products");
-
-    console.log("Cloudinary upload result:", uploaded);
-
-    media = [
-      {
-        url: uploaded.url,
-        publicId: uploaded.publicId,
-        alt: parsed.data.name,
-        isCover: true,
-        order: 0,
-      },
-    ];
   }
-
-  console.log("Media to save:", media);
 
   const product = await Product.create({
     ...parsed.data,
@@ -92,14 +84,14 @@ export async function updateProduct(productId: string, formData: FormData) {
 
   await connectToDatabase();
 
-const product = await Product.findById(productId);
+  const product = await Product.findById(productId);
 
-if (!product) {
-  console.error("Product not found.");
-  return;
-}
+  if (!product) {
+    console.error("Product not found.");
+    return;
+  }
 
-const existingProduct = await Product.findOne({
+  const existingProduct = await Product.findOne({
     sku: parsed.data.sku,
     _id: { $ne: productId },
   });
@@ -109,28 +101,26 @@ const existingProduct = await Product.findOne({
     return;
   }
 
-  let media = product.media ?? [];
+  const media = [...(product.media ?? [])];
 
-  const image = formData.get("media");
+  const files = formData.getAll("media");
 
-  if (image instanceof File && image.size > 0) {
-    const uploaded = await uploadFile(image, "products");
+  let nextOrder = media.length;
 
-    const newMedia = [
-      {
-        url: uploaded.url,
-        publicId: uploaded.publicId,
-        alt: parsed.data.name,
-        isCover: true,
-        order: 0,
-      },
-    ];
-
-    if (media.length > 0 && media[0].publicId) {
-      await deleteMedia(media[0].publicId);
+  for (const file of files) {
+    if (!(file instanceof File) || file.size === 0) {
+      continue;
     }
 
-    media = newMedia;
+    const uploaded = await uploadFile(file, "products");
+
+    const uploadedMedia = buildProductMedia(uploaded, parsed.data.name)[0];
+
+    media.push({
+      ...uploadedMedia,
+      isCover: media.length === 0,
+      order: nextOrder++,
+    });
   }
 
   await Product.findByIdAndUpdate(productId, {
@@ -143,9 +133,7 @@ const existingProduct = await Product.findOne({
 
   redirect(`/admin/products/${productId}`);
 }
-export async function deleteProduct(
-  productId: string,
-) {
+export async function deleteProduct(productId: string) {
   await connectToDatabase();
 
   const product = await Product.findById(productId);

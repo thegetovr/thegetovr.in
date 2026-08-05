@@ -30,7 +30,10 @@ export default async function AdminProductDetailsPage({
       </div>
 
       <div className="grid gap-6 xl:grid-cols-3">
-        <ProductImageCard media={product.media} />
+        <ProductImageCard
+  productId={product.id}
+  media={product.media}
+/>
         <div>
           <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
             <dl className="grid gap-6 sm:grid-cols-2">
