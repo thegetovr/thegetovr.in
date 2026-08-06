@@ -13,9 +13,7 @@ type OrdersTableProps = {
 const tableGrid =
   "grid min-w-[950px] grid-cols-[2fr_2fr_1.2fr_1fr_1.2fr_0.8fr] items-center";
 
-export default function OrdersTable({
-  orders,
-}: OrdersTableProps) {
+export default function OrdersTable({ orders }: OrdersTableProps) {
   if (orders.length === 0) {
     return (
       <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 px-8 py-16 text-center">
@@ -23,9 +21,7 @@ export default function OrdersTable({
           📦
         </div>
 
-        <h3 className="text-lg font-semibold text-white">
-          No orders found
-        </h3>
+        <h3 className="text-lg font-semibold text-white">No orders found</h3>
 
         <p className="mt-2 text-sm text-zinc-400">
           Try changing your search or resetting the current filters.
@@ -53,19 +49,20 @@ export default function OrdersTable({
           className={`${tableGrid} border-b border-zinc-800 px-6 py-4 last:border-b-0`}
         >
           <div>
-            <p className="font-semibold text-white">
+            <Link
+              href={`/admin/orders/${order.orderNumber}`}
+              className="font-semibold text-white transition hover:text-zinc-300 hover:underline"
+            >
               {order.orderNumber}
-            </p>
+            </Link>
 
             <p className="mt-1 text-xs text-zinc-500">
               #{order.orderNumber.slice(-4)}
             </p>
           </div>
-
           <div>
             <p className="text-sm text-zinc-200">
-              {order.customer.firstName}{" "}
-              {order.customer.lastName}
+              {order.customer.firstName} {order.customer.lastName}
             </p>
           </div>
 

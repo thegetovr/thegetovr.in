@@ -1,18 +1,15 @@
 "use client";
 
 import { useTransition } from "react";
-import {
-  deleteProductImage,
-  setCoverImage,
-} from "@/lib/productMediaActions";
+import { deleteProductImage, setCoverImage } from "@/lib/productMediaActions";
 interface GalleryActionsProps {
   productId: string;
   publicId: string;
   children: (actions: {
-  isPending: boolean;
-  setCover: () => void;
-  deleteImage: () => void;
-}) => React.ReactNode;
+    isPending: boolean;
+    setCover: () => void;
+    deleteImage: () => void;
+  }) => React.ReactNode;
 }
 
 export default function GalleryActions({
@@ -35,8 +32,8 @@ export default function GalleryActions({
   }
 
   return children({
-  isPending,
-  setCover,
-  deleteImage,
-});
+    isPending,
+    setCover,
+    deleteImage,
+  });
 }

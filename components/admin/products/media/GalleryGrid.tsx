@@ -138,34 +138,34 @@ export default function GalleryGrid({
         <div className="mt-4 grid grid-cols-4 gap-3">
           {mediaState.map((image) => (
             <GalleryActions
-  key={image.publicId}
-  productId={productId}
-  publicId={image.publicId}
->
-  {({ setCover, deleteImage, isPending }) => {
-    function handleSetCover() {
-      setMediaState((current) =>
-        current.map((item) => ({
-          ...item,
-          isCover: item.publicId === image.publicId,
-        })),
-      );
+              key={image.publicId}
+              productId={productId}
+              publicId={image.publicId}
+            >
+              {({ setCover, deleteImage, isPending }) => {
+                function handleSetCover() {
+                  setMediaState((current) =>
+                    current.map((item) => ({
+                      ...item,
+                      isCover: item.publicId === image.publicId,
+                    })),
+                  );
 
-      setCover();
-    }
+                  setCover();
+                }
 
-    return (
-      <SortableThumbnail
-        image={image}
-        active={selectedPublicId === image.publicId}
-        canDelete={mediaState.length > 1 && !isPending}
-        onPreview={() => onSelect(image.publicId)}
-        onSetCover={isPending ? undefined : handleSetCover}
-        onDelete={deleteImage}
-      />
-    );
-  }}
-</GalleryActions>
+                return (
+                  <SortableThumbnail
+                    image={image}
+                    active={selectedPublicId === image.publicId}
+                    canDelete={mediaState.length > 1 && !isPending}
+                    onPreview={() => onSelect(image.publicId)}
+                    onSetCover={isPending ? undefined : handleSetCover}
+                    onDelete={deleteImage}
+                  />
+                );
+              }}
+            </GalleryActions>
           ))}
         </div>
       </SortableContext>

@@ -100,11 +100,11 @@ export default function ProductForm({
         <div className="space-y-6">
           {mode === "edit" && (
             <ProductImageCard
-  productId={product!.id}
-  title="Current Product Image"
-  media={product?.media ?? []}
-  fallbackText="No product image uploaded"
-/>
+              productId={product!.id}
+              title="Current Product Image"
+              media={product?.media ?? []}
+              fallbackText="No product image uploaded"
+            />
           )}
         </div>
       </div>
