@@ -4,7 +4,7 @@ interface TextFieldProps {
   label: string;
   defaultValue?: string | number;
   placeholder?: string;
-  type?: "text" | "number";
+  type?: "text" | "number" | "date";
   min?: number;
 }
 
