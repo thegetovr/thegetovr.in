@@ -1,10 +1,6 @@
-import type {
-  DesignElement,
-  PrintSide,
-  Product,
-  ProductColor,
-  ProductSize,
-} from "./design";
+import type { PrintSide, Product, ProductColor, ProductSize } from "./design";
+
+import type { CartDesignElement } from "./cartDesign";
 
 export interface CartItem {
   id: string;
@@ -15,9 +11,8 @@ export interface CartItem {
   quantity: number;
   printSide: PrintSide;
 
-  frontElements: DesignElement[];
-  backElements: DesignElement[];
-
+  frontElements: CartDesignElement[];
+  backElements: CartDesignElement[];
   unitPrice: number;
   totalPrice: number;
 

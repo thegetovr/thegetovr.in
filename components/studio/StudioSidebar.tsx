@@ -5,6 +5,7 @@ import { PRODUCTS, COLORS } from "@/lib/product";
 import OrderSummary from "./OrderSummary";
 import { ImagePlus, Type, Trash2, Palette } from "lucide-react";
 import type { StudioTool } from "./layout/ToolRail";
+import { saveImage } from "@/lib/studio/imageStore";
 import type {
   DesignElement,
   Product,
@@ -70,12 +71,12 @@ export default function StudioSidebar({
 
     const reader = new FileReader();
 
-    reader.onload = () => {
+    reader.onload = async () => {
       const img = new window.Image();
 
       img.src = reader.result as string;
 
-      img.onload = () => {
+      img.onload = async () => {
         const maxSize = 220;
 
         let width = img.naturalWidth;
@@ -85,11 +86,15 @@ export default function StudioSidebar({
 
         width *= scale;
         height *= scale;
+        const imageId = crypto.randomUUID();
+
+        await saveImage(imageId, reader.result as string);
 
         const newElement: DesignElement = {
           id: crypto.randomUUID(),
 
           type: "image",
+          imageId,
 
           src: reader.result as string,
 
@@ -215,30 +220,26 @@ export default function StudioSidebar({
 
           <div className="space-y-3">
             {(Object.keys(PRODUCTS) as Product[]).map((productKey) => (
-  <button
-    key={productKey}
-    onClick={() => setProduct(productKey)}
-    className={`flex w-full items-center gap-4 rounded-2xl border p-4 transition ${
-      product === productKey
-        ? "border-white bg-white text-black shadow-lg"
-        : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
-    }`}
-  >
-    <span className="text-2xl">
-      {PRODUCT_ICONS[productKey]}
-    </span>
+              <button
+                key={productKey}
+                onClick={() => setProduct(productKey)}
+                className={`flex w-full items-center gap-4 rounded-2xl border p-4 transition ${
+                  product === productKey
+                    ? "border-white bg-white text-black shadow-lg"
+                    : "border-white/10 bg-[#232329] hover:bg-[#2b2b31]"
+                }`}
+              >
+                <span className="text-2xl">{PRODUCT_ICONS[productKey]}</span>
 
-    <div className="text-left">
-      <p className="font-semibold">
-        {PRODUCTS[productKey].label}
-      </p>
+                <div className="text-left">
+                  <p className="font-semibold">{PRODUCTS[productKey].label}</p>
 
-      <p className="text-xs opacity-70">
-        {PRODUCTS[productKey].label}
-      </p>
-    </div>
-  </button>
-))}
+                  <p className="text-xs opacity-70">
+                    {PRODUCTS[productKey].label}
+                  </p>
+                </div>
+              </button>
+            ))}
           </div>
           <div className="mt-8">
             <div className="mb-4">
