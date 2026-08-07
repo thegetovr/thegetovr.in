@@ -7,6 +7,7 @@ import StudioSidebar from "@/components/studio/StudioSidebar";
 import { useCartStore } from "@/stores/cartStore";
 import { calculatePrice } from "@/lib/store/pricing";
 import { useRouter } from "next/navigation";
+import { toCartDesign } from "@/lib/studio/cartDesignMapper";
 import type {
   Product,
   ProductSize,
@@ -16,9 +17,7 @@ import type {
   DesignElement,
 } from "@/types/design";
 import StudioLayout from "@/components/studio/layout/StudioLayout";
-import ToolRail, {
-  type StudioTool,
-} from "@/components/studio/layout/ToolRail";
+import ToolRail, { type StudioTool } from "@/components/studio/layout/ToolRail";
 
 export default function StudioPage() {
   const [product, setProduct] = useState<Product>("hoodie");
@@ -29,9 +28,18 @@ export default function StudioPage() {
   const [quantity, setQuantity] = useState<ProductQuantity>(1);
   const [printSide, setPrintSide] = useState<PrintSide>("front");
   const addItem = useCartStore((state) => state.addItem);
-  const [designs, setDesigns] = useState<{ front: DesignElement[]; back: DesignElement[]; }>({ front: [], back: [], });
-  const [history, setHistory] = useState<{ front: DesignElement[][]; back: DesignElement[][]; }>({ front: [], back: [], });
-  const [redoHistory, setRedoHistory] = useState<{ front: DesignElement[][]; back: DesignElement[][]; }>({ front: [], back: [], });
+  const [designs, setDesigns] = useState<{
+    front: DesignElement[];
+    back: DesignElement[];
+  }>({ front: [], back: [] });
+  const [history, setHistory] = useState<{
+    front: DesignElement[][];
+    back: DesignElement[][];
+  }>({ front: [], back: [] });
+  const [redoHistory, setRedoHistory] = useState<{
+    front: DesignElement[][];
+    back: DesignElement[][];
+  }>({ front: [], back: [] });
   const currentHistory = history[view];
   const currentRedoHistory = redoHistory[view];
   const elements = designs[view];
@@ -41,7 +49,7 @@ export default function StudioPage() {
     const { unitPrice, totalPrice } = calculatePrice(
       product,
       printSide,
-      quantity
+      quantity,
     );
 
     addItem({
@@ -53,9 +61,8 @@ export default function StudioPage() {
       quantity,
       printSide,
 
-      frontElements: designs.front,
-      backElements: designs.back,
-
+      frontElements: toCartDesign(designs.front),
+      backElements: toCartDesign(designs.back),
       unitPrice,
       totalPrice,
 
@@ -213,7 +220,6 @@ export default function StudioPage() {
   return (
     <main className="flex h-screen flex-col bg-[#0b0b0d] pt-24 text-white">
       <div className="mx-auto flex h-full min-h-0 w-full max-w-[1700px] gap-5 overflow-hidden px-5 pb-5">
-
         {/* Studio */}
         <section className="flex flex-1 flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#151519]">
           {/* Header */}
@@ -232,20 +238,22 @@ export default function StudioPage() {
               <div className="flex overflow-hidden rounded-full border border-white/10 bg-white/5">
                 <button
                   onClick={() => setView("front")}
-                  className={`px-5 py-2 text-sm font-semibold transition ${view === "front"
-                    ? "bg-white text-black"
-                    : "text-white hover:bg-white/10"
-                    }`}
+                  className={`px-5 py-2 text-sm font-semibold transition ${
+                    view === "front"
+                      ? "bg-white text-black"
+                      : "text-white hover:bg-white/10"
+                  }`}
                 >
                   Front
                 </button>
 
                 <button
                   onClick={() => setView("back")}
-                  className={`px-5 py-2 text-sm font-semibold transition ${view === "back"
-                    ? "bg-white text-black"
-                    : "text-white hover:bg-white/10"
-                    }`}
+                  className={`px-5 py-2 text-sm font-semibold transition ${
+                    view === "back"
+                      ? "bg-white text-black"
+                      : "text-white hover:bg-white/10"
+                  }`}
                 >
                   Back
                 </button>
@@ -259,10 +267,7 @@ export default function StudioPage() {
 
           <StudioLayout
             toolRail={
-              <ToolRail
-                activeTool={activeTool}
-                onChange={setActiveTool}
-              />
+              <ToolRail activeTool={activeTool} onChange={setActiveTool} />
             }
             toolPanel={
               <StudioSidebar
@@ -293,7 +298,6 @@ export default function StudioPage() {
                 setElements={setElements}
                 selectedElementId={selectedElementId}
                 setSelectedElementId={setSelectedElementId}
-
               />
             }
             inspector={
@@ -305,7 +309,7 @@ export default function StudioPage() {
                   if (!selectedElementId) return;
 
                   setElements((prev) =>
-                    prev.filter((e) => e.id !== selectedElementId)
+                    prev.filter((e) => e.id !== selectedElementId),
                   );
 
                   setSelectedElementId(null);
@@ -315,11 +319,11 @@ export default function StudioPage() {
                     prev.map((element) =>
                       element.id === id
                         ? {
-                          ...element,
-                          visible: !element.visible,
-                        }
-                        : element
-                    )
+                            ...element,
+                            visible: !element.visible,
+                          }
+                        : element,
+                    ),
                   );
                 }}
               />

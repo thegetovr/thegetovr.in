@@ -37,6 +37,8 @@ export interface BaseElement {
 export interface ImageElement extends BaseElement {
   type: "image";
 
+  imageId: string;
+
   src: string;
 
   originalWidth: number;
