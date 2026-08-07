@@ -2,6 +2,7 @@ import CouponStats from "@/components/admin/coupons/CouponStats";
 import CouponTable from "@/components/admin/coupons/CouponTable";
 import CouponToolbar from "@/components/admin/coupons/CouponToolbar";
 import { getCoupons } from "@/lib/couponService";
+import Link from "next/link";
 
 type AdminCouponsPageProps = {
   searchParams: Promise<{
@@ -46,12 +47,12 @@ export default async function AdminCouponsPage({
               {coupons.length} Coupons
             </span>
 
-            <a
+            <Link
               href="/admin/coupons/new"
               className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-black transition hover:bg-zinc-200"
             >
               + New Coupon
-            </a>
+            </Link>
           </div>
         </div>
         <CouponStats
