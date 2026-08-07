@@ -28,7 +28,7 @@ export default function Navbar() {
         <Logo />
 
         <nav className="hidden items-center gap-8 text-sm font-medium text-gray-300 md:flex">
-          <Link href="/" className="transition-colors hover:text-white">
+          <Link href="/shop" className="transition-colors hover:text-white">
             Shop
           </Link>
 
@@ -47,7 +47,7 @@ export default function Navbar() {
             <input
               type="text"
               placeholder="Search products..."
-              className="w-[360px] rounded-full border border-white/30 bg-white/5 py-2 pl-10 pr-4 text-sm text-white placeholder:text-gray-400 outline-none focus:border-white/60"
+              className="w-90 rounded-full border border-white/30 bg-white/5 py-2 pl-10 pr-4 text-sm text-white placeholder:text-gray-400 outline-none focus:border-white/60"
             />
 
             <svg

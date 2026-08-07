@@ -10,6 +10,7 @@ export interface ProductFilters {
   search?: string;
   category?: ProductCategory | "";
   status?: ProductStatus | "";
+  sort?: "latest" | "price-low" | "price-high" | "";
 }
 
 export async function getProducts(
@@ -44,22 +45,35 @@ export async function getProducts(
     ];
   }
 
-  const products = await Product.find(query).lean();
+  let productQuery = Product.find(query);
+
+  switch (filters.sort) {
+    case "price-low":
+      productQuery = productQuery.sort({ price: 1 });
+      break;
+
+    case "price-high":
+      productQuery = productQuery.sort({ price: -1 });
+      break;
+
+    default:
+      productQuery = productQuery.sort({ createdAt: -1 });
+  }
+
+  const products = await productQuery.lean();
 
   return products.map((product) => ({
-  id: String(product._id),
-  name: product.name,
-  sku: product.sku,
-  category: product.category,
-  price: product.price,
-  stock: product.stock,
-  status: product.status,
-  media: product.media ?? [],
-}));
+    id: String(product._id),
+    name: product.name,
+    sku: product.sku,
+    category: product.category,
+    price: product.price,
+    stock: product.stock,
+    status: product.status,
+    media: product.media ?? [],
+  }));
 }
-export async function getProduct(
-  id: string,
-): Promise<ProductType | null> {
+export async function getProduct(id: string): Promise<ProductType | null> {
   await connectToDatabase();
 
   const product = await Product.findById(id).lean();
@@ -69,13 +83,13 @@ export async function getProduct(
   }
 
   return {
-  id: String(product._id),
-  name: product.name,
-  sku: product.sku,
-  category: product.category,
-  price: product.price,
-  stock: product.stock,
-  status: product.status,
-  media: product.media ?? [],
-};
+    id: String(product._id),
+    name: product.name,
+    sku: product.sku,
+    category: product.category,
+    price: product.price,
+    stock: product.stock,
+    status: product.status,
+    media: product.media ?? [],
+  };
 }
