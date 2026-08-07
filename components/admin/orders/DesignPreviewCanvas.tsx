@@ -7,6 +7,7 @@ import ProductMockup from "@/components/studio/canvas/ProductMockup";
 import StaticImageElement from "./StaticImageElement";
 import StaticTextElement from "./StaticTextElement";
 import { CANVAS } from "@/components/studio/canvas/constants";
+import { getImage } from "@/lib/studio/imageStore";
 
 import type { DesignElement, Product, ProductColor } from "@/types/design";
 
@@ -33,16 +34,24 @@ export default function DesignPreviewCanvas({
 
       if (loadedImages[element.id]) return;
 
-      const img = new window.Image();
+      (async () => {
+        const src = await getImage(element.imageId);
 
-      img.src = element.src;
+        if (!src) {
+          return;
+        }
 
-      img.onload = () => {
-        setLoadedImages((prev) => ({
-          ...prev,
-          [element.id]: img,
-        }));
-      };
+        const img = new window.Image();
+
+        img.src = src;
+
+        img.onload = () => {
+          setLoadedImages((prev) => ({
+            ...prev,
+            [element.id]: img,
+          }));
+        };
+      })();
     });
   }, [elements, loadedImages]);
 
