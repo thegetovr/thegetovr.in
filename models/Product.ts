@@ -25,6 +25,12 @@ const ProductSchema = new Schema(
       trim: true,
     },
 
+    type: {
+      type: String,
+      enum: ["ready-made", "customizable"],
+      default: "ready-made",
+      required: true,
+    },
     price: {
       type: Number,
       required: true,

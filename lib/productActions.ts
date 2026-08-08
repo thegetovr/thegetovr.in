@@ -14,6 +14,7 @@ async function parseProductForm(formData: FormData) {
     name: formData.get("name"),
     sku: formData.get("sku"),
     category: formData.get("category"),
+    type: formData.get("type"),
     price: formData.get("price"),
     stock: formData.get("stock"),
     status: formData.get("status"),

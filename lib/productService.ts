@@ -63,15 +63,16 @@ export async function getProducts(
   const products = await productQuery.lean();
 
   return products.map((product) => ({
-    id: String(product._id),
-    name: product.name,
-    sku: product.sku,
-    category: product.category,
-    price: product.price,
-    stock: product.stock,
-    status: product.status,
-    media: product.media ?? [],
-  }));
+  id: String(product._id),
+  name: product.name,
+  sku: product.sku,
+  category: product.category,
+  type: product.type,
+  price: product.price,
+  stock: product.stock,
+  status: product.status,
+  media: product.media ?? [],
+}));
 }
 export async function getProduct(id: string): Promise<ProductType | null> {
   await connectToDatabase();
@@ -87,6 +88,7 @@ export async function getProduct(id: string): Promise<ProductType | null> {
     name: product.name,
     sku: product.sku,
     category: product.category,
+    type: product.type,
     price: product.price,
     stock: product.stock,
     status: product.status,

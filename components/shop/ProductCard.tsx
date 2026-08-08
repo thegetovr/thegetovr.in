@@ -6,12 +6,9 @@ interface ProductCardProps {
   product: Product;
 }
 
-export default function ProductCard({
-  product,
-}: ProductCardProps) {
+export default function ProductCard({ product }: ProductCardProps) {
   const coverImage =
-    product.media.find((image) => image.isCover) ??
-    product.media[0];
+    product.media.find((image) => image.isCover) ?? product.media[0];
 
   return (
     <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm transition hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900">
@@ -31,13 +28,23 @@ export default function ProductCard({
       </div>
 
       <div className="space-y-3 p-4">
-        <p className="text-xs uppercase tracking-wide text-zinc-500">
-          {product.category}
-        </p>
+        <div className="flex items-center justify-between">
+          <p className="text-xs uppercase tracking-wide text-zinc-500">
+            {product.category}
+          </p>
 
-        <h3 className="line-clamp-2 text-lg font-semibold">
-          {product.name}
-        </h3>
+          <span
+            className={`rounded-full px-2 py-1 text-[10px] font-semibold uppercase ${
+              product.type === "customizable"
+                ? "bg-blue-500/10 text-blue-400"
+                : "bg-emerald-500/10 text-emerald-400"
+            }`}
+          >
+            {product.type === "customizable" ? "Custom" : "Ready"}
+          </span>
+        </div>
+
+        <h3 className="line-clamp-2 text-lg font-semibold">{product.name}</h3>
 
         <p className="text-xl font-bold">
           ₹{product.price.toLocaleString("en-IN")}
@@ -45,9 +52,7 @@ export default function ProductCard({
 
         <p
           className={`text-sm ${
-            product.stock > 0
-              ? "text-green-600"
-              : "text-red-600"
+            product.stock > 0 ? "text-green-600" : "text-red-600"
           }`}
         >
           {product.stock > 0 ? "In Stock" : "Out of Stock"}

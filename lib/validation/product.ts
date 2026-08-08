@@ -7,6 +7,11 @@ export const productSchema = z.object({
 
   category: z.string().trim().min(1, "Category is required"),
 
+  type: z.enum([
+    "ready-made",
+    "customizable",
+  ]),
+
   price: z.coerce
     .number()
     .min(0, "Price cannot be negative"),

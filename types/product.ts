@@ -18,8 +18,12 @@ export interface Product {
   name: string;
   sku: string;
   category: ProductCategory;
+  type: ProductType;
   price: number;
   stock: number;
   status: ProductStatus;
   media: ProductMedia[];
 }
+export type ProductType =
+  | "ready-made"
+  | "customizable";

@@ -95,6 +95,22 @@ export default function ProductForm({
               { value: "archived", label: "Archived" },
             ]}
           />
+          <SelectField
+            id="type"
+            name="type"
+            label="Product Type"
+            defaultValue={product?.type ?? "ready-made"}
+            options={[
+              {
+                value: "ready-made",
+                label: "Ready-made",
+              },
+              {
+                value: "customizable",
+                label: "Customizable",
+              },
+            ]}
+          />
           <FileField id="media" name="media" label="Product Images" multiple />
         </div>
         <div className="space-y-6">
