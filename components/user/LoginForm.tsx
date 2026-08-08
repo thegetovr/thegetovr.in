@@ -8,6 +8,39 @@ import Image from "next/image";
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      console.log(result);
+    } catch (error) {
+      console.error("Login Error:", error);
+    }
+  };
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
   const passwordRef = useRef<HTMLInputElement>(null);
 
   return (
@@ -49,42 +82,46 @@ export default function LoginForm() {
                   Designing your style
                 </p>
 
-                {/* Email/Phone Input */}
-                <div className="group relative mt-6">
-                  <Mail
-                    size={20}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400
+                <form onSubmit={handleSubmit}>
+                  {/* Email/Phone Input */}
+                  <div className="group relative mt-6">
+                    <Mail
+                      size={20}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400
                        transition-all
                       duration-300
                       group-focus-within:text-[#F4B400]
                        group-focus-within:scale-110"
-                  />
+                    />
 
-                  <input
-                    id="identifier"
-                    type="text"
-                    placeholder=" "
-                    className="
-                    peer
-                    h-14
-                    w-full
-                    rounded-xl
-                    border
-                  border-white/50
-                    bg-transparent
-                    pl-12
-                    pr-14
-                  text-white
-                    outline-none
-                    transition-all
-                    duration-300
-                  focus:border-[#F4B400]
-    "
-                  />
+                    <input
+                      id="identifier"
+                      type="text"
+                      placeholder=" "
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="
+                        peer
+                        h-14
+                        w-full
+                        rounded-xl
+                        border
+                      border-white/50
+                        bg-transparent
+                        pl-12
+                        pr-14
+                      text-white
+                        outline-none
+                        transition-all
+                        duration-300
+                      focus:border-[#F4B400]
+                                   "
+                    />
 
-                  <label
-                    htmlFor="identifier"
-                    className="
+                    <label
+                      htmlFor="identifier"
+                      className="
                       ml-6
                       absolute
                       left-4
@@ -106,47 +143,50 @@ export default function LoginForm() {
                       peer-not-placeholder-shown:text-sm
                       peer-not-placeholder-shown:text-[#F4B400]
                      "
-                  >
-                    Email or Phone Number
-                  </label>
-                </div>
+                    >
+                      Email or Phone Number
+                    </label>
+                  </div>
 
-                {/* Password Input */}
-                <div className="group relative mt-6">
-                  <Lock
-                    size={20}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400
+                  {/* Password Input */}
+                  <div className="group relative mt-6">
+                    <Lock
+                      size={20}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400
                        transition-all
                       duration-300
                        group-focus-within:text-[#F4B400]
                        group-focus-within:scale-110"
-                  />
-                  <input
-                    ref={passwordRef}
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder=" "
-                    className="
-                    peer
-                    h-14
-                    w-full
-                    rounded-2xl
-                    border
-                    border-white/50
-                    bg-transparent
-                    pl-12
-                    pr-14
-                    text-white
-                    outline-none
-                    transition-all
-                    duration-300
-                    focus:border-[#F4B400]
-                  "
-                  />
+                    />
+                    <input
+                      ref={passwordRef}
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder=" "
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      className="
+                        peer
+                        h-14
+                        w-full
+                        rounded-2xl
+                        border
+                        border-white/50
+                        bg-transparent
+                        pl-12
+                        pr-14
+                        text-white
+                        outline-none
+                        transition-all
+                        duration-300
+                        focus:border-[#F4B400]
+                      "
+                    />
 
-                  <label
-                    htmlFor="password"
-                    className="
+                    <label
+                      htmlFor="password"
+                      className="
                       ml-6
                       absolute
                       left-4
@@ -168,39 +208,42 @@ export default function LoginForm() {
                       peer-not-placeholder-shown:text-sm
                     peer-not-placeholder-shown:text-[#F4B400]
                     "
-                  >
-                    Password
-                  </label>
+                    >
+                      Password
+                    </label>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowPassword((prev) => !prev);
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowPassword((prev) => !prev);
 
-                      requestAnimationFrame(() => {
-                        if (passwordRef.current) {
-                          passwordRef.current.focus();
+                        requestAnimationFrame(() => {
+                          if (passwordRef.current) {
+                            passwordRef.current.focus();
 
-                          const length = passwordRef.current.value.length;
-                          passwordRef.current.setSelectionRange(length, length);
-                        }
-                      });
-                    }}
-                    className="absolute right-5 top-1/2 -translate-y-1/2
+                            const length = passwordRef.current.value.length;
+                            passwordRef.current.setSelectionRange(
+                              length,
+                              length,
+                            );
+                          }
+                        });
+                      }}
+                      className="absolute right-5 top-1/2 -translate-y-1/2
                      text-zinc-400 
                      transition-all duration-300 
                      hover:scale-110 
                      hover:text-white active:scale-95"
-                  >
-                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
-                </div>
+                    >
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
 
-                {/* forget password */}
-                <div className="mt-4 flex justify-end">
-                  <button
-                    type="button"
-                    className="
+                  {/* forget password */}
+                  <div className="mt-4 flex justify-end">
+                    <button
+                      type="button"
+                      className="
                     text-sm
                     font-medium
                     text-zinc-300
@@ -210,16 +253,16 @@ export default function LoginForm() {
                     hover:underline
                     underline-offset-4
                      "
-                  >
-                    Forgot Password?
-                  </button>
-                </div>
+                    >
+                      Forgot Password?
+                    </button>
+                  </div>
 
-                {/* Login Button */}
-                <div className="mt-6">
-                  <button
-                    type="submit"
-                    className="
+                  {/* Login Button */}
+                  <div className="mt-6">
+                    <button
+                      type="submit"
+                      className="
                     group
                     grid
                     h-14
@@ -234,45 +277,35 @@ export default function LoginForm() {
                     duration-300
                     hover:bg-[#F6C026]
                     active:scale-[0.98]
-    "
-                  >
-                    <div></div>
-
-                    <span
-                      className="transition-all
-                    duration-300 group-hover:scale-110 justify-self-center text-md font-semibold"
+                              "
                     >
-                      LOG IN
-                    </span>
+                      <div></div>
 
-                    <ArrowRight
-                      size={20}
-                      className="justify-self-end transition-transform duration-300 group-hover:translate-x-1"
-                    />
-                  </button>
-
-                  {/* Social Media Logins */}
-                  {/* <div className="my-8 flex items-center gap-4">
-                    <div className="h-px flex-1 bg-white/50"></div>
-
-                    <span className="text-xs font-medium uppercase tracking-[0.25em] text-zinc-300">
-                      Or Continue With
-                    </span>
-
-                    <div className="h-px flex-1 bg-white/50"></div> 
-                  </div>*/}
-
-                  <div className="mt-8 text-center">
-                    <p className="text-sm text-zinc-300">
-                      Don't have an account?{" "}
-                      <Link
-                        href="/register"
-                        className="font-semibold text-[#F4B400] transition-colors duration-300 hover:text-[#FFD54A]"
+                      <span
+                        className="transition-all
+                    duration-300 group-hover:scale-110 justify-self-center text-md font-semibold"
                       >
-                        Register Here
-                      </Link>
-                    </p>
+                        LOG IN
+                      </span>
+
+                      <ArrowRight
+                        size={20}
+                        className="justify-self-end transition-transform duration-300 group-hover:translate-x-1"
+                      />
+                    </button>
                   </div>
+                </form>
+
+                <div className="mt-8 text-center">
+                  <p className="text-sm text-zinc-300">
+                    Don't have an account?{" "}
+                    <Link
+                      href="/register"
+                      className="font-semibold text-[#F4B400] transition-colors duration-300 hover:text-[#FFD54A]"
+                    >
+                      Register Here
+                    </Link>
+                  </p>
                 </div>
               </div>
             </div>

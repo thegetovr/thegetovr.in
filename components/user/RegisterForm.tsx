@@ -5,8 +5,48 @@ import { Mail, Lock, Eye, EyeOff, ArrowRight, User, Phone } from "lucide-react";
 import { useRef, useState } from "react";
 import Image from "next/image";
 
-export default function LoginForm() {
+export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
+
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    password: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+
+    console.log("Form Submitted");
+    console.log(formData);
+
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      console.log(result);
+    } catch (error) {
+      console.error("Register Error:", error);
+    }
+  };
 
   const passwordRef = useRef<HTMLInputElement>(null);
 
@@ -46,23 +86,26 @@ export default function LoginForm() {
                   <br />
                   journey with The GetOvr.
                 </p>
-
-                <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
-                  {/* First Name */}
-                  <div className="group relative">
-                    <User
-                      size={20}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400
+                <form onSubmit={handleSubmit}>
+                  <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+                    {/* First Name */}
+                    <div className="group relative">
+                      <User
+                        size={20}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400
                        transition-all
                       duration-300
                       group-focus-within:text-[#F4B400]
                        group-focus-within:scale-110"
-                    />
-                    <input
-                      id="firstName"
-                      type="text"
-                      placeholder=" "
-                      className="
+                      />
+                      <input
+                        id="firstName"
+                        type="text"
+                        placeholder=" "
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        className="
                         peer
                         h-12
                         w-full
@@ -78,11 +121,11 @@ export default function LoginForm() {
                         duration-300
                         focus:border-[#F4B400]
     "
-                    />
+                      />
 
-                    <label
-                      htmlFor="firstName"
-                      className="
+                      <label
+                        htmlFor="firstName"
+                        className="
                         absolute
                         left-10
                         top-1/2
@@ -103,26 +146,29 @@ export default function LoginForm() {
                         peer-[:not(:placeholder-shown)]:text-xs
                         peer-[:not(:placeholder-shown)]:text-[#F4B400]
     "
-                    >
-                      First Name
-                    </label>
-                  </div>
+                      >
+                        First Name
+                      </label>
+                    </div>
 
-                  {/* Last Name */}
-                  <div className="group relative">
-                    <User
-                      size={20}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400
+                    {/* Last Name */}
+                    <div className="group relative">
+                      <User
+                        size={20}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400
                        transition-all
                       duration-300
                       group-focus-within:text-[#F4B400]
                        group-focus-within:scale-110"
-                    />
-                    <input
-                      id="lastName"
-                      type="text"
-                      placeholder=" "
-                      className="
+                      />
+                      <input
+                        id="lastName"
+                        type="text"
+                        placeholder=" "
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        className="
                         peer
                         h-12
                         w-full
@@ -137,11 +183,11 @@ export default function LoginForm() {
                         transition-all
                         duration-300
                         focus:border-[#F4B400]"
-                    />
+                      />
 
-                    <label
-                      htmlFor="lastName"
-                      className="
+                      <label
+                        htmlFor="lastName"
+                        className="
                         absolute
                         
                         left-10
@@ -163,28 +209,31 @@ export default function LoginForm() {
                         peer-[:not(:placeholder-shown)]:text-xs
                       peer-[:not(:placeholder-shown)]:text-[#F4B400]
     "
-                    >
-                      Last Name
-                    </label>
-                  </div>
+                      >
+                        Last Name
+                      </label>
+                    </div>
 
-                  {/* Email Input */}
-                  <div className="md:col-span-2">
-                    <div className="group relative">
-                      <Mail
-                        size={20}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400
+                    {/* Email Input */}
+                    <div className="md:col-span-2">
+                      <div className="group relative">
+                        <Mail
+                          size={20}
+                          className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400
                        transition-all
                       duration-300
                       group-focus-within:text-[#F4B400]
                        group-focus-within:scale-110"
-                      />
+                        />
 
-                      <input
-                        id="email"
-                        type="email"
-                        placeholder=" "
-                        className="
+                        <input
+                          id="email"
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          placeholder=" "
+                          className="
                         peer
                         h-12
                         w-full
@@ -200,11 +249,11 @@ export default function LoginForm() {
                         duration-300
                     focus:border-[#F4B400]
                     "
-                      />
+                        />
 
-                      <label
-                        htmlFor="email"
-                        className="
+                        <label
+                          htmlFor="email"
+                          className="
                       absolute
                       left-10
                       top-1/2
@@ -225,30 +274,33 @@ export default function LoginForm() {
                       peer-not-placeholder-shown:text-sm
                       peer-not-placeholder-shown:text-[#F4B400]
                      "
-                      >
-                        Email
-                      </label>
+                        >
+                          Email
+                        </label>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Phone Input */}
-                  <div className="group relative">
-                    <Phone
-                      size={20}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400
+                    {/* Phone Input */}
+                    <div className="group relative">
+                      <Phone
+                        size={20}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400
                        transition-all
                       duration-300
                       group-focus-within:text-[#F4B400]
                        group-focus-within:scale-110"
-                    />
+                      />
 
-                    <input
-                      id="phone"
-                      type="tel"
-                      inputMode="numeric"
-                      maxLength={10}
-                      placeholder=" "
-                      className="
+                      <input
+                        id="phone"
+                        type="tel"
+                        inputMode="numeric"
+                        maxLength={10}
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        placeholder=" "
+                        className="
                     peer
                     h-12
                     w-full
@@ -264,11 +316,11 @@ export default function LoginForm() {
                     duration-300
                   focus:border-[#F4B400]
     "
-                    />
+                      />
 
-                    <label
-                      htmlFor="phone"
-                      className="
+                      <label
+                        htmlFor="phone"
+                        className="
                       absolute
                       left-10
                       top-1/2
@@ -289,27 +341,30 @@ export default function LoginForm() {
                       peer-not-placeholder-shown:text-xs
                       peer-not-placeholder-shown:text-[#F4B400]
                      "
-                    >
-                      Phone Number
-                    </label>
-                  </div>
+                      >
+                        Phone Number
+                      </label>
+                    </div>
 
-                  {/* Password Input */}
-                  <div className="group relative">
-                    <Lock
-                      size={20}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400
+                    {/* Password Input */}
+                    <div className="group relative">
+                      <Lock
+                        size={20}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400
                        transition-all
                       duration-300
                        group-focus-within:text-[#F4B400]
                        group-focus-within:scale-110"
-                    />
-                    <input
-                      ref={passwordRef}
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder=" "
-                      className="
+                      />
+                      <input
+                        ref={passwordRef}
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        placeholder=" "
+                        className="
                         peer
                         h-12    
                         w-full
@@ -325,11 +380,11 @@ export default function LoginForm() {
                         duration-300
                         focus:border-[#F4B400]
                   "
-                    />
+                      />
 
-                    <label
-                      htmlFor="password"
-                      className="
+                      <label
+                        htmlFor="password"
+                        className="
                       absolute
                       left-10
                       top-1/2
@@ -350,44 +405,48 @@ export default function LoginForm() {
                       peer-not-placeholder-shown:text-xs
                     peer-not-placeholder-shown:text-[#F4B400]
                     "
-                    >
-                      Password
-                    </label>
+                      >
+                        Password
+                      </label>
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowPassword((prev) => !prev);
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowPassword((prev) => !prev);
 
-                        requestAnimationFrame(() => {
-                          if (passwordRef.current) {
-                            passwordRef.current.focus();
+                          requestAnimationFrame(() => {
+                            if (passwordRef.current) {
+                              passwordRef.current.focus();
 
-                            const length = passwordRef.current.value.length;
-                            passwordRef.current.setSelectionRange(
-                              length,
-                              length,
-                            );
-                          }
-                        });
-                      }}
-                      className="absolute right-5 top-1/2 -translate-y-1/2
+                              const length = passwordRef.current.value.length;
+                              passwordRef.current.setSelectionRange(
+                                length,
+                                length,
+                              );
+                            }
+                          });
+                        }}
+                        className="absolute right-5 top-1/2 -translate-y-1/2
                      text-zinc-400 
                      transition-all duration-300 
                      hover:scale-110 
                      hover:text-white active:scale-95"
-                    >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
+                      >
+                        {showPassword ? (
+                          <EyeOff size={20} />
+                        ) : (
+                          <Eye size={20} />
+                        )}
+                      </button>
+                    </div>
                   </div>
-                </div>
 
-                {/* Terms and Condition */}
-                <div className="mt-5 flex items-start gap-3">
-                  <input
-                    id="terms"
-                    type="checkbox"
-                    className="
+                  {/* Terms and Condition */}
+                  <div className="mt-5 flex items-start gap-3">
+                    <input
+                      id="terms"
+                      type="checkbox"
+                      className="
                     mt-1
                     h-4
                     w-4
@@ -396,35 +455,35 @@ export default function LoginForm() {
                     bg-transparent
                     accent-[#F4B400]
                     cursor-pointer
-    "
-                  />
+                             "
+                    />
 
-                  <label
-                    htmlFor="terms"
-                    className="text-sm leading-6 text-zinc-400"
-                  >
-                    I agree to the{" "}
-                    <Link
-                      href="/terms"
-                      className="font-medium text-[#F4B400] hover:underline"
+                    <label
+                      htmlFor="terms"
+                      className="text-sm leading-6 text-zinc-400"
                     >
-                      Terms & Conditions
-                    </Link>{" "}
-                    and{" "}
-                    <Link
-                      href="/privacy"
-                      className="font-medium text-[#F4B400] hover:underline"
-                    >
-                      Privacy Policy
-                    </Link>
-                  </label>
-                </div>
+                      I agree to the{" "}
+                      <Link
+                        href="/terms"
+                        className="font-medium text-[#F4B400] hover:underline"
+                      >
+                        Terms & Conditions
+                      </Link>{" "}
+                      and{" "}
+                      <Link
+                        href="/privacy"
+                        className="font-medium text-[#F4B400] hover:underline"
+                      >
+                        Privacy Policy
+                      </Link>
+                    </label>
+                  </div>
 
-                {/* Create Account Button */}
-                <div className="mt-6">
-                  <button
-                    type="submit"
-                    className="
+                  {/* Create Account Button */}
+                  <div className="mt-6">
+                    <button
+                      type="submit"
+                      className="
                     group
                     grid
                     h-14
@@ -439,25 +498,25 @@ export default function LoginForm() {
                     duration-300
                     hover:bg-[#F6C026]
                     active:scale-[0.98]
-    "
-                  >
-                    <div></div>
-
-                    <span
-                      className="transition-all
-                    duration-300 group-hover:scale-110 justify-self-center text-md font-semibold"
+                             "
                     >
-                      CREATE ACCOUNT
-                    </span>
+                      <div></div>
 
-                    <ArrowRight
-                      size={20}
-                      className="justify-self-end transition-transform duration-300 group-hover:translate-x-1"
-                    />
-                  </button>
+                      <span
+                        className="transition-all
+                        duration-300 group-hover:scale-110 justify-self-center text-md font-semibold"
+                      >
+                        CREATE ACCOUNT
+                      </span>
 
-                  {/* Social Media Logins */}
-                  {/* <div className="my-8 flex items-center gap-4">
+                      <ArrowRight
+                        size={20}
+                        className="justify-self-end transition-transform duration-300 group-hover:translate-x-1"
+                      />
+                    </button>
+
+                    {/* Social Media Logins */}
+                    {/* <div className="my-8 flex items-center gap-4">
                     <div className="h-px flex-1 bg-white/50"></div>
 
                     <span className="text-xs font-medium uppercase tracking-[0.25em] text-zinc-300">
@@ -465,8 +524,10 @@ export default function LoginForm() {
                     </span>
 
                     <div className="h-px flex-1 bg-white/50"></div> 
-                  </div>*/}
-                </div>
+                    </div>*/}
+                  </div>
+                </form>
+
                 <div className="mt-8 text-center">
                   <p className="text-sm text-zinc-300">
                     Already have an account?{" "}
