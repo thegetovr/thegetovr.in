@@ -2,6 +2,41 @@ import { Schema, model, models } from "mongoose";
 import { ProductStatus } from "@/types/product";
 
 const PRODUCT_STATUSES: ProductStatus[] = ["active", "draft", "archived"];
+const VariantSchema = new Schema(
+  {
+    color: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    size: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    sku: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    stock: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
+    price: {
+      type: Number,
+      min: 0,
+    },
+  },
+  {
+    _id: false,
+  },
+);
 
 const ProductSchema = new Schema(
   {
@@ -42,6 +77,10 @@ const ProductSchema = new Schema(
       required: true,
       min: 0,
       default: 0,
+    },
+    variants: {
+      type: [VariantSchema],
+      default: [],
     },
 
     status: {

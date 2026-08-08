@@ -70,6 +70,7 @@ export async function getProducts(
   type: product.type,
   price: product.price,
   stock: product.stock,
+  variants: product.variants ?? [],
   status: product.status,
   media: product.media ?? [],
 }));
@@ -84,14 +85,15 @@ export async function getProduct(id: string): Promise<ProductType | null> {
   }
 
   return {
-    id: String(product._id),
-    name: product.name,
-    sku: product.sku,
-    category: product.category,
-    type: product.type,
-    price: product.price,
-    stock: product.stock,
-    status: product.status,
-    media: product.media ?? [],
-  };
+  id: String(product._id),
+  name: product.name,
+  sku: product.sku,
+  category: product.category,
+  type: product.type,
+  price: product.price,
+  stock: product.stock,
+  variants: product.variants ?? [],
+  status: product.status,
+  media: product.media ?? [],
+};
 }

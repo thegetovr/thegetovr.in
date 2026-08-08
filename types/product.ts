@@ -6,13 +6,17 @@ export interface ProductMedia {
   order: number;
 }
 
-export type ProductStatus =
-  | "active"
-  | "draft"
-  | "archived";
+export type ProductStatus = "active" | "draft" | "archived";
 
 export type ProductCategory = string;
-
+export interface ProductVariant {
+  color: string;
+  size: string;
+  sku: string;
+  stock: number;
+  variants: ProductVariant[];
+  price?: number;
+}
 export interface Product {
   id: string;
   name: string;
@@ -21,9 +25,8 @@ export interface Product {
   type: ProductType;
   price: number;
   stock: number;
+  variants: ProductVariant[];
   status: ProductStatus;
   media: ProductMedia[];
 }
-export type ProductType =
-  | "ready-made"
-  | "customizable";
+export type ProductType = "ready-made" | "customizable";

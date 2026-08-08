@@ -1,7 +1,20 @@
 import type { PrintSide, Product, ProductColor, ProductSize } from "./design";
 
 import type { CartDesignElement } from "./cartDesign";
+export interface ReadyMadeCartItem {
+  id: string;
 
+  productId: string;
+  name: string;
+  image: string;
+
+  quantity: number;
+
+  unitPrice: number;
+  totalPrice: number;
+
+  createdAt: string;
+}
 export interface CartItem {
   id: string;
 

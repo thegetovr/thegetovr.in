@@ -49,13 +49,11 @@ export default function ProductPurchasePanel({
           </div>
         </div>
 
-        {product.type === "ready-made" && (
-          <QuantitySelector
-            quantity={quantity}
-            onDecrease={() => setQuantity((q) => Math.max(1, q - 1))}
-            onIncrease={() => setQuantity((q) => q + 1)}
-          />
-        )}
+        <QuantitySelector
+          quantity={quantity}
+          onDecrease={() => setQuantity((q) => Math.max(1, q - 1))}
+          onIncrease={() => setQuantity((q) => q + 1)}
+        />
 
         <div className="rounded-2xl border border-zinc-800 bg-black/40 p-6">
           <div className="space-y-4">

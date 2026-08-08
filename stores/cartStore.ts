@@ -1,10 +1,14 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import type { CartItem } from "@/types/cart";
+import type { CartItem, ReadyMadeCartItem } from "@/types/cart";
 
 interface CartStore {
   items: CartItem[];
+  readyMadeItems: ReadyMadeCartItem[];
+  addReadyMadeItem: (item: ReadyMadeCartItem) => void;
+
+  removeReadyMadeItem: (id: string) => void;
 
   addItem: (item: CartItem) => void;
   removeItem: (id: string) => void;
@@ -19,6 +23,38 @@ export const useCartStore = create<CartStore>()(
   persist(
     (set) => ({
       items: [],
+      readyMadeItems: [],
+      addReadyMadeItem: (item) =>
+        set((state) => {
+          const existing = state.readyMadeItems.find(
+            (cartItem) => cartItem.productId === item.productId,
+          );
+
+          if (existing) {
+            return {
+              readyMadeItems: state.readyMadeItems.map((cartItem) =>
+                cartItem.productId === item.productId
+                  ? {
+                      ...cartItem,
+                      quantity: cartItem.quantity + item.quantity,
+                      totalPrice:
+                        cartItem.unitPrice *
+                        (cartItem.quantity + item.quantity),
+                    }
+                  : cartItem,
+              ),
+            };
+          }
+
+          return {
+            readyMadeItems: [...state.readyMadeItems, item],
+          };
+        }),
+
+      removeReadyMadeItem: (id) =>
+        set((state) => ({
+          readyMadeItems: state.readyMadeItems.filter((item) => item.id !== id),
+        })),
 
       addItem: (item) =>
         set((state) => ({
@@ -27,9 +63,7 @@ export const useCartStore = create<CartStore>()(
 
       removeItem: (id) =>
         set((state) => ({
-          items: state.items.filter(
-            (item) => item.id !== id
-          ),
+          items: state.items.filter((item) => item.id !== id),
         })),
 
       increaseQuantity: (id) =>
@@ -39,10 +73,9 @@ export const useCartStore = create<CartStore>()(
               ? {
                   ...item,
                   quantity: item.quantity + 1,
-                  totalPrice:
-                    item.unitPrice * (item.quantity + 1),
+                  totalPrice: item.unitPrice * (item.quantity + 1),
                 }
-              : item
+              : item,
           ),
         })),
 
@@ -53,11 +86,9 @@ export const useCartStore = create<CartStore>()(
               ? {
                   ...item,
                   quantity: Math.max(1, item.quantity - 1),
-                  totalPrice:
-                    item.unitPrice *
-                    Math.max(1, item.quantity - 1),
+                  totalPrice: item.unitPrice * Math.max(1, item.quantity - 1),
                 }
-              : item
+              : item,
           ),
         })),
 
@@ -68,6 +99,6 @@ export const useCartStore = create<CartStore>()(
     }),
     {
       name: "thegetovr-cart",
-    }
-  )
+    },
+  ),
 );
