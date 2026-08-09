@@ -97,3 +97,31 @@ export async function getProduct(id: string): Promise<ProductType | null> {
   media: product.media ?? [],
 };
 }
+export async function getProductsByIds(
+  ids: string[],
+): Promise<ProductType[]> {
+  if (ids.length === 0) {
+    return [];
+  }
+
+  await connectToDatabase();
+
+  const products = await Product.find({
+    _id: {
+      $in: ids,
+    },
+  }).lean();
+
+  return products.map((product) => ({
+    id: String(product._id),
+    name: product.name,
+    sku: product.sku,
+    category: product.category,
+    type: product.type,
+    price: product.price,
+    stock: product.stock,
+    variants: product.variants ?? [],
+    status: product.status,
+    media: product.media ?? [],
+  }));
+}

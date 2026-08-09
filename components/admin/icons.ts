@@ -3,6 +3,7 @@ export {
   ShoppingCart as OrdersIcon,
   Shirt as ProductsIcon,
   Users as CustomersIcon,
+  MessageSquareQuote as ReviewsIcon,
   TicketPercent as CouponsIcon,
   BarChart3 as AnalyticsIcon,
   Settings as SettingsIcon,

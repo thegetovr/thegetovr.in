@@ -5,6 +5,7 @@ import {
   ProductsIcon,
   PackageIcon,
   CustomersIcon,
+  ReviewsIcon,
   CouponsIcon,
   AnalyticsIcon,
   SettingsIcon,
@@ -35,6 +36,11 @@ export const adminNavigation: AdminNavigationItem[] = [
     name: "Customers",
     href: "/admin/customers",
     icon: CustomersIcon,
+  },
+    {
+    name: "Reviews",
+    href: "/admin/reviews",
+    icon: ReviewsIcon,
   },
   {
     name: "Coupons",

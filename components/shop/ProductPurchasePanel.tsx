@@ -5,13 +5,19 @@ import { useState } from "react";
 import { Product } from "@/types/product";
 import QuantitySelector from "./QuantitySelector";
 import { useCartStore } from "@/stores/cartStore";
+import ReviewSummary from "./ReviewSummary";
 
 interface ProductPurchasePanelProps {
   product: Product;
+  reviewSummary: {
+    averageRating: number;
+    reviewCount: number;
+  };
 }
 
 export default function ProductPurchasePanel({
   product,
+  reviewSummary,
 }: ProductPurchasePanelProps) {
   const [quantity, setQuantity] = useState(1);
   const router = useRouter();
@@ -55,6 +61,10 @@ export default function ProductPurchasePanel({
         </p>
 
         <h1 className="text-5xl font-black tracking-tight">{product.name}</h1>
+        <ReviewSummary
+          averageRating={reviewSummary.averageRating}
+          reviewCount={reviewSummary.reviewCount}
+        />
 
         <div className="rounded-2xl border border-zinc-800 bg-black/40 p-6">
           <p className="text-5xl font-black text-white">
