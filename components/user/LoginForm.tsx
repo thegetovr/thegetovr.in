@@ -14,7 +14,7 @@ export default function LoginForm() {
     <main className="flex h-[calc(100vh-80px)] items-center justify-center bg-black px-8 py-8">
       <div className="mx-auto w-full max-w-5xl">
         <section
-          className=" w-full max-w-5xl max-h-[calc(100vh-140px)] overflow-hidden rounded-[32px]
+          className=" w-full max-w-5xl max-h-[calc(100vh-140px)] overflow-hidden rounded-4xl
             border border-white/30 bg-black shadow-2xl"
         >
           <div className="flex flex-col lg:flex-row">
@@ -264,7 +264,7 @@ export default function LoginForm() {
 
                   <div className="mt-8 text-center">
                     <p className="text-sm text-zinc-300">
-                      Don't have an account?{" "}
+                      Don&apos;t have an account?{" "}
                       <Link
                         href="/register"
                         className="font-semibold text-[#F4B400] transition-colors duration-300 hover:text-[#FFD54A]"

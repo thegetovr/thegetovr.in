@@ -6,12 +6,12 @@ import type { CartItem, ReadyMadeCartItem } from "@/types/cart";
 interface CartStore {
   items: CartItem[];
   readyMadeItems: ReadyMadeCartItem[];
-  addReadyMadeItem: (item: ReadyMadeCartItem) => void;
-
-  removeReadyMadeItem: (id: string) => void;
 
   addItem: (item: CartItem) => void;
+  addReadyMadeItem: (item: ReadyMadeCartItem) => void;
+
   removeItem: (id: string) => void;
+  removeReadyMadeItem: (id: string) => void;
 
   increaseQuantity: (id: string) => void;
   decreaseQuantity: (id: string) => void;
@@ -24,6 +24,7 @@ export const useCartStore = create<CartStore>()(
     (set) => ({
       items: [],
       readyMadeItems: [],
+
       addReadyMadeItem: (item) =>
         set((state) => {
           const existing = state.readyMadeItems.find(
@@ -77,6 +78,16 @@ export const useCartStore = create<CartStore>()(
                 }
               : item,
           ),
+
+          readyMadeItems: state.readyMadeItems.map((item) =>
+            item.id === id
+              ? {
+                  ...item,
+                  quantity: item.quantity + 1,
+                  totalPrice: item.unitPrice * (item.quantity + 1),
+                }
+              : item,
+          ),
         })),
 
       decreaseQuantity: (id) =>
@@ -90,15 +101,26 @@ export const useCartStore = create<CartStore>()(
                 }
               : item,
           ),
+
+          readyMadeItems: state.readyMadeItems.map((item) =>
+            item.id === id
+              ? {
+                  ...item,
+                  quantity: Math.max(1, item.quantity - 1),
+                  totalPrice: item.unitPrice * Math.max(1, item.quantity - 1),
+                }
+              : item,
+          ),
         })),
 
       clearCart: () =>
         set({
           items: [],
+          readyMadeItems: [],
         }),
     }),
     {
-      name: "thegetovr-cart",
+      name: "thegetovr-cart-v2",
     },
   ),
 );

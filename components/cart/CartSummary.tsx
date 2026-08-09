@@ -70,7 +70,7 @@ export default function CartSummary({
             </Link>
 
             <Link
-                href="/studio"
+                href="/shop"
                 className="mt-4 block text-center text-sm text-gray-400 transition hover:text-white"
             >
                 Continue Shopping

@@ -6,12 +6,11 @@ import FormField from "@/components/ui/FormField";
 import { useCheckoutStore } from "@/stores/checkoutStore";
 import type { CheckoutFormData } from "@/lib/validation/checkoutSchema";
 export default function CustomerForm() {
-  const { customer, setCustomer, setIsValid } = useCheckoutStore();
+  const { setCustomer, setIsValid } = useCheckoutStore();
 
  const {
   register,
   watch,
-  reset,
   formState: { errors, isValid },
 } = useFormContext<CheckoutFormData>();
 

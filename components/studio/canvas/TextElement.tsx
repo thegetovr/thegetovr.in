@@ -1,16 +1,14 @@
 import { Text } from "react-konva";
+import Konva from "konva";
 import type { DesignElement } from "@/types/design";
 
 interface TextElementProps {
   element: Extract<DesignElement, { type: "text" }>;
   onSelect: () => void;
   onDragEnd: (id: string, x: number, y: number) => void;
-  onTransformEnd: (
-    id: string,
-    node: any,
-    scaleX: number
-  ) => void;
-  nodeRef: (node: any) => void;
+  onTransformEnd: (id: string, node: Konva.Text, scaleX: number) => void;
+
+  nodeRef: (node: Konva.Text | null) => void;
 }
 
 export default function TextElement({
@@ -38,7 +36,7 @@ export default function TextElement({
         onDragEnd(element.id, e.target.x(), e.target.y());
       }}
       onTransformEnd={(e) => {
-        const node = e.target;
+        const node = e.target as Konva.Text;
 
         const scaleX = node.scaleX();
 

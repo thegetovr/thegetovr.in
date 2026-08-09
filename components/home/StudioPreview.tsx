@@ -7,7 +7,7 @@ export default function StudioPreview() {
 
       {/* Background Glow */}
 
-      <div className="absolute left-1/2 top-1/2 h-[700px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.03] blur-[180px]" />
+      <div className="absolute left-1/2 top-1/2 h-175 w-175 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/3 blur-[180px]" />
 
       <div className="relative mx-auto flex max-w-7xl items-center gap-20 px-8">
 
@@ -29,7 +29,7 @@ export default function StudioPreview() {
 
           <p className="mt-8 text-lg leading-8 text-gray-400">
             Upload your logo, add text, position your artwork,
-            preview every detail and create apparel that's uniquely yours.
+            preview every detail and create apparel that&apos;s uniquely yours.
           </p>
 
           <ul className="mt-10 space-y-4 text-gray-300">
@@ -65,7 +65,7 @@ export default function StudioPreview() {
 
           {/* Browser */}
 
-          <div className="overflow-hidden rounded-[32px] border border-white/10 bg-zinc-950 shadow-[0_40px_100px_rgba(0,0,0,0.7)]">
+          <div className="overflow-hidden rounded-4xl border border-white/10 bg-zinc-950 shadow-[0_40px_100px_rgba(0,0,0,0.7)]">
 
             {/* Browser Bar */}
 
@@ -79,7 +79,7 @@ export default function StudioPreview() {
 
             {/* Fake Studio */}
 
-            <div className="grid h-[520px] grid-cols-[220px_1fr]">
+            <div className="grid h-130 grid-cols-[220px_1fr]">
 
               {/* Sidebar */}
 
@@ -102,9 +102,9 @@ export default function StudioPreview() {
 
               <div className="relative flex items-center justify-center bg-[#090909]">
 
-                <div className="absolute h-80 w-80 rounded-full bg-white/[0.03] blur-[80px]" />
+                <div className="absolute h-80 w-80 rounded-full bg-white/3 blur-[80px]" />
 
-                <div className="relative h-[340px] w-[250px] rounded-[28px] border border-white/10 bg-gradient-to-br from-zinc-900 to-black shadow-2xl">
+                <div className="relative h-85 w-62.5 rounded-[28px] border border-white/10 bg-linear-to-br from-zinc-900 to-black shadow-2xl">
 
                   <div className="absolute left-1/2 top-10 h-16 w-16 -translate-x-1/2 rounded-full border border-white/10 bg-white/5" />
 

@@ -2,10 +2,10 @@
 
 import { Image } from "react-konva";
 
-import type { ImageElement } from "@/types/design";
+import type { CartImageElement } from "@/types/cartDesign";
 
 type StaticImageElementProps = {
-  element: ImageElement;
+  element: CartImageElement;
   image?: HTMLImageElement;
 };
 
@@ -18,15 +18,18 @@ export default function StaticImageElement({
   }
 
   return (
-    <Image
-      image={image}
-      x={element.x}
-      y={element.y}
-      width={element.width}
-      height={element.height}
-      rotation={element.rotation}
-      opacity={element.adjustments.opacity / 100}
-      listening={false}
-    />
+    <>
+      {/* eslint-disable-next-line jsx-a11y/alt-text */}
+      <Image
+        image={image}
+        x={element.x}
+        y={element.y}
+        width={element.width}
+        height={element.height}
+        rotation={element.rotation}
+        opacity={element.adjustments.opacity / 100}
+        listening={false}
+      />
+    </>
   );
 }

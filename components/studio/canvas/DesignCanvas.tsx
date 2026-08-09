@@ -1,11 +1,13 @@
 "use client";
 
+import Konva from "konva";
 import { useEffect, useRef, useState } from "react";
 import { Stage, Layer, Transformer, Rect, Text } from "react-konva";
 import { snapToElements } from "./snap";
 import ProductMockup from "./ProductMockup";
 import ImageElement from "./ImageElement";
 import TextElement from "./TextElement";
+
 
 import { CANVAS, PRODUCT_CONFIG, SNAP_THRESHOLD } from "./constants";
 
@@ -31,16 +33,15 @@ export default function DesignCanvas({
   setSelectedElementId,
 }: DesignCanvasProps) {
   const [loadedImages, setLoadedImages] = useState<
-    Record<string, HTMLImageElement>
-  >({});
-  const [zoom, setZoom] = useState(1);
-  const [guides, setGuides] = useState({
-    vertical: null as number | null,
-    horizontal: null as number | null,
-  });
-  const elementRefs = useRef<Record<string, any>>({});
-  const transformerRef = useRef<any>(null);
-  const stageRef = useRef<any>(null);
+  Record<string, HTMLImageElement>
+>({});
+const [guides, setGuides] = useState({
+  vertical: null as number | null,
+  horizontal: null as number | null,
+});
+const elementRefs = useRef<Record<string, Konva.Node>>({});
+const transformerRef = useRef<Konva.Transformer | null>(null);
+const stageRef = useRef<Konva.Stage | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
 

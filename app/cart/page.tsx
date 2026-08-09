@@ -9,20 +9,31 @@ import EmptyCart from "@/components/cart/EmptyCart";
 export default function CartPage() {
   const items = useCartStore((state) => state.items);
 
-  return (
-    <main className="min-h-screen bg-[#141418] text-white">
-      <div className="mx-auto max-w-7xl px-6 py-10">
+  const readyMadeItems = useCartStore(
+    (state) => state.readyMadeItems,
+  );
 
+  const hasItems =
+    items.length > 0 || readyMadeItems.length > 0;
+
+  return (
+    <main className="min-h-screen bg-zinc-950 px-6 py-12 text-white">
+      <div className="mx-auto max-w-6xl">
         <h1 className="mb-8 text-4xl font-bold">
           Shopping Cart
         </h1>
 
-        {items.length === 0 ? (
+        {!hasItems ? (
           <EmptyCart />
         ) : (
           <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
-
             <section className="space-y-6">
+              {readyMadeItems.map((item) => (
+                <CartItemCard
+                  key={item.id}
+                  item={item}
+                />
+              ))}
 
               {items.map((item) => (
                 <CartItemCard
@@ -30,18 +41,18 @@ export default function CartPage() {
                   item={item}
                 />
               ))}
-
             </section>
 
             <aside>
-
-              <CartSummary items={items} />
-
+              <CartSummary
+                items={[
+                  ...readyMadeItems,
+                  ...items,
+                ]}
+              />
             </aside>
-
           </div>
         )}
-
       </div>
     </main>
   );

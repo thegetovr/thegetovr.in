@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import LayersPanel from "@/components/studio/LayersPanel";
 import DesignCanvas from "@/components/studio/canvas/DesignCanvas";
 import StudioSidebar from "@/components/studio/StudioSidebar";
@@ -54,6 +54,7 @@ export default function StudioPage() {
 
     addItem({
       id: crypto.randomUUID(),
+      kind: "custom",
 
       product,
       color: productColor,
@@ -71,28 +72,33 @@ export default function StudioPage() {
     router.push("/cart");
   };
 
-  const setElements: React.Dispatch<React.SetStateAction<DesignElement[]>> = (
-    value,
-  ) => {
-    setHistory((prev) => ({
-      ...prev,
-      [view]: [...prev[view], structuredClone(designs[view])],
-    }));
+  const setElements = useCallback(
+    (value: React.SetStateAction<DesignElement[]>) => {
+      setDesigns((prev) => {
+        const currentElements = prev[view];
 
-    setRedoHistory((prev) => ({
-      ...prev,
-      [view]: [],
-    }));
+        setHistory((historyPrev) => ({
+          ...historyPrev,
+          [view]: [...historyPrev[view], structuredClone(currentElements)],
+        }));
 
-    setDesigns((prev) => ({
-      ...prev,
-      [view]: typeof value === "function" ? value(prev[view]) : value,
-    }));
-  };
+        setRedoHistory((redoPrev) => ({
+          ...redoPrev,
+          [view]: [],
+        }));
+
+        return {
+          ...prev,
+          [view]: typeof value === "function" ? value(currentElements) : value,
+        };
+      });
+    },
+    [view],
+  );
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
     null,
   );
-  const undo = () => {
+  const undo = useCallback(() => {
     if (currentHistory.length === 0) return;
 
     const previous = currentHistory[currentHistory.length - 1];
@@ -111,9 +117,9 @@ export default function StudioPage() {
       ...prev,
       [view]: previous,
     }));
-  };
+  }, [currentHistory, designs, view]);
 
-  const redo = () => {
+  const redo = useCallback(() => {
     if (currentRedoHistory.length === 0) return;
 
     const next = currentRedoHistory[currentRedoHistory.length - 1];
@@ -132,7 +138,7 @@ export default function StudioPage() {
       ...prev,
       [view]: next,
     }));
-  };
+  }, [currentRedoHistory, designs, view]);
 
   const resetCanvas = () => {
     if (elements.length === 0) return;

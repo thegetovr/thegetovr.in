@@ -1,8 +1,15 @@
-import type { PrintSide, Product, ProductColor, ProductSize } from "./design";
+import type {
+  PrintSide,
+  Product,
+  ProductColor,
+  ProductSize,
+} from "./design";
 
 import type { CartDesignElement } from "./cartDesign";
+
 export interface ReadyMadeCartItem {
   id: string;
+  kind: "ready-made";
 
   productId: string;
   name: string;
@@ -15,8 +22,10 @@ export interface ReadyMadeCartItem {
 
   createdAt: string;
 }
-export interface CartItem {
+
+export interface CustomCartItem {
   id: string;
+  kind: "custom";
 
   product: Product;
   color: ProductColor;
@@ -26,8 +35,11 @@ export interface CartItem {
 
   frontElements: CartDesignElement[];
   backElements: CartDesignElement[];
+
   unitPrice: number;
   totalPrice: number;
 
   createdAt: string;
 }
+
+export type CartItem = ReadyMadeCartItem | CustomCartItem;

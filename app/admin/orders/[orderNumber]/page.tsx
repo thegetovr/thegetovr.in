@@ -50,44 +50,66 @@ export default async function AdminOrderDetailsPage({ params }: PageProps) {
             </h2>
 
             <div className="space-y-4">
-              {order.items.map((item) => (
-                <div
-                  key={item.id}
-                  className="rounded-xl border border-zinc-800 bg-zinc-900 p-5"
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="text-xl font-semibold capitalize text-white">
-                        {item.product}
-                      </h3>
+              {order.items.map((item) => {
+                const isReadyMade = "name" in item;
 
-                      <p className="mt-2 text-sm text-zinc-400">
-                        {item.color.toUpperCase()} • Size {item.size} •{" "}
-                        {item.printSide}
-                      </p>
+                return (
+                  <div
+                    key={item.id}
+                    className="rounded-xl border border-zinc-800 bg-zinc-900 p-5"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="text-xl font-semibold capitalize text-white">
+                          {isReadyMade ? item.name : item.product}
+                        </h3>
+
+                        <p className="mt-2 text-sm text-zinc-400">
+                          {isReadyMade ? (
+                            "Ready-Made Product"
+                          ) : (
+                            <>
+                              {item.color.toUpperCase()} • Size {item.size} •{" "}
+                              {item.printSide}
+                            </>
+                          )}
+                        </p>
+                      </div>
+
+                      <div className="text-right">
+                        <p className="text-lg font-semibold text-white">
+                          Qty {item.quantity}
+                        </p>
+
+                        <p className="mt-2 text-zinc-400">
+                          {formatCurrency(item.totalPrice)}
+                        </p>
+                      </div>
                     </div>
 
-                    <div className="text-right">
-                      <p className="text-lg font-semibold text-white">
-                        Qty {item.quantity}
-                      </p>
+                    {isReadyMade ? (
+                      <div className="mt-6 rounded-xl border border-zinc-800 bg-black/30 p-4">
+                        <p className="text-sm font-medium text-zinc-400">
+                          Ready-Made Product
+                        </p>
 
-                      <p className="mt-2 text-zinc-400">
-                        {formatCurrency(item.totalPrice)}
-                      </p>
-                    </div>
+                        <p className="mt-1 text-sm text-zinc-500">
+                          No custom design attached.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="mt-6">
+                        <DesignPreviewCard
+                          product={item.product}
+                          productColor={item.color}
+                          frontElements={item.frontElements}
+                          backElements={item.backElements}
+                        />
+                      </div>
+                    )}
                   </div>
-
-                  <div className="mt-6">
-                    <DesignPreviewCard
-                      product={item.product}
-                      productColor={item.color}
-                      frontElements={item.frontElements}
-                      backElements={item.backElements}
-                    />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         </div>

@@ -54,7 +54,8 @@ export default function ProductMockup({
 
   return (
     <Image
-      image={image}
+  alt=""
+  image={image}
       x={(CANVAS.width - targetWidth) / 2}
       y={offsetY ?? layout.offsetY}
       width={targetWidth}

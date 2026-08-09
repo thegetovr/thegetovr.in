@@ -13,16 +13,19 @@ export async function POST(request: NextRequest) {
       order: savedOrder,
     });
   } catch (error) {
-    console.error("Order API Error:", error);
+  console.error("Order API Error:", error);
 
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Invalid order payload.",
-      },
-      {
-        status: 400,
-      }
-    );
-  }
+  return NextResponse.json(
+    {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Invalid order payload.",
+    },
+    {
+      status: 400,
+    },
+  );
+}
 }

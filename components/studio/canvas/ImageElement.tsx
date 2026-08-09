@@ -1,4 +1,5 @@
 import { Image } from "react-konva";
+import Konva from "konva";
 import { useEffect, useRef } from "react";
 import type { DesignElement } from "@/types/design";
 
@@ -17,11 +18,11 @@ interface ImageElementProps {
 
   onDragEnd: (id: string, x: number, y: number) => void;
 
-  onDragMove?: (node: any, width: number, height: number) => void;
+  onDragMove?: (node: Konva.Image, width: number, height: number) => void;
 
   onTransformEnd: (
     id: string,
-    node: any,
+    node: Konva.Image,
     scaleX: number,
     scaleY: number,
   ) => void;
@@ -31,7 +32,7 @@ interface ImageElementProps {
     y: number;
   };
 
-  nodeRef: (node: any) => void;
+  nodeRef: (node: Konva.Image | null) => void;
 }
 
 export default function ImageElement({
@@ -44,22 +45,18 @@ export default function ImageElement({
   dragBoundFunc,
   nodeRef,
 }: ImageElementProps) {
-  const imageRef = useRef<any>(null);
+  const imageRef = useRef<Konva.Image | null>(null);
 
   useEffect(() => {
     imageRef.current?.getLayer()?.batchDraw();
   }, [element.visible]);
   return (
     <Image
+      alt=""
       opacity={element.visible ? 1 : 0}
       ref={(node) => {
         imageRef.current = node;
         nodeRef(node);
-        console.log(
-  "ImageElement render",
-  element.id,
-  element.visible,
-);
       }}
       image={image}
       x={element.x}
@@ -70,11 +67,7 @@ export default function ImageElement({
       draggable
       dragBoundFunc={dragBoundFunc}
       onDragMove={(e) => {
-        onDragMove?.(
-          e.target,
-          element.width,
-          element.height,
-        );
+        onDragMove?.(e.target as Konva.Image, element.width, element.height);
       }}
       onClick={onSelect}
       onTap={onSelect}
@@ -82,7 +75,7 @@ export default function ImageElement({
         onDragEnd(element.id, e.target.x(), e.target.y());
       }}
       onTransformEnd={(e) => {
-        const node = e.target;
+        const node = e.target as Konva.Image;
 
         const scaleX = node.scaleX();
         const scaleY = node.scaleY();

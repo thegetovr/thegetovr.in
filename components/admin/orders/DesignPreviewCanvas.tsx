@@ -6,16 +6,16 @@ import { useEffect, useState } from "react";
 import ProductMockup from "@/components/studio/canvas/ProductMockup";
 import StaticImageElement from "./StaticImageElement";
 import StaticTextElement from "./StaticTextElement";
-import { CANVAS } from "@/components/studio/canvas/constants";
 import { getImage } from "@/lib/studio/imageStore";
 
-import type { DesignElement, Product, ProductColor } from "@/types/design";
+import type { Product, ProductColor } from "@/types/design";
+import type { CartDesignElement } from "@/types/cartDesign";
 
 type DesignPreviewCanvasProps = {
   product: Product;
   productColor: ProductColor;
   view: "front" | "back";
-  elements: DesignElement[];
+  elements: CartDesignElement[];
 };
 
 export default function DesignPreviewCanvas({

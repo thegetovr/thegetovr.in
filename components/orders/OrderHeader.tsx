@@ -1,14 +1,12 @@
-import StatusBadge from "./StatusBadge";
+
 
 interface OrderHeaderProps {
   orderNumber: string;
-  status: string;
   createdAt: string;
 }
 
 export default function OrderHeader({
   orderNumber,
-  status,
   createdAt,
 }: OrderHeaderProps) {
   return (

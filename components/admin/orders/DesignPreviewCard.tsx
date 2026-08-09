@@ -1,16 +1,12 @@
 import DesignPreviewCanvas from "./DesignPreviewCanvas";
 
-import type {
-  DesignElement,
-  Product,
-  ProductColor,
-} from "@/types/design";
-
+import type { Product, ProductColor } from "@/types/design";
+import type { CartDesignElement } from "@/types/cartDesign";
 type DesignPreviewCardProps = {
   product: Product;
   productColor: ProductColor;
-  frontElements: DesignElement[];
-  backElements: DesignElement[];
+  frontElements: CartDesignElement[];
+  backElements: CartDesignElement[];
 };
 
 

@@ -56,30 +56,59 @@ const OrderItemSchema = new Schema(
       required: true,
     },
 
-    product: {
+    kind: {
       type: String,
       required: true,
+      enum: ["ready-made", "custom"],
+    },
+
+    // Ready-made product fields
+    productId: {
+      type: String,
+      required: function () {
+        return this.kind === "ready-made";
+      },
+    },
+
+    name: {
+      type: String,
+      required: function () {
+        return this.kind === "ready-made";
+      },
+    },
+
+    image: {
+      type: String,
+      default: "",
+    },
+
+    // Custom product fields
+    product: {
+      type: String,
+      required: function () {
+        return this.kind === "custom";
+      },
     },
 
     color: {
       type: String,
-      required: true,
+      required: function () {
+        return this.kind === "custom";
+      },
     },
 
     size: {
       type: String,
-      required: true,
-    },
-
-    quantity: {
-      type: Number,
-      required: true,
-      min: 1,
+      required: function () {
+        return this.kind === "custom";
+      },
     },
 
     printSide: {
       type: String,
-      required: true,
+      required: function () {
+        return this.kind === "custom";
+      },
     },
 
     frontElements: {
@@ -90,6 +119,12 @@ const OrderItemSchema = new Schema(
     backElements: {
       type: [Schema.Types.Mixed],
       default: [],
+    },
+
+    quantity: {
+      type: Number,
+      required: true,
+      min: 1,
     },
 
     unitPrice: {
@@ -113,7 +148,6 @@ const OrderItemSchema = new Schema(
     _id: false,
   },
 );
-
 const OrderSchema = new Schema(
   {
     orderNumber: {
@@ -179,7 +213,6 @@ const OrderSchema = new Schema(
       default: "",
       trim: true,
     },
-    
   },
   {
     timestamps: true,
