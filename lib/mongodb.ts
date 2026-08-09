@@ -1,16 +1,14 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI: string = (() => {
+  const uri = process.env.MONGODB_URI;
 
-if (!MONGODB_URI) {
-  throw new Error("Please define the MONGODB_URI environment variable.");
-}
+  if (!uri) {
+    throw new Error("Please define the MONGODB_URI environment variable.");
+  }
 
-const uri = MONGODB_URI;
-
-if (!MONGODB_URI) {
-  throw new Error("Please define the MONGODB_URI environment variable.");
-}
+  return uri;
+})();
 
 interface MongooseCache {
   conn: typeof mongoose | null;
@@ -34,9 +32,9 @@ export async function connectToDatabase() {
   }
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(uri, {
-  dbName: process.env.MONGODB_DB,
-});
+    cached.promise = mongoose.connect(MONGODB_URI, {
+      dbName: process.env.MONGODB_DB,
+    });
   }
 
   cached.conn = await cached.promise;
