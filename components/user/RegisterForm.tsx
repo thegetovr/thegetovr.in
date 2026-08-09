@@ -29,7 +29,7 @@ export default function RegisterForm() {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
@@ -45,12 +45,18 @@ export default function RegisterForm() {
 
       console.log(result);
 
-      setNotificationType(result.success ? "success" : "error");
-      setNotification(result.message);
+      if (result.success) {
+        sessionStorage.setItem("auth_notification", "Registration Successful");
 
-      setTimeout(() => {
-        setNotification("");
-      }, 3000);
+        window.location.href = "/";
+      } else {
+        setNotificationType("error");
+        setNotification(result.message);
+
+        setTimeout(() => {
+          setNotification("");
+        }, 3000);
+      }
     } catch (error) {
       console.error("Register Error:", error);
 
