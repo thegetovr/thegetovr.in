@@ -94,6 +94,8 @@ export default function RegisterForm() {
                 <Image
                   src="/images/user/RegisterBanner.png"
                   alt="The GetOvr Login"
+                  sizes="(max-width: 1024px) 100vw, 45vw"
+                  quality={80}
                   fill
                   priority
                   className="object-cover object-center"

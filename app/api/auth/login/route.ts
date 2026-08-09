@@ -1,18 +1,13 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 import { connectDB } from "@/lib/mongodb";
 import User from "@/app/models/User";
 
 export async function POST(request: Request) {
   try {
-    console.log("🚀 STEP 1 : Login API Hit");
-
     const body = await request.json();
-
-    console.log("🚀 STEP 2 : Request Body");
-    console.log(body);
-
     const { email, password } = body;
 
     // Validation
@@ -30,12 +25,9 @@ export async function POST(request: Request) {
 
     // Database Connect
     await connectDB();
-    console.log("🚀 STEP 3 : MongoDB Connected");
 
     // Find User
     const user = await User.findOne({ email });
-
-    console.log("🚀 STEP 4 : User Search Complete");
 
     if (!user) {
       return NextResponse.json(
@@ -49,18 +41,10 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log("🚀 STEP 5 : User Found");
-    console.log(user);
-
     // Compare Password
-
-    console.log("Stored Password:", user.password);
-    console.log("Entered Password:", password);
-
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     console.log("Password Match:", isPasswordCorrect);
 
-    console.log("🚀 STEP 6 : Password Compared");
     console.log(isPasswordCorrect);
 
     if (!isPasswordCorrect) {
@@ -75,9 +59,18 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log("🚀 STEP 7 : Login Successful");
+    const token = jwt.sign(
+      {
+        userId: user._id.toString(),
+        email: user.email,
+      },
+      process.env.JWT_SECRET!,
+      {
+        expiresIn: "7d",
+      },
+    );
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         success: true,
         message: "Login Successful",
@@ -93,9 +86,17 @@ export async function POST(request: Request) {
         status: 200,
       },
     );
+
+    response.cookies.set("auth_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+    });
+    return response;
   } catch (error) {
-    console.error("❌ LOGIN API ERROR");
-    console.error(error);
+    console.error("❌ LOGIN API ERROR", error);
 
     return NextResponse.json(
       {

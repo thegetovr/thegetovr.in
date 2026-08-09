@@ -39,12 +39,18 @@ export default function LoginForm() {
 
       console.log(result);
 
-      setNotificationType(result.success ? "success" : "error");
-      setNotification(result.message);
+      if (result.success) {
+        sessionStorage.setItem("auth_notification", "Login Successful");
 
-      setTimeout(() => {
-        setNotification("");
-      }, 3000);
+        window.location.href = "/";
+      } else {
+        setNotificationType("error");
+        setNotification(result.message);
+
+        setTimeout(() => {
+          setNotification("");
+        }, 3000);
+      }
     } catch (error) {
       console.error("Login Error:", error);
 
@@ -65,17 +71,13 @@ export default function LoginForm() {
 
   return (
     <>
-      {notification && (
+      {notification && notificationType === "error" && (
         <div
-          className={`fixed right-6 top-24 z-[100] flex items-center gap-3 rounded-xl border px-5 py-4 shadow-2xl ${
-            notificationType === "success"
-              ? "border-green-500/40 bg-green-500/10 text-green-400"
-              : "border-red-500/40 bg-red-500/10 text-red-400"
-          }`}
+          className="fixed right-6 top-24 z-[100] flex items-center gap-3
+    rounded-xl border border-red-500/40 bg-red-500/10
+    px-5 py-4 text-red-400 shadow-2xl"
         >
-          <span className="text-xl">
-            {notificationType === "success" ? "✓" : "!"}
-          </span>
+          <span className="text-xl">!</span>
 
           <p className="text-sm font-medium">{notification}</p>
         </div>
@@ -93,6 +95,7 @@ export default function LoginForm() {
                   src="/images/user/LoginBanner.png"
                   alt="The GetOvr Login"
                   sizes="(max-width: 1024px) 100vw, 45vw"
+                  quality={80}
                   fill
                   priority
                   className="object-cover object-center"
