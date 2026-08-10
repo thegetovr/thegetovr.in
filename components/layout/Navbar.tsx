@@ -24,7 +24,9 @@ export default function Navbar() {
     return null;
   }
 
-  const totalQuantity = items.reduce((total, item) => total + item.quantity, 0);
+  const totalQuantity =
+  items.reduce((total, item) => total + item.quantity, 0) +
+  readyMadeItems.reduce((total, item) => total + item.quantity, 0);
 
   const [search, setSearch] = useState("");
   const [notification, setNotification] = useState("");
