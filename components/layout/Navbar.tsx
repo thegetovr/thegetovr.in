@@ -53,7 +53,7 @@ export default function Navbar() {
     <>
       {notification && (
         <div
-          className={`fixed right-6 top-24 z-[100] flex items-center gap-3 rounded-xl border px-5 py-4 shadow-2xl ${
+          className={`fixed right-6 top-24 z-100 flex items-center gap-3 rounded-xl border px-5 py-4 shadow-2xl ${
             notificationType === "success"
               ? "border-green-500/40 bg-green-500/10 text-green-400"
               : "border-red-500/40 bg-red-500/10 text-red-400"
@@ -82,7 +82,7 @@ export default function Navbar() {
                 {link.name}
 
                 <span
-                  className="absolute bottom-0 left-1/2 h-[2px] w-0 -translate-x-1/2
+                  className="absolute bottom-0 left-1/2 h-0.5 w-0 -translate-x-1/2
                bg-white transition-all duration-300 ease-out group-hover:w-full"
                 />
               </Link>
@@ -107,7 +107,7 @@ export default function Navbar() {
                 onChange={(e) => setSearch(e.target.value)}
                 // focus:w-[300px] removed temporarily because it was causing layout shift when the input expands on focus
                 className="
-                     w-[400px]
+                     w-100
                      rounded-full
                      border
                    border-white/30
@@ -143,7 +143,7 @@ export default function Navbar() {
                 absolute
                 bottom-0
                 left-1/2
-                h-[2px]
+                h-0.5
                 w-0
                 -translate-x-1/2
                 bg-white
@@ -177,7 +177,7 @@ export default function Navbar() {
                 {totalQuantity > 0 && (
                   <span
                     className="absolute -right-2 -top-2 flex h-5 
-                   min-w-[20px] items-center justify-center rounded-full
+                   min-w-5 items-center justify-center rounded-full
                   bg-white px-1 text-[10px] font-bold text-black"
                   >
                     {totalQuantity}
