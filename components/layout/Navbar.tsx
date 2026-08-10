@@ -2,25 +2,50 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { User } from "lucide-react";
+import UserDropdown from "@/components/layout/UserDropdown";
 
 import Logo from "@/components/ui/Logo";
 import { useCartStore } from "@/stores/cartStore";
 
 export default function Navbar() {
   const items = useCartStore((state) => state.items);
+const readyMadeItems = useCartStore((state) => state.readyMadeItems);
   const pathname = usePathname();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+  const [notification, setNotification] = useState("");
+  const [notificationType, setNotificationType] = useState<"success" | "error">(
+    "success",
+  );
+
+  useEffect(() => {
+    const authNotification = sessionStorage.getItem("auth_notification");
+
+    if (authNotification) {
+      setNotificationType("success");
+      setNotification(authNotification);
+
+      sessionStorage.removeItem("auth_notification");
+
+      const timeout = window.setTimeout(() => {
+        setNotification("");
+      }, 2000);
+
+      return () => window.clearTimeout(timeout);
+    }
+  }, []);
 
   if (pathname.startsWith("/admin")) {
     return null;
   }
 
-  const totalQuantity = items.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
+  const totalQuantity =
+  items.reduce((total, item) => total + item.quantity, 0) +
+  readyMadeItems.reduce((total, item) => total + item.quantity, 0);
+  console.log("Navbar cart items:", items);
+console.log("Navbar total quantity:", totalQuantity);
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-black/70 backdrop-blur-xl">
@@ -67,38 +92,23 @@ export default function Navbar() {
           </div>
 
           {/* User */}
-          <div className="relative">
-            <button
-              onMouseEnter={() => setUserMenuOpen(true)}
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 transition hover:border-white/20 hover:bg-white/5"
-            >
-              <User size={20} strokeWidth={1.8} className="text-white" />
+          <div className="group relative flex h-20 items-center">
+            <button className="flex h-full items-center justify-center px-2 text-gray-300 transition hover:text-white">
+              <User size={24} strokeWidth={1.8} />
             </button>
 
-            {userMenuOpen && (
-              <div
-                onMouseEnter={() => setUserMenuOpen(true)}
-                onMouseLeave={() => setUserMenuOpen(false)}
-                className="absolute right-1/2 top-full z-50 mt-3 w-72 translate-x-1/2 rounded-xl border border-white/20 bg-black shadow-2xl"
-              >
-                <div className="px-5 py-4">
-                  <h3 className="text-base font-semibold text-white">
-                    Welcome
-                  </h3>
+            <span className="absolute bottom-0 left-1/2 h-[2px] w-0 -translate-x-1/2 bg-white transition-all duration-300 ease-out group-hover:w-full" />
 
-                  <p className="mt-1 text-sm text-gray-400">
-                    To access account and manage orders
-                  </p>
+            <UserDropdown
+              onNotification={(message, type) => {
+                setNotification(message);
+                setNotificationType(type);
 
-                  <Link
-                    href="/login"
-                    className="mt-4 inline-flex rounded-md border border-[#F4B400] px-8 py-2.5 text-sm font-semibold text-[#F4B400] transition hover:bg-[#F4B400] hover:text-white"
-                  >
-                    LOGIN / SIGNUP
-                  </Link>
-                </div>
-              </div>
-            )}
+                window.setTimeout(() => {
+                  setNotification("");
+                }, 2000);
+              }}
+            />
           </div>
 
           {/* Cart */}
