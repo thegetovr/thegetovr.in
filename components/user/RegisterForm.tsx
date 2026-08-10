@@ -4,8 +4,10 @@ import Link from "next/link";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, User, Phone } from "lucide-react";
 import { useRef, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [notification, setNotification] = useState("");
   const [notificationType, setNotificationType] = useState<"success" | "error">(
@@ -29,7 +31,7 @@ export default function RegisterForm() {
     });
   };
 
-  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
@@ -48,7 +50,7 @@ export default function RegisterForm() {
       if (result.success) {
         sessionStorage.setItem("auth_notification", "Registration Successful");
 
-        window.location.href = "/";
+        router.push("/");
       } else {
         setNotificationType("error");
         setNotification(result.message);

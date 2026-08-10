@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ShoppingBag, User } from "lucide-react";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 interface UserData {
   firstName: string;
@@ -16,6 +17,7 @@ interface UserDropdownProps {
 }
 
 export default function UserDropdown({ onNotification }: UserDropdownProps) {
+  const pathname = usePathname();
   const [user, setUser] = useState<UserData | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
@@ -39,7 +41,7 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
     };
 
     checkSession();
-  }, []);
+  }, [pathname]);
 
   const handleLogout = async () => {
     try {

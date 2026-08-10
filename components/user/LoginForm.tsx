@@ -4,8 +4,10 @@ import Link from "next/link";
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { useRef, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
   const [notification, setNotification] = useState("");
@@ -23,7 +25,7 @@ export default function LoginForm() {
     });
   };
 
-  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
@@ -42,7 +44,7 @@ export default function LoginForm() {
       if (result.success) {
         sessionStorage.setItem("auth_notification", "Login Successful");
 
-        window.location.href = "/";
+        router.push("/");
       } else {
         setNotificationType("error");
         setNotification(result.message);
@@ -342,7 +344,7 @@ export default function LoginForm() {
 
                   <div className="mt-8 text-center">
                     <p className="text-sm text-zinc-300">
-                      Don't have an account?{" "}
+                      Don&apos;t have an account?{" "}
                       <Link
                         href="/register"
                         className="font-semibold text-[#F4B400] transition-colors duration-300 hover:text-[#FFD54A]"

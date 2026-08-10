@@ -20,13 +20,9 @@ export default function Navbar() {
   const readyMadeItems = useCartStore((state) => state.readyMadeItems);
   const pathname = usePathname();
 
-  if (pathname.startsWith("/admin")) {
-    return null;
-  }
-
   const totalQuantity =
-  items.reduce((total, item) => total + item.quantity, 0) +
-  readyMadeItems.reduce((total, item) => total + item.quantity, 0);
+    items.reduce((total, item) => total + item.quantity, 0) +
+    readyMadeItems.reduce((total, item) => total + item.quantity, 0);
 
   const [search, setSearch] = useState("");
   const [notification, setNotification] = useState("");
@@ -35,9 +31,11 @@ export default function Navbar() {
   );
 
   useEffect(() => {
-    const authNotification = sessionStorage.getItem("auth_notification");
+    const timer = setTimeout(() => {
+      const authNotification = sessionStorage.getItem("auth_notification");
 
-    if (authNotification) {
+      if (!authNotification) return;
+
       setNotificationType("success");
       setNotification(authNotification);
 
@@ -46,8 +44,16 @@ export default function Navbar() {
       setTimeout(() => {
         setNotification("");
       }, 2000);
-    }
-  }, []);
+    }, 0);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [pathname]);
+
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <>
