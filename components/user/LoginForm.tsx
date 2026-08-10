@@ -3,12 +3,10 @@
 import Link from "next/link";
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
 
   const [notification, setNotification] = useState("");
 
@@ -44,7 +42,7 @@ export default function LoginForm() {
       if (result.success) {
         sessionStorage.setItem("auth_notification", "Login Successful");
 
-        router.push("/");
+        window.location.href = "/";
       } else {
         setNotificationType("error");
         setNotification(result.message);
@@ -97,7 +95,7 @@ export default function LoginForm() {
                   src="/images/user/LoginBanner.png"
                   alt="The GetOvr Login"
                   sizes="(max-width: 1024px) 100vw, 45vw"
-                  quality={80}
+                  quality={70}
                   fill
                   priority
                   className="object-cover object-center"
@@ -344,7 +342,7 @@ export default function LoginForm() {
 
                   <div className="mt-8 text-center">
                     <p className="text-sm text-zinc-300">
-                      Don&apos;t have an account?{" "}
+                      Don't have an account?{" "}
                       <Link
                         href="/register"
                         className="font-semibold text-[#F4B400] transition-colors duration-300 hover:text-[#FFD54A]"
