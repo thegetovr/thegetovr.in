@@ -10,7 +10,7 @@ import Logo from "@/components/ui/Logo";
 import { useCartStore } from "@/stores/cartStore";
 
 const navLinks = [
-  { name: "Shop", href: "/" },
+  { name: "Shop", href: "/Shop" },
   { name: "Studio", href: "/studio" },
   { name: "About", href: "/about" },
 ];
