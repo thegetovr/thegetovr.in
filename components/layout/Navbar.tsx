@@ -10,7 +10,7 @@ import Logo from "@/components/ui/Logo";
 import { useCartStore } from "@/stores/cartStore";
 
 const navLinks = [
-  { name: "Shop", href: "/Shop" },
+  { name: "Shop", href: "/shop" },
   { name: "Studio", href: "/studio" },
   { name: "About", href: "/about" },
 ];
@@ -19,7 +19,6 @@ export default function Navbar() {
   const items = useCartStore((state) => state.items);
   const readyMadeItems = useCartStore((state) => state.readyMadeItems);
   const pathname = usePathname();
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   if (pathname.startsWith("/admin")) {
     return null;
