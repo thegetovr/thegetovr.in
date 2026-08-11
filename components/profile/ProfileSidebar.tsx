@@ -50,11 +50,6 @@ const menuItems = [
     section: "wishlist",
     icon: Heart,
   },
-  {
-    label: "Track Order",
-    section: "track-order",
-    icon: Truck,
-  },
 ];
 
 export default function ProfileSidebar({

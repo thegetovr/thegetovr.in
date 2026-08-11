@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import OrderDetails from "@/components/profile/OrderDetails";
 import Link from "next/link";
 import {
   Search,
@@ -96,6 +97,7 @@ const tabs = [
 export default function MyOrders() {
   const [activeTab, setActiveTab] = useState("All");
   const [search, setSearch] = useState("");
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   /* =====================================================
      FILTER ORDERS
@@ -148,7 +150,14 @@ export default function MyOrders() {
         return "bg-gray-50 text-gray-700";
     }
   };
-
+  if (selectedOrder) {
+    return (
+      <OrderDetails
+        order={selectedOrder}
+        onBack={() => setSelectedOrder(null)}
+      />
+    );
+  }
   return (
     <section className="min-w-0 flex-1 bg-white px-8 py-7">
       {/* =================================================
@@ -321,6 +330,7 @@ export default function MyOrders() {
                       </button>
                     ) : (
                       <button
+                        onClick={() => setSelectedOrder(order)}
                         type="button"
                         className="mt-4 flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-800"
                       >
