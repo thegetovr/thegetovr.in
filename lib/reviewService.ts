@@ -151,3 +151,41 @@ export async function getPendingReviews(): Promise<ReviewType[]> {
 
   return reviews.map(formatReview);
 }
+export async function getProductReviewSummaries(productIds: string[]) {
+  if (productIds.length === 0) {
+    return {};
+  }
+
+  await connectToDatabase();
+
+  const result = await Review.aggregate([
+    {
+      $match: {
+        productId: { $in: productIds },
+        status: "approved",
+      },
+    },
+    {
+      $group: {
+        _id: "$productId",
+        averageRating: {
+          $avg: "$rating",
+        },
+        reviewCount: {
+          $sum: 1,
+        },
+      },
+    },
+  ]);
+
+  return result.reduce<
+    Record<string, { averageRating: number; reviewCount: number }>
+  >((summaries, item) => {
+    summaries[item._id] = {
+      averageRating: Number(item.averageRating.toFixed(1)),
+      reviewCount: item.reviewCount,
+    };
+
+    return summaries;
+  }, {});
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { User, ShoppingCart, Search } from "lucide-react";
@@ -19,6 +19,7 @@ export default function Navbar() {
   const items = useCartStore((state) => state.items);
   const readyMadeItems = useCartStore((state) => state.readyMadeItems);
   const pathname = usePathname();
+  const router = useRouter();
 
   const totalQuantity =
     items.reduce((total, item) => total + item.quantity, 0) +
@@ -111,6 +112,17 @@ export default function Navbar() {
                 placeholder="Search products..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    const value = e.currentTarget.value.trim();
+
+                    if (value) {
+                      router.push(`/shop?search=${encodeURIComponent(value)}`);
+                    } else {
+                      router.push("/shop");
+                    }
+                  }
+                }}
                 // focus:w-[300px] removed temporarily because it was causing layout shift when the input expands on focus
                 className="
                      w-100
