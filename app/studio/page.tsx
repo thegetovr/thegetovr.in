@@ -31,6 +31,9 @@ export default function StudioPage() {
   const [printSide, setPrintSide] = useState<PrintSide>("front");
   const addItem = useCartStore((state) => state.addItem);
   const [exportDesign, setExportDesign] = useState<(() => void) | null>(null);
+  const handleExportReady = useCallback((exportFn: (() => void) | null) => {
+    setExportDesign(() => exportFn);
+  }, []);
   const [designs, setDesigns] = useState<{
     front: DesignElement[];
     back: DesignElement[];
@@ -343,7 +346,7 @@ export default function StudioPage() {
                 setElements={setElements}
                 selectedElementId={selectedElementId}
                 setSelectedElementId={setSelectedElementId}
-                onExportReady={(exportFn) => setExportDesign(() => exportFn)}
+                onExportReady={handleExportReady}
               />
             }
             inspector={
