@@ -2,14 +2,12 @@
 
 import { useRef } from "react";
 import { PRODUCTS, COLORS } from "@/lib/product";
-import OrderSummary from "./OrderSummary";
 import { ImagePlus, Type, Trash2, Palette } from "lucide-react";
 import type { StudioTool } from "./layout/ToolRail";
 import { saveImage } from "@/lib/studio/imageStore";
 import type {
   DesignElement,
   Product,
-  ProductQuantity,
   PrintSide,
   ProductSize,
   TextElement,
@@ -21,8 +19,7 @@ interface StudioSidebarProps {
   productColor: ProductColor;
   productSize: ProductSize;
   setProductSize: React.Dispatch<React.SetStateAction<ProductSize>>;
-  quantity: ProductQuantity;
-  setQuantity: React.Dispatch<React.SetStateAction<ProductQuantity>>;
+
   printSide: PrintSide;
   setPrintSide: React.Dispatch<React.SetStateAction<PrintSide>>;
   setProductColor: React.Dispatch<React.SetStateAction<ProductColor>>;
@@ -38,7 +35,8 @@ interface StudioSidebarProps {
   setSelectedElementId: (id: string | null) => void;
 
   activeTool: StudioTool;
-  onAddToCart: () => void;
+
+  onExport: () => void;
 }
 export default function StudioSidebar({
   product,
@@ -47,8 +45,6 @@ export default function StudioSidebar({
   setProduct,
   productSize,
   setProductSize,
-  quantity,
-  setQuantity,
   printSide,
   setPrintSide,
   elements,
@@ -56,7 +52,7 @@ export default function StudioSidebar({
   selectedElementId,
   setSelectedElementId,
   activeTool,
-  onAddToCart,
+  onExport,
 }: StudioSidebarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -320,37 +316,7 @@ export default function StudioSidebar({
               </button>
             </div>
           </div>
-          <div className="mt-8">
-            <div className="mb-4">
-              <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-gray-500">
-                Quantity
-              </h3>
-            </div>
 
-            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#232329] px-4 py-3">
-              <button
-                type="button"
-                onClick={() =>
-                  quantity > 1 && setQuantity((quantity - 1) as ProductQuantity)
-                }
-                className="h-10 w-10 rounded-lg bg-[#2d2d33] text-lg font-bold transition hover:bg-[#3a3a42]"
-              >
-                -
-              </button>
-
-              <span className="text-lg font-semibold">{quantity}</span>
-
-              <button
-                type="button"
-                onClick={() =>
-                  quantity < 5 && setQuantity((quantity + 1) as ProductQuantity)
-                }
-                className="h-10 w-10 rounded-lg bg-[#2d2d33] text-lg font-bold transition hover:bg-[#3a3a42]"
-              >
-                +
-              </button>
-            </div>
-          </div>
           <div className="mt-8">
             <div className="mb-4 flex items-center gap-2">
               <Palette size={16} />
@@ -373,20 +339,6 @@ export default function StudioSidebar({
               ))}
             </div>
           </div>
-          <OrderSummary
-            product={product}
-            size={productSize}
-            quantity={quantity}
-            printSide={printSide}
-          />
-
-          <button
-            type="button"
-            onClick={onAddToCart}
-            className="mt-6 w-full rounded-2xl bg-white px-5 py-4 font-semibold text-black transition hover:scale-[1.02]"
-          >
-            Add to Cart
-          </button>
         </>
       )}
 
@@ -507,18 +459,42 @@ export default function StudioSidebar({
             {elements.length !== 1 ? "s" : ""} added
           </p>
 
+          {selectedElementId && (
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="mt-4 w-full rounded-xl bg-red-600 p-3 font-semibold transition hover:bg-red-700"
+            >
+              <div className="flex items-center justify-center gap-2">
+                <Trash2 size={18} />
+                Delete
+              </div>
+            </button>
+          )}
+        </>
+      )}
+      {activeTool === "export" && (
+        <div className="space-y-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gray-500">
+              Export
+            </p>
+
+            <h2 className="mt-2 text-2xl font-bold">Save Your Design</h2>
+
+            <p className="mt-2 text-sm text-gray-400">
+              Download your current design as an image.
+            </p>
+          </div>
+
           <button
             type="button"
-            onClick={handleDelete}
-            disabled={!selectedElementId}
-            className="mt-4 w-full rounded-xl bg-red-600 p-3 font-semibold transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={onExport}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-white p-4 font-semibold text-black transition hover:bg-gray-200"
           >
-            <div className="flex items-center justify-center gap-2">
-              <Trash2 size={18} />
-              Delete
-            </div>
+            Download Design
           </button>
-        </>
+        </div>
       )}
     </div>
   );
