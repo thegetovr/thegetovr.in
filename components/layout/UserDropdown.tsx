@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ShoppingBag, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-
+import { useRouter } from "next/navigation";
 interface UserData {
   firstName: string;
   lastName: string;
@@ -17,6 +17,7 @@ interface UserDropdownProps {
 }
 
 export default function UserDropdown({ onNotification }: UserDropdownProps) {
+  const router = useRouter();
   const pathname = usePathname();
   const [user, setUser] = useState<UserData | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
@@ -53,7 +54,13 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
 
       if (result.success) {
         setUser(null);
-        onNotification(result.message, "success");
+
+        sessionStorage.setItem(
+          "auth_notification",
+          result.message || "Logout Successful",
+        );
+
+        router.push("/");
       } else {
         onNotification(result.message, "error");
       }
