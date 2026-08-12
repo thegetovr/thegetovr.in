@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import OrderDetails from "@/components/profile/OrderDetails";
+
 import Link from "next/link";
 import {
   Search,
@@ -14,7 +15,6 @@ import {
   Truck,
   CircleHelp,
   ShoppingBag,
-  Clock3,
   CheckCircle2,
   XCircle,
   ExternalLink,
@@ -35,57 +35,6 @@ interface Order {
   deliveryText: string;
 }
 
-const orders: Order[] = [
-  {
-    id: "#TG1024",
-    date: "11 Aug 2026",
-    time: "10:30 AM",
-    items: 1,
-    productName: "Oversized Black T-Shirt",
-    image: "/images/products/black-tshirt.png",
-    price: "₹1,999",
-    payment: "Paid Online",
-    status: "Delivered",
-    deliveryText: "Delivered on 14 Aug 2026",
-  },
-  {
-    id: "#TG1023",
-    date: "08 Aug 2026",
-    time: "07:15 PM",
-    items: 1,
-    productName: "Minimal Hoodie - Grey",
-    image: "/images/products/grey-hoodie.png",
-    price: "₹2,499",
-    payment: "Paid Online",
-    status: "Shipped",
-    deliveryText: "Expected delivery 12 Aug 2026",
-  },
-  {
-    id: "#TG1022",
-    date: "02 Aug 2026",
-    time: "11:05 AM",
-    items: 1,
-    productName: "GETOVR Classic Cap",
-    image: "/images/products/black-cap.png",
-    price: "₹999",
-    payment: "Paid Online",
-    status: "Processing",
-    deliveryText: "Expected delivery 06 Aug 2026",
-  },
-  {
-    id: "#TG1021",
-    date: "31 Jul 2026",
-    time: "09:20 PM",
-    items: 2,
-    productName: "GETOVR Cargo Pants",
-    image: "/images/products/cargo-pants.png",
-    price: "₹3,198",
-    payment: "Refunded",
-    status: "Cancelled",
-    deliveryText: "Cancelled on 01 Aug 2026",
-  },
-];
-
 const tabs = [
   { label: "All Orders", value: "All" },
   { label: "Processing", value: "Processing" },
@@ -93,11 +42,96 @@ const tabs = [
   { label: "Delivered", value: "Delivered" },
   { label: "Cancelled", value: "Cancelled" },
 ];
+interface UserData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+}
 
-export default function MyOrders() {
+interface MyOrdersProps {
+  user: UserData | null;
+}
+export default function MyOrders({ user }: MyOrdersProps) {
   const [activeTab, setActiveTab] = useState("All");
   const [search, setSearch] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+
+  const mapOrderToUI = (order: any): Order => {
+    const firstItem = order.items?.[0];
+
+    return {
+      id: order.orderNumber,
+
+      date: new Date(order.createdAt).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }),
+
+      time: new Date(order.createdAt).toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+
+      items: order.items?.length ?? 0,
+
+      productName: firstItem?.name || firstItem?.product || "Custom Product",
+
+      image: firstItem?.image || "",
+
+      price: order.total,
+
+      payment: order.total,
+
+      status: order.status,
+
+      deliveryText:
+        order.status === "delivered"
+          ? "Delivered"
+          : order.status === "cancelled"
+            ? "Order Cancelled"
+            : "Estimated delivery 3-5 Days",
+    };
+  };
+  useEffect(() => {
+    const fetchOrders = async () => {
+      console.log("LOGGED IN USER:", user);
+      console.log("LOGGED IN EMAIL:", user?.email);
+      if (!user?.email) {
+        setOrdersLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `/api/orders?email=${encodeURIComponent(user.email)}`,
+        );
+
+        const result = await response.json();
+
+        if (!result.success) {
+          console.error(result.message);
+          return;
+        }
+
+        console.log("Profile Orders:", result.orders);
+        const mappedOrders = result.orders.map(mapOrderToUI);
+
+        console.log("Mapped Orders:", mappedOrders);
+
+        setOrders(mappedOrders);
+      } catch (error) {
+        console.error("My Orders Error:", error);
+      } finally {
+        setOrdersLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, [user?.email]);
 
   /* =====================================================
      FILTER ORDERS
@@ -150,6 +184,15 @@ export default function MyOrders() {
         return "bg-gray-50 text-gray-700";
     }
   };
+
+  if (ordersLoading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <p className="text-gray-500">Loading orders...</p>
+      </div>
+    );
+  }
+
   if (selectedOrder) {
     return (
       <OrderDetails

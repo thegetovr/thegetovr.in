@@ -6,7 +6,6 @@ import {
   MapPin,
   User,
   Heart,
-  Truck,
   LogOut,
 } from "lucide-react";
 

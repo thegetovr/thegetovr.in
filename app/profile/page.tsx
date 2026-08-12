@@ -8,7 +8,7 @@ import ProfileDetails from "@/components/profile/ProfileDetails";
 import Wishlist from "@/components/profile/Wishlist";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+
 interface UserData {
   firstName: string;
   lastName: string;
@@ -82,7 +82,7 @@ export default function ProfilePage() {
 
       <section className="flex-1 p-8">
         {activeSection === "overview" && <Overview user={user} />}
-        {activeSection === "orders" && <MyOrders />}
+        {activeSection === "orders" && <MyOrders user={user} />}
         {activeSection === "addresses" && <Addresses />}
         {activeSection === "profile" && <ProfileDetails user={user} />}
         {activeSection === "wishlist" && <Wishlist />}

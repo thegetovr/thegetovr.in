@@ -12,7 +12,7 @@ import { useCheckoutStore } from "@/stores/checkoutStore";
 import { useRouter } from "next/navigation";
 
 export default function OrderSummary() {
-  const { items, clearCart } = useCartStore();
+  const { items, readyMadeItems, clearCart } = useCartStore();
   const checkout = useCheckoutStore();
   const { reset } = useFormContext<CheckoutFormData>();
   const router = useRouter();
@@ -28,7 +28,11 @@ export default function OrderSummary() {
     setIsSubmitting,
   } = checkout;
 
-  const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
+  const checkoutItems = [...readyMadeItems, ...items];
+  const subtotal = checkoutItems.reduce(
+    (sum, item) => sum + item.totalPrice,
+    0,
+  );
 
   const shipping = 0;
   const total = subtotal + shipping;
@@ -41,7 +45,13 @@ export default function OrderSummary() {
     setIsSubmitting(true);
 
     try {
-      const order = createOrder(customer, items, subtotal, discount, coupon);
+      const order = createOrder(
+        customer,
+        checkoutItems,
+        subtotal,
+        discount,
+        coupon,
+      );
 
       const response = await fetch("/api/orders", {
         method: "POST",
@@ -93,10 +103,10 @@ export default function OrderSummary() {
       <h2 className="text-2xl font-semibold text-white">Order Summary</h2>
 
       <div className="mt-6 space-y-5">
-        {items.length === 0 ? (
+        {checkoutItems.length === 0 ? (
           <p className="text-sm text-gray-400">Your cart is empty.</p>
         ) : (
-          items.map((item) => (
+          checkoutItems.map((item) => (
             <div
               key={item.id}
               className="rounded-xl border border-white/10 bg-[#111118] p-4"
@@ -233,7 +243,7 @@ export default function OrderSummary() {
       <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-900 p-4">
         <div className="flex items-center justify-between text-sm text-zinc-400">
           <span>Items</span>
-          <span>{items.length}</span>
+          <span>{checkoutItems.length}</span>
         </div>
 
         <div className="mt-2 flex items-center justify-between text-sm text-zinc-400">
@@ -246,11 +256,14 @@ export default function OrderSummary() {
         <p>🚚 Free Shipping</p>
         <p>↩️ Easy Returns</p>
       </div>
+      <p className="mt-3 text-center text-xs text-zinc-500">
+        Valid: {isValid ? "Yes" : "No"} | Items: {items.length}
+      </p>
       <Button
         className="mt-8"
         fullWidth
         loading={isSubmitting}
-        disabled={!isValid || items.length === 0}
+        disabled={!isValid || checkoutItems.length === 0}
         onClick={handlePlaceOrder}
       >
         Place Order

@@ -18,6 +18,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import image from "next/image";
+import { useEffect, useState } from "react";
 
 interface UserData {
   firstName: string;
@@ -29,42 +30,6 @@ interface UserData {
 interface OverviewProps {
   user: UserData | null;
 }
-
-/* =========================================================
-   STAT CARDS
-   Sirf yahan se cards ka data change hoga
-========================================================= */
-
-const statCards = [
-  {
-    title: "Total Orders",
-    value: 0,
-    icon: ShoppingBag,
-    action: "View all orders",
-    href: "#",
-  },
-  {
-    title: "Processing",
-    value: 0,
-    icon: Clock3,
-    action: "View details",
-    href: "#",
-  },
-  {
-    title: "Delivered",
-    value: 0,
-    icon: CheckCircle2,
-    action: "View details",
-    href: "#",
-  },
-  {
-    title: "Wishlist",
-    value: 0,
-    icon: Heart,
-    action: "View wishlist",
-    href: "/wishlist",
-  },
-];
 
 /* =========================================================
    QUICK ACTIONS
@@ -125,6 +90,83 @@ const benefits = [
 ];
 
 export default function Overview({ user }: OverviewProps) {
+  const [stats, setStats] = useState({
+    totalOrders: 0,
+    processingOrders: 0,
+    deliveredOrders: 0,
+    wishlistItems: 0,
+  });
+
+  useEffect(() => {
+    const fetchOrderStats = async () => {
+      if (!user?.email) return;
+
+      try {
+        const response = await fetch(
+          `/api/orders?email=${encodeURIComponent(user.email)}`,
+        );
+
+        const result = await response.json();
+
+        if (!result.success) {
+          console.error(result.message);
+          return;
+        }
+
+        const orders = result.orders || [];
+
+        const processingOrders = orders.filter(
+          (order: { status: string }) => order.status === "processing",
+        ).length;
+
+        const deliveredOrders = orders.filter(
+          (order: { status: string }) => order.status === "delivered",
+        ).length;
+
+        setStats((currentStats) => ({
+          ...currentStats,
+          totalOrders: orders.length,
+          processingOrders,
+          deliveredOrders,
+        }));
+      } catch (error) {
+        console.error("Overview Orders Error:", error);
+      }
+    };
+
+    fetchOrderStats();
+  }, [user?.email]);
+
+  const statCards = [
+    {
+      title: "Total Orders",
+      value: stats.totalOrders,
+      icon: ShoppingBag,
+      action: "View all orders",
+      href: "#",
+    },
+    {
+      title: "Processing",
+      value: stats.processingOrders,
+      icon: Clock3,
+      action: "View details",
+      href: "#",
+    },
+    {
+      title: "Delivered",
+      value: stats.deliveredOrders,
+      icon: CheckCircle2,
+      action: "View details",
+      href: "#",
+    },
+    {
+      title: "Wishlist",
+      value: stats.wishlistItems,
+      icon: Heart,
+      action: "View wishlist",
+      href: "#",
+    },
+  ];
   /* =======================================================
      GREETING
   ======================================================= */

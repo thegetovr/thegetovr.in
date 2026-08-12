@@ -7,6 +7,7 @@ import type { Order as OrderType, OrderStatus } from "@/types/order";
 type GetOrdersOptions = {
   search?: string;
   status?: OrderStatus;
+  email?: string;
 };
 
 export async function getOrders(
@@ -14,7 +15,7 @@ export async function getOrders(
 ): Promise<OrderType[]> {
   await connectToDatabase();
 
-  const { search, status } = options;
+  const { search, status, email } = options;
 
   const query: Record<string, unknown> = {};
 
@@ -51,7 +52,16 @@ export async function getOrders(
     query.status = status;
   }
 
-  return await Order.find(query).lean();
+  if (email?.trim()) {
+    query["customer.email"] = email.trim();
+    console.log("ORDER SEARCH QUERY:", query);
+  }
+
+  const foundOrders = await Order.find(query).sort({ createdAt: -1 }).lean();
+
+  console.log("FOUND ORDERS:", foundOrders);
+
+  return foundOrders;
 }
 
 export async function getOrderByNumber(

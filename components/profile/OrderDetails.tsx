@@ -1,5 +1,5 @@
 "use client";
-
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   Check,
@@ -10,6 +10,10 @@ import {
   RotateCcw,
   Truck,
 } from "lucide-react";
+import OrderItems from "@/components/orders/OrderItems";
+import PaymentSummary from "@/components/orders/PaymentSummary";
+import ShippingCard from "@/components/orders/ShippingCard";
+import OrderTrackingCard from "@/components/orders/OrderTrackingCard";
 
 interface Order {
   id: string;
@@ -30,6 +34,43 @@ interface OrderDetailsProps {
 }
 
 export default function OrderDetails({ order, onBack }: OrderDetailsProps) {
+  const [fullOrder, setFullOrder] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchOrder = async () => {
+      try {
+        const response = await fetch(
+          `/api/orders/${encodeURIComponent(order.id)}`,
+        );
+
+        const result = await response.json();
+
+        if (!result.success) {
+          console.error(result.message);
+          return;
+        }
+
+        setFullOrder(result.order);
+      } catch (error) {
+        console.error("Order Details Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrder();
+  }, [order.id]);
+
+  if (loading) {
+    return (
+      <section className="min-w-0 flex-1 bg-white px-8 py-7">
+        <div className="flex min-h-[400px] items-center justify-center">
+          <p className="text-sm text-gray-500">Loading order details...</p>
+        </div>
+      </section>
+    );
+  }
   return (
     <section className="min-w-0 flex-1 bg-white px-8 py-7">
       {/* =====================================================
@@ -89,145 +130,15 @@ export default function OrderDetails({ order, onBack }: OrderDetailsProps) {
           {/* =================================================
               ORDER ITEMS
           ================================================= */}
-
-          <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="text-base font-semibold text-black">Order Items</h2>
-
-            <div className="mt-5 flex items-center gap-6">
-              {/* Product Image */}
-              <div className="flex h-32 w-32 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-50">
-                <img
-                  src={order.image}
-                  alt={order.productName}
-                  className="h-full w-full object-contain"
-                />
-              </div>
-
-              {/* Product Details */}
-              <div className="min-w-0 flex-1">
-                <h3 className="text-lg font-semibold text-black">
-                  {order.productName}
-                </h3>
-
-                <div className="mt-2 flex items-center gap-2 text-sm text-gray-500">
-                  <span>Size: L</span>
-
-                  <span>•</span>
-
-                  <span>Color: Black</span>
-                </div>
-              </div>
-
-              {/* Quantity */}
-              <div className="text-sm text-gray-500">
-                Qty: <span className="text-black">{order.items}</span>
-              </div>
-
-              {/* Price */}
-              <div className="text-right">
-                <p className="text-base font-semibold text-black">
-                  {order.price}
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-5 text-lg font-semibold text-black">
-              {order.price}
-            </div>
-          </div>
-
+          <OrderItems items={fullOrder.items} />
           {/* =================================================
               ORDER STATUS
           ================================================= */}
-
-          <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="text-base font-semibold text-black">Order Status</h2>
-
-            {/* Timeline */}
-            <div className="mt-7 flex items-start">
-              {/* Ordered */}
-              <div className="flex flex-1 flex-col items-center">
-                <div className="relative flex w-full items-center justify-center">
-                  <div className="absolute left-1/2 right-0 top-1/2 h-[2px] bg-black" />
-
-                  <div className="relative z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black text-white">
-                    <Check size={17} strokeWidth={2.5} />
-                  </div>
-                </div>
-
-                <p className="mt-3 text-sm font-semibold text-black">
-                  Order Placed
-                </p>
-
-                <p className="mt-1 text-xs text-gray-500">{order.date}</p>
-
-                <p className="mt-1 text-xs text-gray-500">{order.time}</p>
-              </div>
-
-              {/* Confirmed */}
-              <div className="flex flex-1 flex-col items-center">
-                <div className="relative flex w-full items-center justify-center">
-                  <div className="absolute left-0 right-0 top-1/2 h-[2px] bg-black" />
-
-                  <div className="relative z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black text-white">
-                    <Check size={17} strokeWidth={2.5} />
-                  </div>
-                </div>
-
-                <p className="mt-3 text-sm font-semibold text-black">
-                  Confirmed
-                </p>
-
-                <p className="mt-1 text-xs text-gray-500">11 Aug 2026</p>
-
-                <p className="mt-1 text-xs text-gray-500">11:45 AM</p>
-              </div>
-
-              {/* Shipped */}
-              <div className="flex flex-1 flex-col items-center">
-                <div className="relative flex w-full items-center justify-center">
-                  <div className="absolute left-0 right-0 top-1/2 h-[2px] bg-black" />
-
-                  <div className="relative z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black text-white">
-                    <Check size={17} strokeWidth={2.5} />
-                  </div>
-                </div>
-
-                <p className="mt-3 text-sm font-semibold text-black">Shipped</p>
-
-                <p className="mt-1 text-xs text-gray-500">12 Aug 2026</p>
-
-                <p className="mt-1 text-xs text-gray-500">08:30 AM</p>
-              </div>
-
-              {/* Delivered */}
-              <div className="flex flex-1 flex-col items-center">
-                <div className="relative flex w-full items-center justify-center">
-                  <div className="absolute left-0 top-1/2 h-[2px] w-1/2 bg-black" />
-
-                  <div className="relative z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black text-white">
-                    <Check size={17} strokeWidth={2.5} />
-                  </div>
-                </div>
-
-                <p className="mt-3 text-sm font-semibold text-black">
-                  Delivered
-                </p>
-
-                <p className="mt-1 text-xs text-gray-500">14 Aug 2026</p>
-
-                <p className="mt-1 text-xs text-gray-500">02:15 PM</p>
-              </div>
-            </div>
-
-            {/* Success Message */}
-            <div className="mt-7 flex items-center gap-2 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700">
-              <Check size={17} strokeWidth={2} />
-
-              <span>Your order has been delivered successfully.</span>
-            </div>
-          </div>
-
+          <OrderTrackingCard
+            orderNumber={fullOrder.orderNumber}
+            status={fullOrder.status}
+            createdAt={fullOrder.createdAt}
+          />
           {/* =================================================
               PAYMENT DETAILS
           ================================================= */}
@@ -270,7 +181,6 @@ export default function OrderDetails({ order, onBack }: OrderDetailsProps) {
           {/* =================================================
               NEED HELP
           ================================================= */}
-
           <div className="rounded-xl border border-gray-200 bg-white p-6">
             <h2 className="text-base font-semibold text-black">Need Help?</h2>
 
@@ -298,84 +208,97 @@ export default function OrderDetails({ order, onBack }: OrderDetailsProps) {
               DELIVERY ADDRESS
           ================================================= */}
 
-          <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold text-black">
-                Delivery Address
-              </h2>
+          {false && (
+            <div className="rounded-xl border border-gray-200 bg-white p-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-semibold text-black">
+                  Delivery Address
+                </h2>
+
+                <button
+                  type="button"
+                  className="flex items-center gap-1.5 text-sm font-medium text-black"
+                >
+                  Edit
+                  <Pencil size={14} />
+                </button>
+              </div>
+
+              <div className="mt-5 text-sm leading-6 text-gray-500">
+                <p className="font-semibold text-black">Shivdeep Raina</p>
+
+                <p>+91 98765 43210</p>
+
+                <p className="mt-2">123, Green Street, Model Town,</p>
+
+                <p>Jammu, Jammu & Kashmir - 180001</p>
+
+                <p>India</p>
+              </div>
 
               <button
                 type="button"
-                className="flex items-center gap-1.5 text-sm font-medium text-black"
+                className="mt-5 flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-black transition hover:bg-gray-50"
               >
-                Edit
-                <Pencil size={14} />
+                <MapPin size={17} />
+                View on Map
               </button>
             </div>
+          )}
 
-            <div className="mt-5 text-sm leading-6 text-gray-500">
-              <p className="font-semibold text-black">Shivdeep Raina</p>
+          {/*   <CustomerCard customer={fullOrder.customer} variant="profile" /> */}
 
-              <p>+91 98765 43210</p>
-
-              <p className="mt-2">123, Green Street, Model Town,</p>
-
-              <p>Jammu, Jammu & Kashmir - 180001</p>
-
-              <p>India</p>
-            </div>
-
-            <button
-              type="button"
-              className="mt-5 flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-black transition hover:bg-gray-50"
-            >
-              <MapPin size={17} />
-              View on Map
-            </button>
-          </div>
-
+          <ShippingCard customer={fullOrder.customer} />
+          <PaymentSummary
+            subtotal={fullOrder.subtotal}
+            discount={fullOrder.discount}
+            total={fullOrder.total}
+            coupon={fullOrder.coupon}
+          />
           {/* =================================================
               ORDER SUMMARY
           ================================================= */}
 
-          <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="text-base font-semibold text-black">
-              Order Summary
-            </h2>
+          {false && (
+            <div className="rounded-xl border border-gray-200 bg-white p-6">
+              <h2 className="text-base font-semibold text-black">
+                Order Summary
+              </h2>
 
-            <div className="mt-5 space-y-4 text-sm">
-              <div className="flex items-center justify-between text-gray-500">
-                <span>Subtotal</span>
-                <span className="text-black">{order.price}</span>
-              </div>
-
-              <div className="flex items-center justify-between text-gray-500">
-                <span>Shipping</span>
-                <span className="text-black">₹0</span>
-              </div>
-
-              <div className="flex items-center justify-between text-gray-500">
-                <span>Discount</span>
-                <span className="text-black">- ₹0</span>
-              </div>
-
-              <div className="border-t border-gray-200 pt-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-base font-semibold text-black">
-                    Total
-                  </span>
-
-                  <span className="text-lg font-semibold text-black">
-                    {order.price}
-                  </span>
+              <div className="mt-5 space-y-4 text-sm">
+                <div className="flex items-center justify-between text-gray-500">
+                  <span>Subtotal</span>
+                  <span className="text-black">{order.price}</span>
                 </div>
 
-                <p className="mt-2 text-right text-xs text-gray-500">
-                  Paid Online
-                </p>
+                <div className="flex items-center justify-between text-gray-500">
+                  <span>Shipping</span>
+                  <span className="text-black">₹0</span>
+                </div>
+
+                <div className="flex items-center justify-between text-gray-500">
+                  <span>Discount</span>
+                  <span className="text-black">- ₹0</span>
+                </div>
+
+                <div className="border-t border-gray-200 pt-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-base font-semibold text-black">
+                      Total
+                    </span>
+
+                    <span className="text-lg font-semibold text-black">
+                      {order.price}
+                    </span>
+                  </div>
+
+                  <p className="mt-2 text-right text-xs text-gray-500">
+                    Paid Online
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* =================================================
               ACTIONS

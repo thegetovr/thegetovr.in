@@ -1,22 +1,28 @@
 import type { CustomerInfo } from "@/types/order";
+
 interface ShippingCardProps {
   customer: CustomerInfo;
 }
 
-export default function ShippingCard({
-  customer,
-}: ShippingCardProps) {
+export default function ShippingCard({ customer }: ShippingCardProps) {
   return (
-    <section className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
-      <h2 className="mb-5 text-lg font-semibold text-white">
-        Shipping Address
-      </h2>
+    <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
+      <h2 className="text-base font-semibold text-black">Delivery Address</h2>
 
-      <div className="space-y-2 text-zinc-300">
-        <p>{customer.address}</p>
-        <p>{customer.city}</p>
-        <p>{customer.state}</p>
-        <p>{customer.pincode}</p>
+      <div className="mt-5 space-y-1 text-sm leading-6 text-gray-500">
+        <p className="font-semibold text-black">
+          {customer.firstName} {customer.lastName}
+        </p>
+
+        <p>{customer.phone}</p>
+
+        <p className="mt-2">{customer.address}</p>
+
+        <p>
+          {customer.city}, {customer.state} - {customer.pincode}
+        </p>
+
+        <p>India</p>
       </div>
     </section>
   );
