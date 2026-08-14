@@ -2,30 +2,25 @@ import StepCard from "./StepCard";
 
 export default function HowItWorks() {
   return (
-    <section className="bg-black py-36">
-
-      <div className="mx-auto max-w-7xl px-8">
-
-        <div className="mx-auto mb-20 max-w-3xl text-center">
-
-          <p className="text-sm uppercase tracking-[0.4em] text-gray-500">
-            HOW IT WORKS
+    <section className="bg-(--color-surface-muted) py-24 lg:py-32">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto mb-16 max-w-3xl text-center lg:mb-20">
+          <p className="text-xs font-medium uppercase tracking-[0.3em] text-(--color-text-muted)">
+            How It Works
           </p>
 
-          <h2 className="mt-5 text-5xl font-black">
+          <h2 className="mt-5 font-(--font-editorial) text-4xl font-normal leading-tight text-(--color-text-primary) sm:text-5xl lg:text-6xl">
             Create Your Apparel
             <br />
             In Three Simple Steps
           </h2>
 
-          <p className="mt-6 text-lg text-gray-400">
+          <p className="mt-6 text-lg leading-8 text-(--color-text-secondary)">
             From your idea to a premium finished product in just a few clicks.
           </p>
-
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-3">
-
+        <div className="grid gap-6 lg:grid-cols-3">
           <StepCard
             number="01"
             title="Upload"
@@ -43,11 +38,8 @@ export default function HowItWorks() {
             title="Print & Deliver"
             description="We print your apparel using premium materials and deliver it to your doorstep."
           />
-
         </div>
-
       </div>
-
     </section>
   );
 }

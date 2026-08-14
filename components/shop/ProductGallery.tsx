@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
+
 import Image from "next/image";
+import { useState } from "react";
 
 import { ProductMedia } from "@/types/product";
 
@@ -19,7 +20,7 @@ export default function ProductGallery({
 
   return (
     <div>
-      <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-[32px] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-black to-zinc-950 shadow-2xl">
+      <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-(--radius-lg) border border-(--color-border) bg-(--color-surface) shadow-(--shadow-soft)">
         {selectedImage ? (
           <Image
             src={selectedImage.url}
@@ -30,7 +31,7 @@ export default function ProductGallery({
             className="object-contain object-center p-10 transition-transform duration-500 hover:scale-[1.03]"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-zinc-500">
+          <div className="flex h-full items-center justify-center text-(--color-text-muted)">
             No Image
           </div>
         )}
@@ -39,13 +40,15 @@ export default function ProductGallery({
       {media.length > 1 && (
         <div className="mt-4 flex flex-wrap gap-3">
           {media.map((image) => (
-            <div
+            <button
               key={image.publicId}
+              type="button"
               onClick={() => setSelectedImage(image)}
-              className={`flex h-28 w-28 cursor-pointer items-center justify-center overflow-hidden rounded-xl border transition-all duration-200 ${
+              aria-label={`View ${image.alt || productName}`}
+              className={`flex h-28 w-28 cursor-pointer items-center justify-center overflow-hidden rounded-(--radius-md) border transition-all duration-200 ${
                 selectedImage?.publicId === image.publicId
-                  ? "border-white bg-zinc-800 ring-2 ring-white/20"
-                  : "border-zinc-800 bg-zinc-900 hover:border-zinc-500 hover:bg-zinc-800"
+                  ? "border-(--color-text-primary) bg-(--color-surface-muted) ring-2 ring-(--color-accent)/30"
+                  : "border-(--color-border) bg-(--color-surface) hover:border-(--color-text-primary) hover:bg-(--color-surface-muted)"
               }`}
             >
               <Image
@@ -56,7 +59,7 @@ export default function ProductGallery({
                 className="h-full w-full object-contain p-2"
                 unoptimized
               />
-            </div>
+            </button>
           ))}
         </div>
       )}

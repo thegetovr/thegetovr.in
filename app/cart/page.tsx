@@ -8,7 +8,6 @@ import EmptyCart from "@/components/cart/EmptyCart";
 
 export default function CartPage() {
   const items = useCartStore((state) => state.items);
-
   const readyMadeItems = useCartStore(
     (state) => state.readyMadeItems,
   );
@@ -17,7 +16,7 @@ export default function CartPage() {
     items.length > 0 || readyMadeItems.length > 0;
 
   return (
-    <main className="min-h-screen bg-zinc-950 px-6 py-12 text-white">
+    <main className="min-h-screen bg-(--color-page) px-6 py-12 text-(--color-text-primary)">
       <div className="mx-auto max-w-6xl">
         <h1 className="mb-8 text-4xl font-bold">
           Shopping Cart

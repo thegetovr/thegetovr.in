@@ -25,26 +25,26 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   ]);
 
   return (
-    <main className="min-h-screen bg-white text-zinc-950 dark:bg-zinc-950 dark:text-white">
+    <main className="min-h-screen bg-(--color-page) text-(--color-text-primary)">
       <section className="mx-auto max-w-7xl px-4 pb-10 pt-12 sm:px-6 lg:px-8 lg:pb-14 lg:pt-16">
         <div className="mb-10 max-w-3xl">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-zinc-500 dark:text-zinc-400">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-(--color-text-secondary)">
             The Getovr Collection
           </p>
 
-          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
+          <h1 className="text-4xl font-semibold tracking-tight text-(--color-text-primary) sm:text-5xl lg:text-6xl">
             Discover pieces
             <br />
             made to be yours.
           </h1>
 
-          <p className="mt-5 max-w-xl text-base leading-7 text-zinc-600 dark:text-zinc-400 sm:text-lg">
+          <p className="mt-5 max-w-xl text-base leading-7 text-(--color-text-secondary) sm:text-lg">
             Explore our latest collection of ready-made and customizable
             pieces designed for your everyday style.
           </p>
         </div>
 
-        <div className="border-y border-zinc-200 py-5 dark:border-zinc-800">
+        <div className="border-y border-(--color-border) py-5">
           <ShopToolbar
             search={params.search ?? ""}
             category={params.category ?? ""}
@@ -53,14 +53,14 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           />
         </div>
 
-        <div className="mt-8 mb-6 flex items-center justify-between">
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        <div className="mb-6 mt-8 flex items-center justify-between">
+          <p className="text-sm text-(--color-text-secondary)">
             {products.length}{" "}
             {products.length === 1 ? "piece" : "pieces"}
           </p>
 
           {params.category && (
-            <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            <p className="text-sm font-medium text-(--color-text-primary)">
               {params.category}
             </p>
           )}

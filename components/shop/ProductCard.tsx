@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+
 import { Product } from "@/types/product";
 
 interface ProductCardProps {
@@ -22,7 +23,7 @@ export default function ProductCard({
   return (
     <article className="group">
       <Link href={productHref} className="block">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-zinc-100 dark:bg-zinc-900">
+        <div className="relative aspect-4/5 overflow-hidden rounded-(--radius-md) bg-(--color-surface-muted)">
           {coverImage ? (
             <Image
               src={coverImage.url}
@@ -32,17 +33,17 @@ export default function ProductCard({
               className="object-contain transition-transform duration-500 ease-out group-hover:scale-[1.04]"
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-sm text-zinc-400">
+            <div className="flex h-full items-center justify-center text-sm text-(--color-text-muted)">
               No Image
             </div>
           )}
 
           <div className="absolute left-3 top-3">
             <span
-              className={`rounded-full px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider backdrop-blur ${
+              className={`rounded-sm px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider ${
                 product.type === "customizable"
-                  ? "bg-white/90 text-zinc-900 dark:bg-zinc-950/90 dark:text-white"
-                  : "bg-black/85 text-white"
+                  ? "border border-(--color-accent) bg-(--color-white) text-(--color-text-primary)"
+                  : "bg-(--color-text-primary) text-(--color-white)"
               }`}
             >
               {product.type === "customizable" ? "Custom" : "Ready"}
@@ -51,61 +52,67 @@ export default function ProductCard({
         </div>
       </Link>
 
-      <div className="mb-2 flex items-center justify-between gap-2">
-  <p className="min-w-0 truncate text-[10px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400 sm:text-xs sm:tracking-[0.16em]">
-    {product.category}
-  </p>
+      <div className="mb-2 mt-3 flex items-center justify-between gap-2">
+        <p className="min-w-0 truncate text-[10px] font-medium uppercase tracking-[0.14em] text-(--color-text-secondary) sm:text-xs sm:tracking-[0.16em]">
+          {product.category}
+        </p>
 
-  <span
-    className={`shrink-0 text-[10px] font-medium sm:text-xs ${
-      product.stock > 0
-        ? "text-emerald-600 dark:text-emerald-400"
-        : "text-red-500 dark:text-red-400"
-    }`}
-  >
-    {product.stock > 0 ? "In stock" : "Sold out"}
-  </span>
-</div>
+        <span
+          className={`shrink-0 text-[10px] font-medium sm:text-xs ${
+            product.stock > 0
+              ? "text-(--color-accent)"
+              : "text-(--color-error)"
+          }`}
+        >
+          {product.stock > 0 ? "In stock" : "Sold out"}
+        </span>
+      </div>
 
-        <Link href={productHref} className="block">
-          <h3 className="line-clamp-2 text-sm font-semibold leading-5 tracking-tight text-zinc-950 transition-colors
-           group-hover:text-zinc-600 dark:text-white dark:group-hover:text-zinc-300 sm:text-lg sm:leading-6">
-            {product.name}
-          </h3>
-        </Link>
+      <Link href={productHref} className="block">
+        <h3 className="line-clamp-2 text-sm font-semibold leading-5 tracking-tight text-(--color-text-primary) transition-colors group-hover:text-(--color-text-secondary) sm:text-lg sm:leading-6">
+          {product.name}
+        </h3>
+      </Link>
 
-        {reviewSummary && reviewSummary.reviewCount > 0 ? (
-          <div
-            className="mt-2 flex items-center gap-2 text-xs"
-            aria-label={`${reviewSummary.averageRating} out of 5 stars, ${reviewSummary.reviewCount} reviews`}
+      {reviewSummary && reviewSummary.reviewCount > 0 ? (
+        <div
+          className="mt-2 flex items-center gap-2 text-xs"
+          aria-label={`${reviewSummary.averageRating} out of 5 stars, ${reviewSummary.reviewCount} reviews`}
+        >
+          <span
+            className="tracking-wide text-(--color-accent)"
+            aria-hidden="true"
           >
-            <span className="tracking-wide text-amber-500" aria-hidden="true">
-              {"★".repeat(Math.round(reviewSummary.averageRating))}
-              {"☆".repeat(5 - Math.round(reviewSummary.averageRating))}
-            </span>
+            {"★".repeat(Math.round(reviewSummary.averageRating))}
+            {"☆".repeat(5 - Math.round(reviewSummary.averageRating))}
+          </span>
 
-            <span className="font-medium text-zinc-700 dark:text-zinc-300">
-              {reviewSummary.averageRating.toFixed(1)}
-            </span>
+          <span className="font-medium text-(--color-text-secondary)">
+            {reviewSummary.averageRating.toFixed(1)}
+          </span>
 
-            <span className="text-zinc-400">({reviewSummary.reviewCount})</span>
-          </div>
-        ) : (
-          <p className="mt-2 text-xs text-zinc-400">No reviews yet</p>
-        )}
+          <span className="text-(--color-text-muted)">
+            ({reviewSummary.reviewCount})
+          </span>
+        </div>
+      ) : (
+        <p className="mt-2 text-xs text-(--color-text-muted)">
+          No reviews yet
+        </p>
+      )}
 
-        <div className="mt-3 flex items-center justify-between gap-2">
-  <p className="text-base font-bold tracking-tight text-zinc-950 dark:text-white sm:text-lg">
-    ₹{product.price.toLocaleString("en-IN")}
-  </p>
+      <div className="mt-3 flex items-center justify-between gap-2">
+        <p className="text-base font-bold tracking-tight text-(--color-text-primary) sm:text-lg">
+          ₹{product.price.toLocaleString("en-IN")}
+        </p>
 
-  <Link
-    href={productHref}
-    className="shrink-0 text-xs font-semibold text-zinc-950 underline-offset-4 transition hover:underline dark:text-white sm:text-sm"
-  >
-    View →
-  </Link>
-</div>
+        <Link
+          href={productHref}
+          className="shrink-0 text-xs font-semibold text-(--color-text-primary) underline-offset-4 transition-colors hover:text-(--color-text-secondary) hover:underline sm:text-sm"
+        >
+          View →
+        </Link>
+      </div>
     </article>
   );
 }

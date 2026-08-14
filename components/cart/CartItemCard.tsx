@@ -49,7 +49,7 @@ export default function CartItemCard({
       : null;
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-zinc-900/60 p-6">
+    <div className="rounded-md border border-(--color-border) bg-(--color-surface) p-6 shadow-[var(--shadow-soft)]">
       <div className="flex items-start justify-between gap-6">
         <div className="flex items-start gap-4">
           {item.kind === "ready-made" && item.image ? (
@@ -58,16 +58,16 @@ export default function CartItemCard({
               alt={item.name}
               width={80}
               height={96}
-              className="h-24 w-20 rounded-xl object-cover"
+              className="h-24 w-20 rounded-md object-cover"
             />
           ) : null}
 
           <div>
-            <h2 className="text-xl font-bold">
+            <h2 className="text-xl font-bold text-(--color-text-primary)">
               {productName}
             </h2>
 
-            <p className="mt-1 text-sm text-gray-400">
+            <p className="mt-1 text-sm text-(--color-text-muted)">
               {item.kind === "ready-made"
                 ? "Ready-made Apparel"
                 : "Customized Apparel"}
@@ -76,11 +76,11 @@ export default function CartItemCard({
         </div>
 
         <div className="text-right">
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-(--color-text-muted)">
             Unit Price
           </p>
 
-          <p className="text-2xl font-bold">
+          <p className="text-2xl font-bold text-(--color-text-primary)">
             ₹{item.unitPrice.toLocaleString("en-IN")}
           </p>
         </div>
@@ -89,31 +89,31 @@ export default function CartItemCard({
       {item.kind === "custom" ? (
         <div className="mt-6 grid grid-cols-2 gap-6 md:grid-cols-3">
           <div>
-            <p className="text-xs uppercase tracking-wide text-gray-500">
+            <p className="text-xs uppercase tracking-wide text-(--color-text-muted)">
               Color
             </p>
 
-            <p className="mt-1 font-medium capitalize">
+            <p className="mt-1 font-medium capitalize text-(--color-text-primary)">
               {item.color}
             </p>
           </div>
 
           <div>
-            <p className="text-xs uppercase tracking-wide text-gray-500">
+            <p className="text-xs uppercase tracking-wide text-(--color-text-muted)">
               Size
             </p>
 
-            <p className="mt-1 font-medium uppercase">
+            <p className="mt-1 font-medium uppercase text-(--color-text-primary)">
               {item.size}
             </p>
           </div>
 
           <div>
-            <p className="text-xs uppercase tracking-wide text-gray-500">
+            <p className="text-xs uppercase tracking-wide text-(--color-text-muted)">
               Print
             </p>
 
-            <p className="mt-1 font-medium">
+            <p className="mt-1 font-medium text-(--color-text-primary)">
               {printLabel}
             </p>
           </div>
@@ -122,7 +122,7 @@ export default function CartItemCard({
 
       <div className="mt-6 flex items-center justify-between">
         <div>
-          <p className="text-xs uppercase tracking-wide text-gray-500">
+          <p className="text-xs uppercase tracking-wide text-(--color-text-muted)">
             Quantity
           </p>
 
@@ -130,19 +130,19 @@ export default function CartItemCard({
             <button
               type="button"
               onClick={() => decreaseQuantity(item.id)}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 transition hover:bg-white/10"
+              className="flex h-8 w-8 items-center justify-center rounded-sm border border-(--color-border) text-(--color-text-primary) transition hover:bg-(--color-surface-muted)"
             >
               −
             </button>
 
-            <span className="w-8 text-center font-semibold">
+            <span className="w-8 text-center font-semibold text-(--color-text-primary)">
               {item.quantity}
             </span>
 
             <button
               type="button"
               onClick={() => increaseQuantity(item.id)}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 transition hover:bg-white/10"
+              className="flex h-8 w-8 items-center justify-center rounded-sm border border-(--color-border) text-(--color-text-primary) transition hover:bg-(--color-surface-muted)"
             >
               +
             </button>
@@ -150,20 +150,22 @@ export default function CartItemCard({
         </div>
 
         <div className="text-right">
-          <p className="text-sm text-gray-400">Total</p>
+          <p className="text-sm text-(--color-text-muted)">
+            Total
+          </p>
 
-          <p className="text-3xl font-bold">
+          <p className="text-3xl font-bold text-(--color-text-primary)">
             ₹{item.totalPrice.toLocaleString("en-IN")}
           </p>
         </div>
       </div>
 
-      <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-6">
+      <div className="mt-6 flex items-center justify-between border-t border-(--color-border) pt-6">
         <div>
           {item.kind === "custom" ? (
             <button
               type="button"
-              className="rounded-lg border border-white/20 px-4 py-2 text-sm transition hover:border-white hover:bg-white/10"
+              className="rounded-sm border border-(--color-border) px-4 py-2 text-sm text-(--color-text-primary) transition hover:border-(--color-text-primary) hover:bg-(--color-surface-muted)"
             >
               Edit Design
             </button>
@@ -173,7 +175,7 @@ export default function CartItemCard({
         <button
           type="button"
           onClick={handleRemove}
-          className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium transition hover:bg-red-600"
+          className="rounded-sm bg-(--color-error) px-4 py-2 text-sm font-medium text-(--color-white) transition hover:opacity-90"
         >
           Remove
         </button>

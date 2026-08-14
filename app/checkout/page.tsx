@@ -29,9 +29,9 @@ export default function CheckoutPage() {
 
   return (
     <FormProvider {...methods}>
-      <main className="min-h-screen bg-[#0A0A0F] py-10">
+      <main className="min-h-screen bg-(--color-page) py-10 text-(--color-text-primary)">
         <div className="mx-auto max-w-7xl px-6">
-          <h1 className="mb-10 text-4xl font-bold text-white">
+          <h1 className="mb-10 text-4xl font-bold tracking-tight">
             Checkout
           </h1>
 

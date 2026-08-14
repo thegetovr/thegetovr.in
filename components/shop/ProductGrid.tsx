@@ -11,8 +11,8 @@ export default async function ProductGrid({
 }: ProductGridProps) {
   if (products.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-zinc-300 py-20 text-center dark:border-zinc-800">
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+      <div className="rounded-(--radius-md) border border-dashed border-(--color-border) py-20 text-center">
+        <p className="text-sm text-(--color-text-muted)">
           No products found.
         </p>
       </div>

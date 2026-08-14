@@ -14,47 +14,47 @@ export default function CollectionCard({
   return (
     <Link
       href="/shop"
-      className={`
-        group
-        relative
-        overflow-hidden
-        rounded-[32px]
-        border
-        border-white/10
-        bg-gradient-to-br
-        from-zinc-900
-        via-black
-        to-zinc-950
+      className={`group relative block overflow-hidden rounded-(--radius-lg)
+        border border-(--color-border)
+        bg-(--color-surface)
         p-8
-        transition-all
-        duration-500
-        hover:-translate-y-2
-        hover:border-white/20
-        ${large ? "min-h-[420px]" : "min-h-[260px]"}
-      `}
+        transition-all duration-500
+        hover:-translate-y-1
+        hover:shadow-(--shadow-elevated)
+        ${large ? "min-h-[420px]" : "min-h-[260px]"}`}
     >
-      {/* Background Glow */}
-      <div className="absolute right-0 top-0 h-56 w-56 rounded-full bg-white/[0.03] blur-[90px]" />
-
-      {/* Placeholder Product */}
-      <div className="absolute right-10 top-10 h-40 w-32 rounded-3xl border border-white/10 bg-black shadow-2xl" />
+      {/* Product Shape */}
+      <div
+        className={`absolute right-8 top-8
+          rounded-(--radius-lg)
+          border border-(--color-border)
+          bg-(--color-surface-muted)
+          shadow-(--shadow-soft)
+          transition-transform duration-500
+          group-hover:scale-105
+          group-hover:rotate-2
+          ${large ? "h-48 w-36" : "h-36 w-28"}`}
+      >
+        <div className="absolute left-1/2 top-5 h-9 w-9 -translate-x-1/2 rounded-full border border-(--color-border) bg-(--color-surface)" />
+      </div>
 
       {/* Content */}
       <div className="relative flex h-full flex-col justify-end">
-        <p className="text-sm uppercase tracking-[0.35em] text-gray-500">
+        <p className="text-xs font-medium uppercase tracking-[0.3em] text-(--color-text-muted)">
           Collection
         </p>
 
-        <h3 className="mt-3 text-3xl font-bold text-white">
+        <h3 className="mt-4 font-(--font-editorial) text-3xl font-normal text-(--color-text-primary)">
           {title}
         </h3>
 
-        <p className="mt-4 max-w-sm text-gray-400">
+        <p className="mt-4 max-w-sm leading-7 text-(--color-text-secondary)">
           {description}
         </p>
 
-        <span className="mt-8 inline-flex items-center gap-2 text-white transition-transform duration-300 group-hover:translate-x-2">
-          Explore Collection →
+        <span className="mt-8 inline-flex items-center gap-2 font-medium text-(--color-text-primary) transition-transform duration-300 group-hover:translate-x-1">
+          Explore Collection
+          <span aria-hidden="true">→</span>
         </span>
       </div>
     </Link>
