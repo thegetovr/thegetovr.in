@@ -117,7 +117,7 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
               </Link>
 
               <Link
-                href="/orders"
+                href="/profile?tab=orders"
                 className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-300 transition hover:bg-white/5 hover:text-white"
               >
                 <ShoppingBag size={18} strokeWidth={1.8} />

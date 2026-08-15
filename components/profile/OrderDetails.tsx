@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
-  Check,
   Download,
   ExternalLink,
   MapPin,

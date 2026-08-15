@@ -29,6 +29,7 @@ export default function OrderSummary() {
   } = checkout;
 
   const checkoutItems = [...readyMadeItems, ...items];
+
   const subtotal = checkoutItems.reduce(
     (sum, item) => sum + item.totalPrice,
     0,
@@ -36,11 +37,17 @@ export default function OrderSummary() {
 
   const shipping = 0;
   const total = subtotal + shipping;
+
   const [couponCode, setCouponCode] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponMessage, setCouponMessage] = useState("");
 
   const finalTotal = total - discount;
+
+  // =====================================================
+  // PLACE ORDER
+  // =====================================================
+
   const handlePlaceOrder = async () => {
     setIsSubmitting(true);
 
@@ -62,6 +69,9 @@ export default function OrderSummary() {
       });
 
       const data = await response.json();
+
+      console.log("ORDER RESPONSE:", data);
+
       if (data.success) {
         clearCart();
 
@@ -83,16 +93,12 @@ export default function OrderSummary() {
         setCouponCode("");
         setCouponMessage("");
 
-        console.log(
-          "Redirecting to:",
-          `/order-success?orderNumber=${encodeURIComponent(order.orderNumber)}`,
-        );
-
         router.replace(
           `/order-success?orderNumber=${encodeURIComponent(order.orderNumber)}`,
         );
       }
-      console.log(data);
+    } catch (error) {
+      console.error("PLACE ORDER ERROR:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -101,7 +107,9 @@ export default function OrderSummary() {
   return (
     <Card as={undefined} className="sticky top-6 h-fit bg-[#1B1B22]">
       <h2 className="text-2xl font-semibold text-white">Order Summary</h2>
-
+      {/* =====================================================
+          ITEMS
+      ===================================================== */}
       <div className="mt-6 space-y-5">
         {checkoutItems.length === 0 ? (
           <p className="text-sm text-gray-400">Your cart is empty.</p>
@@ -155,6 +163,9 @@ export default function OrderSummary() {
           ))
         )}
       </div>
+      {/* =====================================================
+          COUPON
+      ===================================================== */}
       <div className="mt-6 flex gap-2">
         <input
           type="text"
@@ -169,6 +180,7 @@ export default function OrderSummary() {
           disabled={!couponCode.trim()}
           onClick={async () => {
             setCouponLoading(true);
+
             try {
               const response = await fetch("/api/coupons/validate", {
                 method: "POST",
@@ -185,6 +197,7 @@ export default function OrderSummary() {
 
               if (data.valid) {
                 applyCoupon(data.coupon.code, data.discount);
+
                 setCouponMessage("Coupon applied successfully!");
               } else {
                 setCouponMessage(data.message);
@@ -198,12 +211,14 @@ export default function OrderSummary() {
         </Button>
       </div>
       {couponMessage && (
-        <p className="mt-2 text-sm text-center text-green-400">
+        <p className="mt-2 text-center text-sm text-green-400">
           {couponMessage}
         </p>
       )}
       <div className="my-6 border-t border-white/10" />
-
+      {/* =====================================================
+          PRICE
+      ===================================================== */}
       <div className="space-y-3">
         <div className="flex justify-between text-gray-300">
           <span>Subtotal</span>
@@ -214,6 +229,7 @@ export default function OrderSummary() {
           <span>Shipping</span>
           <span className="text-green-400">FREE</span>
         </div>
+
         {discount > 0 && (
           <div className="flex items-center justify-between text-green-400">
             <span>Coupon ({coupon})</span>
@@ -222,6 +238,7 @@ export default function OrderSummary() {
               <span>-₹{discount}</span>
 
               <button
+                type="button"
                 onClick={() => {
                   removeCoupon();
                   setCouponCode("");
@@ -242,6 +259,9 @@ export default function OrderSummary() {
           </div>
         </div>
       </div>
+      {/* =====================================================
+          DELIVERY INFO
+      ===================================================== */}
       <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-900 p-4">
         <div className="flex items-center justify-between text-sm text-zinc-400">
           <span>Items</span>
@@ -258,9 +278,10 @@ export default function OrderSummary() {
         <p>🚚 Free Shipping</p>
         <p>↩️ Easy Returns</p>
       </div>
-      <p className="mt-3 text-center text-xs text-zinc-500">
-        Valid: {isValid ? "Yes" : "No"} | Items: {items.length}
-      </p>
+
+      {/* =====================================================
+          PLACE ORDER
+      ===================================================== */}
       <Button
         className="mt-8"
         fullWidth
@@ -270,7 +291,6 @@ export default function OrderSummary() {
       >
         Place Order
       </Button>
-
       <Link
         href="/cart"
         className="mt-4 block text-center text-sm text-gray-400 transition hover:text-white"

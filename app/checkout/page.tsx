@@ -3,7 +3,7 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import CustomerForm from "@/components/checkout/CustomerForm";
+import CustomerAddress from "@/components/checkout/CustomerAddress";
 import OrderSummary from "@/components/checkout/OrderSummary";
 
 import {
@@ -31,12 +31,10 @@ export default function CheckoutPage() {
     <FormProvider {...methods}>
       <main className="min-h-screen bg-[#0A0A0F] py-10">
         <div className="mx-auto max-w-7xl px-6">
-          <h1 className="mb-10 text-4xl font-bold text-white">
-            Checkout
-          </h1>
+          <h1 className="mb-10 text-4xl font-bold text-white">Checkout</h1>
 
           <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
-            <CustomerForm />
+            <CustomerAddress />
             <OrderSummary />
           </div>
         </div>
