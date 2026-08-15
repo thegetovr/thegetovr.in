@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import OrderDetails from "@/components/profile/OrderDetails";
+import { useRouter } from "next/navigation";
 
 import Link from "next/link";
 import {
@@ -53,9 +53,9 @@ interface MyOrdersProps {
   user: UserData | null;
 }
 export default function MyOrders({ user }: MyOrdersProps) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("All");
   const [search, setSearch] = useState("");
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
 
@@ -193,14 +193,6 @@ export default function MyOrders({ user }: MyOrdersProps) {
     );
   }
 
-  if (selectedOrder) {
-    return (
-      <OrderDetails
-        order={selectedOrder}
-        onBack={() => setSelectedOrder(null)}
-      />
-    );
-  }
   return (
     <section className="min-w-0 flex-1 bg-white px-8 py-7">
       {/* =================================================
@@ -324,7 +316,7 @@ export default function MyOrders({ user }: MyOrdersProps) {
                   {/* Order Info */}
                   <div className="min-w-0">
                     <h2 className="text-lg font-semibold text-black">
-                      Order {order.id}
+                      {order.productName}
                     </h2>
 
                     <p className="mt-1 text-sm text-gray-500">
@@ -356,11 +348,7 @@ export default function MyOrders({ user }: MyOrdersProps) {
                   {/* Price + Action */}
                   <div className="flex flex-col items-end">
                     <p className="text-lg font-semibold text-black">
-                      {order.price}
-                    </p>
-
-                    <p className="mt-1 text-xs text-gray-500">
-                      {order.payment}
+                      ₹{order.price}
                     </p>
 
                     {order.status === "Shipped" ? (
@@ -373,7 +361,7 @@ export default function MyOrders({ user }: MyOrdersProps) {
                       </button>
                     ) : (
                       <button
-                        onClick={() => setSelectedOrder(order)}
+                        onClick={() => router.push(`/orders/${order.id}`)}
                         type="button"
                         className="mt-4 flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-800"
                       >

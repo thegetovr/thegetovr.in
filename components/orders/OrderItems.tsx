@@ -1,5 +1,6 @@
 import type { CartItem } from "@/types/cart";
-import { PRODUCTS, COLOR_LABELS, PRINT_SIDE_LABELS } from "@/lib/product";
+import { PRODUCTS, PRINT_SIDE_LABELS } from "@/lib/product";
+import DesignPreviewCanvas from "@/components/admin/orders/DesignPreviewCanvas";
 
 interface OrderItemsProps {
   items: CartItem[];
@@ -20,29 +21,41 @@ export default function OrderItems({ items }: OrderItemsProps) {
               className="rounded-xl border border-gray-200 bg-white p-4 transition hover:bg-gray-50"
             >
               <div className="flex items-start justify-between gap-6">
-                <div>
-                  <h3 className="text-lg font-semibold text-black">
-                    {isReadyMade ? item.name : PRODUCTS[item.product].label}
-                  </h3>
+                {isReadyMade ? (
+                  /* Ready-made: image + details */
+                  <div className="flex items-start gap-4">
+                    <div className="h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-gray-50">
+                      {item.image && (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="h-full w-full object-contain"
+                        />
+                      )}
+                    </div>
 
-                  <p className="mt-2 text-sm text-gray-500">
-                    {isReadyMade
-                      ? "Ready-Made Apparel"
-                      : `${COLOR_LABELS[item.color]} • Size ${item.size}`}
-                  </p>
+                    <div>
+                      <h3 className="text-lg font-semibold text-black">
+                        {item.name}
+                      </h3>
 
-                  {!isReadyMade && (
+                      <p className="mt-3 inline-flex rounded-full border border-gray-200 bg-gray-200 px-3 py-1 text-xs uppercase tracking-wider text-black">
+                        Ready to Wear
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  /* Custom: no image, start directly */
+                  <div>
+                    <h3 className="text-lg font-semibold text-black">
+                      {PRODUCTS[item.product].label}
+                    </h3>
+
                     <p className="mt-3 inline-flex rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
                       {PRINT_SIDE_LABELS[item.printSide]}
                     </p>
-                  )}
-
-                  {isReadyMade && (
-                    <p className="mt-3 inline-flex rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs uppercase tracking-wider text-zinc-300">
-                      Ready to Wear
-                    </p>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 <div className="text-right">
                   <p className="text-sm text-gray-500">Qty</p>
@@ -51,28 +64,50 @@ export default function OrderItems({ items }: OrderItemsProps) {
                 </div>
               </div>
 
+              {/* Custom Design Preview */}
               {!isReadyMade && (
-                <div className="mt-5 grid grid-cols-2 gap-6 rounded-lg border border-gray-200 bg-gray-100 p-4 text-sm">
-                  <div>
-                    <p className="text-gray-500">Front Design</p>
+                <div className="mt-5 grid gap-5 md:grid-cols-2">
+                  {item.frontElements.length > 0 && (
+                    <div>
+                      <p className="mb-2 text-sm font-medium text-gray-500">
+                        Front Design
+                      </p>
 
-                    <p className="text-black">
-                      {item.frontElements.length} element
-                      {item.frontElements.length !== 1 && "s"}
-                    </p>
-                  </div>
+                      <div className="flex justify-center">
+                        <div className="w-[320px] max-w-full overflow-hidden rounded-xl">
+                          <DesignPreviewCanvas
+                            product={item.product}
+                            productColor={item.color}
+                            view="front"
+                            elements={item.frontElements}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
-                  <div>
-                    <p className="text-gray-500">Back Design</p>
+                  {item.backElements.length > 0 && (
+                    <div>
+                      <p className="mb-2 text-sm font-medium text-gray-500">
+                        Back Design
+                      </p>
 
-                    <p className="text-black">
-                      {item.backElements.length} element
-                      {item.backElements.length !== 1 && "s"}
-                    </p>
-                  </div>
+                      <div className="flex justify-center">
+                        <div className="w-[320px] max-w-full overflow-hidden rounded-xl">
+                          <DesignPreviewCanvas
+                            product={item.product}
+                            productColor={item.color}
+                            view="back"
+                            elements={item.backElements}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
+              {/* Price */}
               <div className="mt-5 flex items-center justify-between border-t border-gray-200 pt-5">
                 <div>
                   <p className="text-sm text-gray-500">Unit Price</p>

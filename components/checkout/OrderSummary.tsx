@@ -114,22 +114,24 @@ export default function OrderSummary() {
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0 flex-1">
                   <h3 className="truncate text-lg font-semibold text-white">
-                    {item.product}
+                    {item.kind === "ready-made" ? item.name : item.product}
                   </h3>
 
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <span className="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300">
-                      {item.color}
-                    </span>
+                  {item.kind === "custom" && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <span className="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300">
+                        {item.color}
+                      </span>
 
-                    <span className="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300">
-                      Size {item.size}
-                    </span>
+                      <span className="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300">
+                        Size {item.size}
+                      </span>
 
-                    <span className="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300">
-                      {item.printSide}
-                    </span>
-                  </div>
+                      <span className="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300">
+                        {item.printSide}
+                      </span>
+                    </div>
+                  )}
 
                   <p className="mt-3 text-sm text-zinc-400">
                     Quantity:{" "}

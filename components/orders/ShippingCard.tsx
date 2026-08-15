@@ -10,12 +10,6 @@ export default function ShippingCard({ customer }: ShippingCardProps) {
       <h2 className="text-base font-semibold text-black">Delivery Address</h2>
 
       <div className="mt-5 space-y-1 text-sm leading-6 text-gray-500">
-        <p className="font-semibold text-black">
-          {customer.firstName} {customer.lastName}
-        </p>
-
-        <p>{customer.phone}</p>
-
         <p className="mt-2">{customer.address}</p>
 
         <p>

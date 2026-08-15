@@ -1,9 +1,7 @@
 import type { DesignElement } from "@/types/design";
 import type { CartDesignElement } from "@/types/cartDesign";
 
-export function toCartDesign(
-  elements: DesignElement[],
-): CartDesignElement[] {
+export function toCartDesign(elements: DesignElement[]): CartDesignElement[] {
   return elements.map((element) => {
     if (element.type === "image") {
       return {
@@ -11,6 +9,7 @@ export function toCartDesign(
         type: "image",
 
         imageId: element.imageId,
+        src: element.src,
 
         x: element.x,
         y: element.y,

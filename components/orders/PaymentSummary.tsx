@@ -18,7 +18,7 @@ export default function PaymentSummary({
   tax = 0,
 }: PaymentSummaryProps) {
   return (
-    <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-lg">
+    <section className="rounded-2xl border border-gray-200 bg-white p-6 pb-4 shadow-lg">
       <h2 className="mb-6 text-xl font-semibold text-black">Payment Summary</h2>
 
       <div className="space-y-4 text-sm">
