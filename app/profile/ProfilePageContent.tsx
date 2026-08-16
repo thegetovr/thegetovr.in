@@ -1,11 +1,12 @@
 "use client";
 
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
-import Overview from "@/components/profile/Overview";
 import MyOrders from "@/components/profile/MyOrders";
 import Addresses from "@/components/profile/Address";
 import ProfileDetails from "@/components/profile/ProfileDetails";
 import Wishlist from "@/components/profile/Wishlist";
+import ProfileEdit from "@/components/profile/ProfileEdit";
+import GetOvrCollection from "@/components/profile/GetOvrCollection";
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -15,6 +16,8 @@ interface UserData {
   lastName: string;
   email: string;
   phone: string;
+  dateOfBirth?: string;
+  gender?: string;
 }
 
 export default function ProfilePage() {
@@ -25,7 +28,8 @@ export default function ProfilePage() {
   const [user, setUser] = useState<UserData | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
-  const activeSection = searchParams.get("tab") || "overview";
+  // Profile is now the default section
+  const activeSection = searchParams.get("tab") || "profile";
 
   // =====================================================
   // SECTION CHANGE
@@ -57,6 +61,7 @@ export default function ProfilePage() {
         }
       } catch (error) {
         console.error("Session Check Error:", error);
+
         setUser(null);
       } finally {
         setLoadingUser(false);
@@ -115,9 +120,13 @@ export default function ProfilePage() {
         return "Security";
 
       default:
-        return "My Account";
+        return "My Profile";
     }
   };
+
+  // =====================================================
+  // PAGE DESCRIPTION
+  // =====================================================
 
   const getPageDescription = () => {
     switch (activeSection) {
@@ -137,7 +146,7 @@ export default function ProfilePage() {
         return "Manage your account security here";
 
       default:
-        return "Manage your account and preferences.";
+        return "Manage your personal information and account settings.";
     }
   };
 
@@ -194,7 +203,7 @@ export default function ProfilePage() {
                     ? "Wishlist"
                     : activeSection === "security"
                       ? "Security"
-                      : "Account"}
+                      : "Profile"}
           </span>
         </div>
 
@@ -228,6 +237,7 @@ export default function ProfilePage() {
               activeSection={activeSection}
               onSectionChange={handleSectionChange}
             />
+            <GetOvrCollection />
           </aside>
 
           {/* =================================================
@@ -235,15 +245,52 @@ export default function ProfilePage() {
           ================================================= */}
 
           <section className="min-w-0">
-            {activeSection === "overview" && <Overview user={user} />}
+            {/* PROFILE */}
+
+            {activeSection === "profile" &&
+              (searchParams.get("edit") === "true" ? (
+                <ProfileEdit
+                  user={user}
+                  onCancel={() =>
+                    router.push(`${pathname}?tab=profile`, {
+                      scroll: false,
+                    })
+                  }
+                  onSaved={(updatedUser) => {
+                    setUser(updatedUser);
+
+                    router.push(`${pathname}?tab=profile`, {
+                      scroll: false,
+                    });
+                  }}
+                />
+              ) : (
+                <ProfileDetails user={user} />
+              ))}
+
+            {/* ORDERS */}
 
             {activeSection === "orders" && <MyOrders user={user} />}
 
+            {/* ADDRESSES */}
+
             {activeSection === "addresses" && <Addresses />}
 
-            {activeSection === "profile" && <ProfileDetails user={user} />}
+            {/* WISHLIST */}
 
             {activeSection === "wishlist" && <Wishlist />}
+
+            {/* SECURITY */}
+
+            {activeSection === "security" && (
+              <div className="rounded-xl border border-zinc-200 bg-white p-7">
+                <h2 className="font-serif text-2xl text-black">Security</h2>
+
+                <p className="mt-3 text-sm text-zinc-500">
+                  Manage your account security here.
+                </p>
+              </div>
+            )}
           </section>
         </div>
       </div>

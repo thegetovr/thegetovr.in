@@ -129,6 +129,16 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
   const defaultAddress =
     addresses.find((address) => address.isDefault) ?? addresses[0];
 
+  const formatDateOfBirth = (date?: string) => {
+    if (!date) return "Not added";
+
+    const [year, month, day] = date.split("-");
+
+    if (!year || !month || !day) return "Not added";
+
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <div className="space-y-5">
       {/* =====================================================
@@ -166,7 +176,10 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
             value={user?.phone ? `+91 ${user.phone}` : ""}
           />
 
-          <InfoField label="Date of Birth" value={user?.dateOfBirth} />
+          <InfoField
+            label="Date of Birth"
+            value={formatDateOfBirth(user?.dateOfBirth)}
+          />
 
           <InfoField label="Gender" value={user?.gender} />
         </div>
@@ -176,7 +189,7 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
           SAVED ADDRESS + ACCOUNT SUMMARY
       ===================================================== */}
 
-      <div className="grid items-start gap-5 xl:grid-cols-[1.35fr_1fr]">
+      <div className="grid items-start gap-5 xl:grid-cols-[1fr_1fr]">
         {/* ===================================================
             SAVED ADDRESSES
         =================================================== */}
@@ -320,14 +333,21 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
             ACCOUNT SUMMARY
         =================================================== */}
 
-        <section className="h-fit rounded-xl border border-zinc-200 bg-white p-6 md:p-7">
+        {/* ===================================================
+    ACCOUNT SUMMARY
+            =================================================== */}
+
+        <section className="h-fit rounded-xl border border-zinc-200 bg-white p-6 md:p-6">
           <div>
             <h2 className="font-serif text-2xl text-black">Account Summary</h2>
 
             <div className="mt-2 h-[2px] w-8 bg-[#b7965d]" />
           </div>
 
-          <div className="mt-7 space-y-4">
+          <div
+            className="mt-7 grid grid-cols-1 divide-y
+           divide-zinc-200 rounded-xl border border-zinc-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0"
+          >
             {/* ORDERS */}
 
             <SummaryCard
@@ -400,30 +420,32 @@ function SummaryCard({
   linkText: string;
 }) {
   return (
-    <div className="rounded-xl border border-zinc-200 p-4">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#f4ecdf]">
-            <Icon size={20} strokeWidth={1.5} />
-          </div>
+    <div className="min-w-0 p-4 md:p-5">
+      <div className="flex items-center gap-3">
+        {/* ICON */}
 
-          <div>
-            <p className="font-serif text-3xl leading-none text-black">
-              {value}
-            </p>
-
-            <p className="mt-1 text-xs text-zinc-500">{label}</p>
-          </div>
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f4ecdf]">
+          <Icon size={18} strokeWidth={1.5} />
         </div>
 
-        <Link
-          href={href}
-          className="inline-flex items-center gap-1 text-xs font-medium text-black underline underline-offset-4"
-        >
-          {linkText}
-          <ArrowRight size={13} />
-        </Link>
+        {/* VALUE + LABEL */}
+
+        <div className="min-w-0">
+          <p className="font-serif text-2xl leading-none text-black">{value}</p>
+
+          <p className="mt-1 text-xs text-zinc-500">{label}</p>
+        </div>
       </div>
+
+      {/* LINK */}
+
+      <Link
+        href={href}
+        className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-black underline underline-offset-4 transition hover:text-zinc-600"
+      >
+        {linkText}
+        <ArrowRight size={12} />
+      </Link>
     </div>
   );
 }

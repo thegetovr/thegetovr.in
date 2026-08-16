@@ -6,6 +6,8 @@ export interface IUser {
   email: string;
   phone: string;
   password: string;
+  dateOfBirth?: string;
+  gender?: string;
 }
 
 const userSchema = new Schema<IUser>(
@@ -41,6 +43,16 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: true,
       minlength: 8,
+    },
+
+    dateOfBirth: {
+      type: String,
+      default: "",
+    },
+
+    gender: {
+      type: String,
+      default: "",
     },
   },
   {

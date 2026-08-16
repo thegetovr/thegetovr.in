@@ -94,7 +94,8 @@ export default async function OrderDetailsPage({ params }: OrderPageProps) {
             <a
               href={`/api/orders/${order.orderNumber}/invoice`}
               download
-              className="flex w-full items-center justify-center rounded-xl border border-black bg-black px-4 py-3 text-sm font-medium text-white transition hover:bg-zinc-800"
+              className="flex w-full items-center justify-center rounded-xl border border-zinc-400 
+              bg-[#eee3d5] px-4 py-3 text-sm font-medium text-zinc-900 transition hover:bg-[#e6d8c6]"
             >
               Download Invoice
             </a>

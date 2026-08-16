@@ -1,16 +1,12 @@
 "use client";
 
 import {
-  LayoutDashboard,
   Package,
   MapPin,
   User,
   Heart,
   LogOut,
-  CreditCard,
-  Bell,
   ShieldCheck,
-  Gift,
   Headphones,
   ArrowRight,
 } from "lucide-react";
@@ -149,7 +145,9 @@ export default function ProfileSidebar({
           <div>
             <h3 className="text-sm font-semibold text-black">Need help?</h3>
 
-            <p className="mt-1 text-xs text-zinc-500">We're here for you.</p>
+            <p className="mt-1 text-xs text-zinc-500">
+              We&apos;re here for you.
+            </p>
 
             <button
               type="button"

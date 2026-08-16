@@ -11,12 +11,8 @@ import {
   ChevronRight,
   ChevronLeft,
   Download,
-  CalendarDays,
   Truck,
-  CircleHelp,
   ShoppingBag,
-  CheckCircle2,
-  XCircle,
   ExternalLink,
 } from "lucide-react";
 
@@ -42,6 +38,7 @@ const tabs = [
   { label: "Delivered", value: "Delivered" },
   { label: "Cancelled", value: "Cancelled" },
 ];
+
 interface UserData {
   firstName: string;
   lastName: string;
@@ -52,12 +49,18 @@ interface UserData {
 interface MyOrdersProps {
   user: UserData | null;
 }
+
 export default function MyOrders({ user }: MyOrdersProps) {
   const router = useRouter();
+
   const [activeTab, setActiveTab] = useState("All");
   const [search, setSearch] = useState("");
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
+
+  // =====================================================
+  // MAP DATABASE ORDER TO UI
+  // =====================================================
 
   const mapOrderToUI = (order: any): Order => {
     const firstItem = order.items?.[0];
@@ -96,10 +99,16 @@ export default function MyOrders({ user }: MyOrdersProps) {
             : "Estimated delivery 3-5 Days",
     };
   };
+
+  // =====================================================
+  // FETCH ORDERS
+  // =====================================================
+
   useEffect(() => {
     const fetchOrders = async () => {
       console.log("LOGGED IN USER:", user);
       console.log("LOGGED IN EMAIL:", user?.email);
+
       if (!user?.email) {
         setOrdersLoading(false);
         return;
@@ -118,6 +127,7 @@ export default function MyOrders({ user }: MyOrdersProps) {
         }
 
         console.log("Profile Orders:", result.orders);
+
         const mappedOrders = result.orders.map(mapOrderToUI);
 
         console.log("Mapped Orders:", mappedOrders);
@@ -133,9 +143,9 @@ export default function MyOrders({ user }: MyOrdersProps) {
     fetchOrders();
   }, [user?.email]);
 
-  /* =====================================================
-     FILTER ORDERS
-  ===================================================== */
+  // =====================================================
+  // FILTER ORDERS
+  // =====================================================
 
   const filteredOrders = orders.filter((order) => {
     const matchesTab = activeTab === "All" || order.status === activeTab;
@@ -150,9 +160,9 @@ export default function MyOrders({ user }: MyOrdersProps) {
     return matchesTab && matchesSearch;
   });
 
-  /* =====================================================
-     STATUS COUNT
-  ===================================================== */
+  // =====================================================
+  // STATUS COUNT
+  // =====================================================
 
   const getCount = (status: string) => {
     if (status === "All") {
@@ -162,59 +172,65 @@ export default function MyOrders({ user }: MyOrdersProps) {
     return orders.filter((order) => order.status === status).length;
   };
 
-  /* =====================================================
-     STATUS STYLE
-  ===================================================== */
+  // =====================================================
+  // STATUS STYLE
+  // =====================================================
 
   const getStatusStyle = (status: OrderStatus) => {
     switch (status) {
       case "Delivered":
-        return "bg-green-50 text-green-700";
+        return "bg-[#edf7ef] text-[#4d8a5a]";
 
       case "Shipped":
-        return "bg-blue-50 text-blue-700";
+        return "bg-[#eef4f7] text-[#587c8c]";
 
       case "Processing":
-        return "bg-yellow-50 text-yellow-700";
+        return "bg-[#f7f1e5] text-[#9a7a43]";
 
       case "Cancelled":
-        return "bg-red-50 text-red-700";
+        return "bg-[#fbeeee] text-[#a45c5c]";
 
       default:
-        return "bg-gray-50 text-gray-700";
+        return "bg-[#f5f3ef] text-zinc-600";
     }
   };
 
+  // =====================================================
+  // LOADING
+  // =====================================================
+
   if (ordersLoading) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <p className="text-gray-500">Loading orders...</p>
-      </div>
+      <section className="flex min-h-[400px] items-center justify-center rounded-xl border border-[#e6e0d8] bg-white">
+        <p className="text-sm text-zinc-500">Loading orders...</p>
+      </section>
     );
   }
 
   return (
-    <section className="min-w-0 flex-1 bg-white px-8 py-7">
+    <section className="min-w-0 flex-1 rounded-xl border border-[#e6e0d8] bg-white p-6 md:p-7">
       {/* =================================================
           HEADER
       ================================================= */}
 
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-black">
+          <h1 className="font-serif text-3xl font-medium tracking-tight text-black md:text-4xl">
             My Orders
           </h1>
 
-          <p className="mt-1.5 text-sm text-gray-500">
+          <div className="mt-2 h-[2px] w-8 bg-[#b7965d]" />
+
+          <p className="mt-3 text-sm leading-6 text-zinc-500">
             Track and manage all your orders in one place.
           </p>
         </div>
 
         <button
           type="button"
-          className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-black transition hover:bg-gray-50"
+          className="inline-flex w-fit items-center gap-2 rounded-lg border border-[#ddd5ca] bg-white px-4 py-2.5 text-sm font-medium text-zinc-800 transition hover:bg-[#fcfaf7]"
         >
-          <Download size={17} strokeWidth={1.8} />
+          <Download size={16} strokeWidth={1.7} />
           Download Invoices
         </button>
       </div>
@@ -223,32 +239,34 @@ export default function MyOrders({ user }: MyOrdersProps) {
           SEARCH + FILTER
       ================================================= */}
 
-      <div className="mt-7 flex gap-4">
-        {/* Search */}
+      <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+        {/* SEARCH */}
+
         <div className="relative flex-1">
           <Search
-            size={19}
-            strokeWidth={1.8}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+            size={18}
+            strokeWidth={1.7}
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400"
           />
 
           <input
             type="text"
             placeholder="Search by Order ID, product or status..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="h-12 w-full rounded-lg border border-gray-200 bg-white pl-11 pr-4 text-sm text-black outline-none transition placeholder:text-gray-400 focus:border-black"
+            onChange={(event) => setSearch(event.target.value)}
+            className="h-11 w-full rounded-lg border border-[#ddd5ca] bg-white pl-11 pr-4 text-sm text-zinc-800 outline-none transition placeholder:text-zinc-400 focus:border-[#b7965d]"
           />
         </div>
 
-        {/* Filter */}
+        {/* FILTER */}
+
         <button
           type="button"
-          className="flex h-12 min-w-[145px] items-center justify-center gap-3 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-black transition hover:bg-gray-50"
+          className="flex h-11 min-w-[125px] items-center justify-center gap-2 rounded-lg border border-[#ddd5ca] bg-white px-4 text-sm font-medium text-zinc-700 transition hover:bg-[#fcfaf7]"
         >
-          <SlidersHorizontal size={18} strokeWidth={1.8} />
+          <SlidersHorizontal size={16} strokeWidth={1.7} />
           Filter
-          <ChevronDown size={16} />
+          <ChevronDown size={15} />
         </button>
       </div>
 
@@ -256,7 +274,7 @@ export default function MyOrders({ user }: MyOrdersProps) {
           STATUS TABS
       ================================================= */}
 
-      <div className="mt-5 flex overflow-hidden rounded-lg border border-gray-200 bg-white">
+      <div className="mt-5 grid grid-cols-2 overflow-hidden rounded-lg border border-[#ddd5ca] bg-white sm:grid-cols-5">
         {tabs.map((tab) => {
           const active = activeTab === tab.value;
 
@@ -265,19 +283,19 @@ export default function MyOrders({ user }: MyOrdersProps) {
               key={tab.value}
               type="button"
               onClick={() => setActiveTab(tab.value)}
-              className={`flex flex-1 items-center justify-center gap-2 border-r border-gray-200 px-4 py-3 text-sm font-medium transition last:border-r-0 ${
+              className={`flex items-center justify-center gap-2 border-b border-[#ddd5ca] px-3 py-3 text-xs font-medium transition last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0 ${
                 active
-                  ? "bg-black text-white"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-black"
+                  ? "bg-[#eee3d5] text-black"
+                  : "text-zinc-600 hover:bg-[#fcfaf7] hover:text-black"
               }`}
             >
               {tab.label}
 
               <span
-                className={`flex h-6 min-w-6 items-center justify-center rounded-full px-1.5 text-xs ${
+                className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] ${
                   active
-                    ? "bg-white/15 text-white"
-                    : "bg-gray-100 text-gray-600"
+                    ? "bg-white text-zinc-700"
+                    : "bg-[#f5f1eb] text-zinc-500"
                 }`}
               >
                 {getCount(tab.value)}
@@ -291,82 +309,97 @@ export default function MyOrders({ user }: MyOrdersProps) {
           MAIN CONTENT
       ================================================= */}
 
-      <div className="mt-6 grid grid-cols-[minmax(0,1fr)_300px] gap-5">
+      <div className="mt-6">
         {/* =================================================
             LEFT - ORDER LIST
         ================================================= */}
 
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+        <div className="overflow-hidden rounded-xl border border-[#ddd5ca] bg-white">
           {filteredOrders.length > 0 ? (
             filteredOrders.map((order) => (
               <div
                 key={order.id}
-                className="border-b border-gray-200 px-5 py-5 last:border-b-0"
+                className="border-b border-[#e8e2da] px-4 py-4 last:border-b-0 md:px-5"
               >
-                <div className="grid grid-cols-[150px_minmax(0,1fr)_130px_160px] items-center gap-5">
-                  {/* Product Image */}
-                  <div className="flex h-[120px] w-[120px] items-center justify-center overflow-hidden rounded-xl bg-gray-50">
-                    <img
-                      src={order.image}
-                      alt={order.productName}
-                      className="h-full w-full object-contain"
-                    />
+                <div className="grid grid-cols-[92px_minmax(0,1fr)_95px_120px] items-center gap-4">
+                  {/* PRODUCT IMAGE */}
+
+                  <div className="flex h-[88px] w-[88px] items-center justify-center overflow-hidden rounded-lg bg-[#f8f6f2]">
+                    {order.image ? (
+                      <img
+                        src={order.image}
+                        alt={order.productName}
+                        className="h-full w-full object-contain"
+                      />
+                    ) : (
+                      <ShoppingBag
+                        size={28}
+                        strokeWidth={1.3}
+                        className="text-zinc-300"
+                      />
+                    )}
                   </div>
 
-                  {/* Order Info */}
+                  {/* ORDER INFO */}
+
                   <div className="min-w-0">
-                    <h2 className="text-lg font-semibold text-black">
+                    <h2 className="truncate text-sm font-semibold text-black">
                       {order.productName}
                     </h2>
 
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-xs text-zinc-500">
                       {order.date}, {order.time}
                     </p>
 
-                    <p className="mt-2 text-sm text-gray-600">
+                    <p className="mt-1 text-xs text-zinc-600">
                       {order.items} {order.items === 1 ? "Item" : "Items"}
                     </p>
 
-                    <div className="mt-3 flex items-center gap-2 text-sm text-gray-500">
-                      <Truck size={16} strokeWidth={1.7} />
+                    <div className="mt-2 flex items-center gap-1.5 text-xs text-zinc-500">
+                      <Truck size={13} strokeWidth={1.7} />
+
                       <span>{order.deliveryText}</span>
                     </div>
                   </div>
 
-                  {/* Status */}
+                  {/* STATUS */}
+
                   <div>
                     <span
-                      className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-xs font-medium ${getStatusStyle(
+                      className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[11px] font-medium ${getStatusStyle(
                         order.status,
                       )}`}
                     >
-                      <span className="h-2 w-2 rounded-full bg-current" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-current" />
+
                       {order.status}
                     </span>
                   </div>
 
-                  {/* Price + Action */}
+                  {/* PRICE + ACTION */}
+
                   <div className="flex flex-col items-end">
-                    <p className="text-lg font-semibold text-black">
+                    <p className="text-sm font-semibold text-black">
                       ₹{order.price}
                     </p>
 
                     {order.status === "Shipped" ? (
                       <button
                         type="button"
-                        className="mt-4 flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-black transition hover:bg-gray-50"
+                        className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-[#d8cfc3] px-3 py-2 text-xs font-medium text-zinc-800 transition hover:bg-[#fcfaf7]"
                       >
                         Track Order
-                        <ChevronRight size={16} />
+                        <ChevronRight size={14} />
                       </button>
                     ) : (
                       <button
-                        onClick={() => router.push(`/orders/${order.id}`)}
                         type="button"
-                        className="mt-4 flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-800"
+                        onClick={() => router.push(`/orders/${order.id}`)}
+                        className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-[#eee3d5] 
+                        px-3 py-2 text-xs font-medium text-zinc-900 transition hover:bg-[#e6d8c6]"
                       >
                         View Details
-                        <ChevronRight size={16} />
+                        <ChevronRight size={14} />
                       </button>
                     )}
                   </div>
@@ -374,13 +407,14 @@ export default function MyOrders({ user }: MyOrdersProps) {
               </div>
             ))
           ) : (
-            /* Empty Search / Filter State */
-            <div className="flex min-h-[400px] flex-col items-center justify-center px-5 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-50">
+            /* EMPTY STATE */
+
+            <div className="flex min-h-[360px] flex-col items-center justify-center px-5 text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#f5f1eb]">
                 <ShoppingBag
-                  size={30}
-                  strokeWidth={1.5}
-                  className="text-gray-400"
+                  size={26}
+                  strokeWidth={1.4}
+                  className="text-zinc-400"
                 />
               </div>
 
@@ -388,141 +422,11 @@ export default function MyOrders({ user }: MyOrdersProps) {
                 No orders found
               </h3>
 
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 max-w-sm text-sm text-zinc-500">
                 Try changing your search or selected filter.
               </p>
             </div>
           )}
-        </div>
-
-        {/* =================================================
-            RIGHT SIDEBAR
-        ================================================= */}
-
-        <div className="space-y-5">
-          {/* Order Summary */}
-          <div className="rounded-xl border border-gray-200 bg-white p-5">
-            <h2 className="text-base font-semibold text-black">
-              Order Summary
-            </h2>
-
-            <div className="mt-5 space-y-4">
-              {/* Total */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <CalendarDays size={17} />
-                  Total Orders
-                </div>
-
-                <span className="text-sm font-medium text-black">
-                  {orders.length}
-                </span>
-              </div>
-
-              {/* Processing */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <span className="h-3.5 w-3.5 rounded-full border-2 border-yellow-400" />
-                  Processing
-                </div>
-
-                <span className="text-sm font-medium text-black">
-                  {getCount("Processing")}
-                </span>
-              </div>
-
-              {/* Shipped */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <Truck size={17} className="text-blue-600" />
-                  Shipped
-                </div>
-
-                <span className="text-sm font-medium text-black">
-                  {getCount("Shipped")}
-                </span>
-              </div>
-
-              {/* Delivered */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <CheckCircle2 size={17} className="text-green-600" />
-                  Delivered
-                </div>
-
-                <span className="text-sm font-medium text-black">
-                  {getCount("Delivered")}
-                </span>
-              </div>
-
-              {/* Cancelled */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <XCircle size={17} className="text-red-600" />
-                  Cancelled
-                </div>
-
-                <span className="text-sm font-medium text-black">
-                  {getCount("Cancelled")}
-                </span>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab("All")}
-              className="mt-6 w-full rounded-lg bg-black px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800"
-            >
-              View All Orders
-            </button>
-          </div>
-
-          {/* Need Help */}
-          <div className="rounded-xl border border-gray-200 bg-white p-5">
-            <h2 className="text-base font-semibold text-black">Need Help?</h2>
-
-            <p className="mt-3 text-sm leading-6 text-gray-500">
-              Check our help center or contact our support team.
-            </p>
-
-            <Link
-              href="/contact"
-              className="mt-4 inline-flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-black transition hover:bg-gray-50"
-            >
-              <CircleHelp size={17} />
-              Visit Help Center
-              <ExternalLink size={14} />
-            </Link>
-          </div>
-
-          {/* GETOVR Promotion */}
-          <div className="relative min-h-[185px] overflow-hidden rounded-xl border border-gray-200 bg-white p-5">
-            <div className="relative z-10 max-w-[170px]">
-              <h2 className="text-base font-semibold text-black">
-                Explore GETOVR Collection
-              </h2>
-
-              <p className="mt-2 text-sm leading-5 text-gray-500">
-                Check out our latest arrivals and exclusive offers.
-              </p>
-
-              <Link
-                href="/shop"
-                className="mt-4 inline-flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-black transition hover:bg-gray-50"
-              >
-                Shop Now
-                <ChevronRight size={16} />
-              </Link>
-            </div>
-
-            <div className="absolute bottom-0 right-0 h-[150px] w-[130px]">
-              <img
-                src="/images/getovr-model.png"
-                alt="GETOVR Collection"
-                className="h-full w-full object-contain object-bottom"
-              />
-            </div>
-          </div>
         </div>
       </div>
 
@@ -530,40 +434,40 @@ export default function MyOrders({ user }: MyOrdersProps) {
           PAGINATION
       ================================================= */}
 
-      <div className="mt-6 flex items-center justify-center gap-2">
+      <div className="mt-6 flex items-center justify-center gap-1.5">
         <button
           type="button"
-          className="flex h-9 w-9 items-center justify-center rounded-md text-gray-500 transition hover:bg-gray-100 hover:text-black"
+          className="flex h-8 w-8 items-center justify-center rounded-md text-zinc-500 transition hover:bg-[#f5f1eb] hover:text-black"
         >
-          <ChevronLeft size={17} />
+          <ChevronLeft size={16} />
         </button>
 
         <button
           type="button"
-          className="flex h-9 w-9 items-center justify-center rounded-md bg-black text-sm font-medium text-white"
+          className="flex h-8 w-8 items-center justify-center rounded-md bg-[#eee3d5] text-xs font-medium text-black"
         >
           1
         </button>
 
         <button
           type="button"
-          className="flex h-9 w-9 items-center justify-center rounded-md text-sm text-gray-600 transition hover:bg-gray-100"
+          className="flex h-8 w-8 items-center justify-center rounded-md text-xs text-zinc-600 transition hover:bg-[#f5f1eb]"
         >
           2
         </button>
 
         <button
           type="button"
-          className="flex h-9 w-9 items-center justify-center rounded-md text-sm text-gray-600 transition hover:bg-gray-100"
+          className="flex h-8 w-8 items-center justify-center rounded-md text-xs text-zinc-600 transition hover:bg-[#f5f1eb]"
         >
           3
         </button>
 
         <button
           type="button"
-          className="flex h-9 w-9 items-center justify-center rounded-md text-gray-500 transition hover:bg-gray-100 hover:text-black"
+          className="flex h-8 w-8 items-center justify-center rounded-md text-zinc-500 transition hover:bg-[#f5f1eb] hover:text-black"
         >
-          <ChevronRight size={17} />
+          <ChevronRight size={16} />
         </button>
       </div>
     </section>
