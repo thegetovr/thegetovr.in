@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import StateDropdown from "./StateDropdown";
 
 export interface AddressFormData {
   name: string;
@@ -127,6 +128,9 @@ export default function AddressForm({
 
             <input
               value={form.phone}
+              inputMode="numeric"
+              type="tel"
+              maxLength={10}
               onChange={(e) => handleChange("phone", e.target.value)}
               placeholder="9876543210"
               required
@@ -173,12 +177,9 @@ export default function AddressForm({
               State
             </label>
 
-            <input
+            <StateDropdown
               value={form.state}
-              onChange={(e) => handleChange("state", e.target.value)}
-              placeholder="Jammu & Kashmir"
-              required
-              className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-black outline-none transition focus:border-black"
+              onChange={(value) => handleChange("state", value)}
             />
           </div>
 

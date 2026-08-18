@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingBag, User } from "lucide-react";
+import { ShoppingBag, User, Heart, Headphones } from "lucide-react";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+
 interface UserData {
   firstName: string;
   lastName: string;
@@ -19,13 +19,20 @@ interface UserDropdownProps {
 export default function UserDropdown({ onNotification }: UserDropdownProps) {
   const router = useRouter();
   const pathname = usePathname();
+
   const [user, setUser] = useState<UserData | null>(null);
+
   const [loadingUser, setLoadingUser] = useState(true);
+
+  // =====================================================
+  // SESSION
+  // =====================================================
 
   useEffect(() => {
     const checkSession = async () => {
       try {
         const response = await fetch("/api/auth/session");
+
         const result = await response.json();
 
         if (result.success) {
@@ -35,6 +42,7 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
         }
       } catch (error) {
         console.error("Session Check Error:", error);
+
         setUser(null);
       } finally {
         setLoadingUser(false);
@@ -43,6 +51,10 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
 
     checkSession();
   }, [pathname]);
+
+  // =====================================================
+  // LOGOUT
+  // =====================================================
 
   const handleLogout = async () => {
     try {
@@ -55,9 +67,16 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
       if (result.success) {
         setUser(null);
 
-        sessionStorage.setItem(
-          "auth_notification",
-          result.message || "Logout Successful",
+        const message = result.message || "Logout Successful";
+
+        // Show immediately
+        window.dispatchEvent(
+          new CustomEvent("auth-notification", {
+            detail: {
+              message,
+              type: "success",
+            },
+          }),
         );
 
         router.push("/");
@@ -71,81 +90,115 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
     }
   };
 
+  // =====================================================
+  // LOADING
+  // =====================================================
+
   if (loadingUser) {
     return (
       <div className="absolute left-1/2 top-full z-50 hidden w-72 -translate-x-1/2 group-hover:block">
-        <div className="rounded-xl border border-white/20 bg-black px-5 py-4 shadow-2xl">
-          <p className="text-sm text-gray-400">Checking account...</p>
+        <div className="rounded-xl border border-[#ddd5ca] bg-white px-5 py-4 shadow-2xl">
+          <p className="text-sm text-zinc-500">Checking account...</p>
         </div>
       </div>
     );
   }
 
+  // =====================================================
+  // DROPDOWN
+  // =====================================================
+
   return (
     <div className="absolute left-1/2 top-full z-50 hidden -translate-x-1/2 group-hover:block">
-      <div className="w-80 overflow-hidden rounded-xl border border-white/20 bg-black shadow-2xl">
+      <div className="w-80 overflow-hidden rounded-xl border border-[#ddd5ca] bg-white shadow-2xl">
         {user ? (
           /* =========================
              LOGGED IN
           ========================== */
+
           <div>
             {/* User Info */}
+
             <div className="px-5 py-5">
               <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-black">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#eee3d5] text-zinc-900">
                   <User size={20} strokeWidth={1.8} />
                 </div>
 
                 <div className="min-w-0">
-                  <h3 className="truncate text-sm font-semibold text-white">
+                  <h3 className="truncate text-sm font-semibold text-black">
                     {user.firstName} {user.lastName}
                   </h3>
 
-                  <p className="truncate text-xs text-gray-400">{user.email}</p>
+                  <p className="truncate text-xs text-zinc-500">{user.email}</p>
                 </div>
               </div>
             </div>
 
             {/* Logged In Menu */}
-            <div className="border-t border-white/10 px-2 py-2">
+
+            <div className="border-t border-[#eee8df] px-2 py-2">
               <Link
                 href="/profile"
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-300 transition hover:bg-white/5 hover:text-white"
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-zinc-600 transition hover:bg-[#fcfaf7] hover:text-black"
               >
-                <User size={18} strokeWidth={1.8} />
+                <User size={18} strokeWidth={1.8} className="text-zinc-500" />
                 My Profile
               </Link>
 
               <Link
                 href="/profile?tab=orders"
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-300 transition hover:bg-white/5 hover:text-white"
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm
+                 text-zinc-600 transition hover:bg-[#fcfaf7] hover:text-black"
               >
-                <ShoppingBag size={18} strokeWidth={1.8} />
+                <ShoppingBag
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-zinc-500"
+                />
                 My Orders
               </Link>
 
               <Link
-                href="/wishlist"
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-300 transition hover:bg-white/5 hover:text-white"
+                href="/profile?tab=wishlist"
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-zinc-600 transition hover:bg-[#fcfaf7] hover:text-black"
               >
-                <span className="text-lg">♡</span>
+                <Heart size={18} strokeWidth={1.8} className="text-zinc-500" />
                 Wishlist
               </Link>
 
               <Link
                 href="/contact"
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-300 transition hover:bg-white/5 hover:text-white"
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-zinc-600 transition hover:bg-[#fcfaf7] hover:text-black"
               >
-                <span className="text-lg">•</span>
+                <Headphones
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-zinc-500"
+                />
                 Contact Us
               </Link>
             </div>
 
             {/* Logout */}
-            <div className="border-t border-white/10 px-2 py-2">
+
+            <div className="border-t border-[#eee8df] px-2 py-2">
               <button
                 onClick={handleLogout}
-                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
+                className="
+                  flex
+                  w-full
+                  items-center
+                  gap-3
+                  rounded-lg
+                  px-3
+                  py-2.5
+                  text-sm
+                  text-red-600
+                  transition
+                  hover:bg-red-50
+                  hover:text-red-700
+                "
               >
                 <span className="text-lg">↪</span>
                 Logout
@@ -156,43 +209,77 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
           /* =========================
              LOGGED OUT
           ========================== */
+
           <div>
             {/* Welcome */}
-            <div className="px-5 py-5">
-              <h3 className="text-lg font-semibold text-white">Welcome</h3>
 
-              <p className="mt-1 text-sm leading-5 text-gray-400">
+            <div className="px-5 py-5">
+              <h3 className="text-lg font-semibold text-black">Welcome</h3>
+
+              <p className="mt-1 text-sm leading-5 text-zinc-500">
                 To access account and manage orders
               </p>
 
               <Link
                 href="/login"
-                className="mt-5 inline-flex items-center justify-center rounded-md border border-[#F4B400] px-7 py-2.5 text-sm font-semibold text-[#F4B400] transition-all duration-300 hover:bg-[#F4B400] hover:text-black"
+                className="
+                  mt-5
+                  inline-flex
+                  items-center
+                  justify-center
+                  rounded-md
+                  border
+                  border-[#cdbb9f]
+                  bg-[#eee3d5]
+                  px-7
+                  py-2.5
+                  text-sm
+                  font-semibold
+                  text-zinc-900
+                  transition-all
+                  duration-300
+                  hover:bg-[#e6d8c6]
+                  hover:text-black
+                "
               >
                 LOGIN / SIGNUP
               </Link>
             </div>
 
             {/* Logged Out Menu */}
-            <div className="border-t border-white/10 px-2 py-2">
+
+            <div className="border-t border-[#eee8df] px-2 py-2">
               <Link
-                href="/orders"
-                className="block rounded-lg px-3 py-2.5 text-sm text-gray-300 transition hover:bg-white/5 hover:text-white"
+                href="/login?redirect=/profile%3Ftab%3Dorders"
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-zinc-600 transition hover:bg-[#fcfaf7] hover:text-black"
               >
+                <ShoppingBag
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-zinc-500"
+                />
                 Orders
               </Link>
 
               <Link
-                href="/wishlist"
-                className="block rounded-lg px-3 py-2.5 text-sm text-gray-300 transition hover:bg-white/5 hover:text-white"
+                href="/login?redirect=%2Fprofile%3Ftab%3Dwishlist"
+                className="flex items-center gap-3  rounded-lg px-3 py-2.5 text-sm text-zinc-600 transition
+                 hover:bg-[#fcfaf7] hover:text-black"
               >
+                <Heart size={18} strokeWidth={1.8} className="text-zinc-500" />
                 Wishlist
               </Link>
 
               <Link
                 href="/contact"
-                className="block rounded-lg px-3 py-2.5 text-sm text-gray-300 transition hover:bg-white/5 hover:text-white"
+                className="flex items-center gap-3  rounded-lg px-3 py-2.5 text-sm text-zinc-600 transition hover:bg-[#fcfaf7]
+                 hover:text-black"
               >
+                <Headphones
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-zinc-500"
+                />
                 Contact Us
               </Link>
             </div>

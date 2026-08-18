@@ -35,6 +35,12 @@ export default function Addresses() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
   const [form, setForm] = useState<AddressFormData>(emptyForm);
 
   // ID of address currently being edited
@@ -71,7 +77,7 @@ export default function Addresses() {
   }, []);
 
   // =====================================================
-  // ADD / EDIT ADDRESS
+  // ADD  ADDRESS
   // =====================================================
 
   const handleSaveAddress = async (formData: AddressFormData) => {
@@ -106,7 +112,15 @@ export default function Addresses() {
       console.log("ADDRESS API RESPONSE:", data);
 
       if (!response.ok || !data.success) {
-        alert(data.message || "Failed to save address");
+        setNotification({
+          message: data.message || "Failed to save address",
+          type: "error",
+        });
+
+        setTimeout(() => {
+          setNotification(null);
+        }, 2000);
+
         return;
       }
 
@@ -154,17 +168,43 @@ export default function Addresses() {
         });
       }
 
+      // =================================================
+      // SUCCESS NOTIFICATION
+      // =================================================
+
+      setNotification({
+        message: editingId
+          ? "Address updated successfully"
+          : "Address saved successfully",
+        type: "success",
+      });
+
+      setTimeout(() => {
+        setNotification(null);
+      }, 2000);
+
+      // =================================================
+      // RESET FORM
+      // =================================================
+
       setForm(emptyForm);
       setEditingId(null);
       setShowForm(false);
     } catch (error) {
       console.error("Save address error:", error);
-      alert("Something went wrong while saving the address.");
+
+      setNotification({
+        message: "Something went wrong while saving the address.",
+        type: "error",
+      });
+
+      setTimeout(() => {
+        setNotification(null);
+      }, 2000);
     } finally {
       setSaving(false);
     }
   };
-
   // =====================================================
   // EDIT ADDRESS
   // =====================================================
@@ -205,16 +245,41 @@ export default function Addresses() {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        alert(data.message || "Failed to delete address");
+        setNotification({
+          message: data.message || "Failed to delete address",
+          type: "error",
+        });
+
+        setTimeout(() => {
+          setNotification(null);
+        }, 2000);
+
         return;
       }
 
       setAddresses((current) =>
         current.filter((address) => address._id !== id),
       );
+
+      setNotification({
+        message: "Address deleted successfully",
+        type: "success",
+      });
+
+      setTimeout(() => {
+        setNotification(null);
+      }, 2000);
     } catch (error) {
       console.error("Delete address error:", error);
-      alert("Something went wrong while deleting the address.");
+
+      setNotification({
+        message: "Something went wrong while deleting the address.",
+        type: "error",
+      });
+
+      setTimeout(() => {
+        setNotification(null);
+      }, 2000);
     }
   };
 
@@ -234,7 +299,15 @@ export default function Addresses() {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        alert(data.message || "Failed to update default address");
+        setNotification({
+          message: data.message || "Failed to update default address",
+          type: "error",
+        });
+
+        setTimeout(() => {
+          setNotification(null);
+        }, 2000);
+
         return;
       }
 
@@ -244,9 +317,26 @@ export default function Addresses() {
           isDefault: address._id === id,
         })),
       );
+
+      setNotification({
+        message: "Default address updated successfully",
+        type: "success",
+      });
+
+      setTimeout(() => {
+        setNotification(null);
+      }, 2000);
     } catch (error) {
       console.error("Make default error:", error);
-      alert("Something went wrong while updating the default address.");
+
+      setNotification({
+        message: "Something went wrong while updating the default address.",
+        type: "error",
+      });
+
+      setTimeout(() => {
+        setNotification(null);
+      }, 2000);
     }
   };
 
@@ -272,6 +362,21 @@ export default function Addresses() {
 
   return (
     <section className="min-w-0 flex-1 bg-white px-8 py-7">
+      {notification && (
+        <div
+          className={`fixed right-6 top-24 z-50 flex items-center gap-3 rounded-xl border px-5 py-4 shadow-2xl ${
+            notification.type === "success"
+              ? "border-green-500/30 bg-green-50 text-green-700"
+              : "border-red-500/30 bg-red-50 text-red-700"
+          }`}
+        >
+          <span className="text-lg">
+            {notification.type === "success" ? "✓" : "!"}
+          </span>
+
+          <p className="text-sm font-medium">{notification.message}</p>
+        </div>
+      )}
       {/* =====================================================
           HEADER
       ===================================================== */}

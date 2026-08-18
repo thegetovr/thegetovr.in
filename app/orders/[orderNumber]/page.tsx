@@ -1,4 +1,8 @@
-import { getOrderByNumber } from "@/lib/orderService";
+import { getOrderByNumberAndEmail } from "@/lib/orderService";
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
+import { connectToDatabase } from "@/lib/mongodb";
+import User from "@/models/User";
 import CustomerCard from "@/components/orders/CustomerCard";
 import OrderItems from "@/components/orders/OrderItems";
 import PaymentSummary from "@/components/orders/PaymentSummary";
@@ -16,16 +20,103 @@ type OrderPageProps = {
 export default async function OrderDetailsPage({ params }: OrderPageProps) {
   const { orderNumber } = await params;
 
-  const order = await getOrderByNumber(orderNumber);
+  // =====================================================
+  // CHECK LOGIN
+  // =====================================================
 
-  if (!order) {
+  const cookieStore = await cookies();
+
+  const token = cookieStore.get("auth_token")?.value;
+
+  if (!token) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-black text-white">
-        <h1 className="text-3xl font-bold">Order Not Found</h1>
+      <main className="flex min-h-screen items-center justify-center bg-white text-black">
+        <div className="text-center">
+          <h1 className="text-3xl font-semibold">Please Login</h1>
+
+          <p className="mt-2 text-sm text-gray-500">
+            Please login to view your order details.
+          </p>
+        </div>
       </main>
     );
   }
 
+  // =====================================================
+  // VERIFY JWT
+  // =====================================================
+
+  let decoded: jwt.JwtPayload;
+
+  try {
+    const verifiedToken = jwt.verify(token, process.env.JWT_SECRET!);
+
+    if (typeof verifiedToken === "string" || !verifiedToken.userId) {
+      return (
+        <main className="flex min-h-screen items-center justify-center bg-white text-black">
+          <div className="text-center">
+            <h1 className="text-3xl font-semibold">Unauthorized</h1>
+          </div>
+        </main>
+      );
+    }
+
+    decoded = verifiedToken;
+  } catch (error) {
+    console.error("ORDER AUTH ERROR:", error);
+
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-white text-black">
+        <div className="text-center">
+          <h1 className="text-3xl font-semibold">Unauthorized</h1>
+
+          <p className="mt-2 text-sm text-gray-500">Please login again.</p>
+        </div>
+      </main>
+    );
+  }
+
+  // =====================================================
+  // GET CURRENT USER
+  // =====================================================
+
+  await connectToDatabase();
+
+  const user = await User.findById(decoded.userId).select("email");
+
+  if (!user) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-white text-black">
+        <div className="text-center">
+          <h1 className="text-3xl font-semibold">User Not Found</h1>
+        </div>
+      </main>
+    );
+  }
+
+  // =====================================================
+  // SECURE ORDER LOOKUP
+  // =====================================================
+
+  const order = await getOrderByNumberAndEmail(orderNumber, user.email);
+
+  // =====================================================
+  // ORDER NOT FOUND / NOT OWNED
+  // =====================================================
+
+  if (!order) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-white text-black">
+        <div className="text-center">
+          <h1 className="text-3xl font-semibold">Order Not Found</h1>
+
+          <p className="mt-2 text-sm text-gray-500">
+            This order does not exist or does not belong to your account.
+          </p>
+        </div>
+      </main>
+    );
+  }
   const statusInfo =
     ORDER_STATUS[order.status as keyof typeof ORDER_STATUS] ??
     ORDER_STATUS.pending;

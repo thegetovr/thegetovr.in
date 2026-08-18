@@ -130,7 +130,7 @@ export async function getOrderByNumberAndEmail(
 
   return await Order.findOne({
     orderNumber,
-    "customer.email": email,
+    "customer.email": email.trim(),
   }).lean();
 }
 

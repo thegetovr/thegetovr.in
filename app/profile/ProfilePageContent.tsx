@@ -20,7 +20,7 @@ interface UserData {
   gender?: string;
 }
 
-export default function ProfilePage() {
+export default function ProfilePageContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -28,7 +28,10 @@ export default function ProfilePage() {
   const [user, setUser] = useState<UserData | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
-  // Profile is now the default section
+  // =====================================================
+  // ACTIVE SECTION
+  // =====================================================
+
   const activeSection = searchParams.get("tab") || "profile";
 
   // =====================================================
@@ -61,7 +64,6 @@ export default function ProfilePage() {
         }
       } catch (error) {
         console.error("Session Check Error:", error);
-
         setUser(null);
       } finally {
         setLoadingUser(false);
@@ -86,9 +88,16 @@ export default function ProfilePage() {
       if (result.success) {
         setUser(null);
 
-        sessionStorage.setItem(
-          "auth_notification",
-          result.message || "Logout Successful",
+        const message = result.message || "Logout Successful";
+
+        // Show immediately
+        window.dispatchEvent(
+          new CustomEvent("auth-notification", {
+            detail: {
+              message,
+              type: "success",
+            },
+          }),
         );
 
         router.push("/");
@@ -237,6 +246,7 @@ export default function ProfilePage() {
               activeSection={activeSection}
               onSectionChange={handleSectionChange}
             />
+
             <GetOvrCollection />
           </aside>
 
