@@ -278,9 +278,7 @@ export default function Addresses() {
 
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-black">
-            My Addresses
-          </h1>
+          <h1 className="text-2xl font-serif  text-black">My Addresses</h1>
 
           <p className="mt-1.5 text-sm text-gray-500">
             Manage your saved delivery addresses
@@ -291,7 +289,7 @@ export default function Addresses() {
           type="button"
           onClick={openAddForm}
           className="flex items-center gap-2 rounded-lg 
-          bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-gray-800"
+          px-5 py-3 text-sm font-medium text-zinc-900 transition bg-[#eee3d5] hover:bg-[#e6d8c6]"
         >
           <Plus size={18} strokeWidth={1.8} />
           Add New Address

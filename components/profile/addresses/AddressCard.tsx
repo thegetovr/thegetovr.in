@@ -34,7 +34,10 @@ export default function AddressCard({
       <div className="flex items-start justify-between">
         <div>
           {address.isDefault ? (
-            <span className="inline-flex items-center gap-1.5 rounded-md bg-black px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-white">
+            <span
+              className="inline-flex items-center gap-1.5 rounded-md 
+            bg-[#e6d8c6]  px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-zinc-900"
+            >
               <Star size={12} fill="currentColor" />
               Default Address
             </span>

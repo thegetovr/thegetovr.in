@@ -60,7 +60,7 @@ export default function Wishlist() {
 
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-black">
+          <h1 className="text-2xl font-serif tracking-tight text-black">
             My Wishlist
           </h1>
 
