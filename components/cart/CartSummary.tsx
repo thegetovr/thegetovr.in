@@ -5,13 +5,8 @@ interface CartSummaryProps {
   items: CartItem[];
 }
 
-export default function CartSummary({
-  items,
-}: CartSummaryProps) {
-  const subtotal = items.reduce(
-    (sum, item) => sum + item.totalPrice,
-    0,
-  );
+export default function CartSummary({ items }: CartSummaryProps) {
+  const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
 
   const shipping = 0;
   const total = subtotal + shipping;
@@ -26,17 +21,13 @@ export default function CartSummary({
         <div className="flex justify-between text-(--color-text-secondary)">
           <span>Items ({items.length})</span>
 
-          <span>
-            ₹{subtotal.toLocaleString("en-IN")}
-          </span>
+          <span>₹{subtotal.toLocaleString("en-IN")}</span>
         </div>
 
         <div className="flex justify-between text-(--color-text-secondary)">
           <span>Shipping</span>
 
-          <span className="text-(--color-accent)">
-            FREE
-          </span>
+          <span className="text-(--color-accent)">FREE</span>
         </div>
       </div>
 

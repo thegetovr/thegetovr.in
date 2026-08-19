@@ -113,7 +113,7 @@ export default function Navbar() {
           HEADER
       ================================================= */}
 
-      <header className="sticky top-0 z-50 border-b border-(--color-border) bg-(--color-page)">
+      <header className="sticky top-0 z-50 border-b border-(--color-border) bg-(--color-page)/80 backdrop-blur-xl">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-8">
           <Logo />
 

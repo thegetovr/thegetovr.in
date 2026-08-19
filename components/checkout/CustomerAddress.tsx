@@ -126,8 +126,8 @@ export default function CustomerAddress() {
   }, [isValid, setIsValid]);
 
   return (
-    <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-8 shadow-xl">
-      <h2 className="mb-6 text-2xl font-semibold text-white">
+    <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-8 shadow-(--shadow-soft)">
+      <h2 className="mb-6 text-2xl font-semibold text-(--color-text-primary)">
         Delivery Address
       </h2>
 
