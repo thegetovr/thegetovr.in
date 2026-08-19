@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingBag, User, Heart, Headphones } from "lucide-react";
+import { ShoppingBag, User, Heart, Headphones, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -190,7 +190,11 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
                 onClick={handleLogout}
                 className="flex w-full items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-error) transition-colors hover:bg-(--color-error-background)"
               >
-                <span className="text-lg">↪</span>
+                <LogOut
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-(--color-text-muted)"
+                />
                 Logout
               </button>
             </div>

@@ -95,7 +95,7 @@ export default function Navbar() {
 
       {notification && (
         <div
-          className={`fixed right-6 top-24 z-[100] flex items-center gap-3 rounded-xl border px-5 py-4 shadow-2xl ${
+          className={`fixed right-6 top-24 z-50 flex items-center gap-3 rounded-[var(--radius-sm)] border px-5 py-4 shadow-[var(--shadow-soft)] ${
             notificationType === "success"
               ? "border-(--color-success) bg-(--color-success-background) text-(--color-success)"
               : "border-(--color-error) bg-(--color-error-background) text-(--color-error)"
@@ -113,47 +113,22 @@ export default function Navbar() {
           HEADER
       ================================================= */}
 
-      <header className="sticky top-0 z-50 border-b border-white/30 bg-black backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-(--color-border) bg-(--color-page)">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-8">
-          {/* Logo */}
-
           <Logo />
 
           {/* Navigation */}
 
-          <nav className="hidden h-full items-center gap-8 text-md text-white md:flex">
+          <nav className="hidden h-full items-center gap-8 text-md text-(--color-text-primary) md:flex">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="
-                  group
-                  relative
-                  flex
-                  h-full
-                  items-center
-                  transition-colors
-                  duration-200
-                  hover:text-white
-                "
+                className="group relative flex h-full items-center transition-colors duration-200 hover:text-(--color-text-secondary)"
               >
                 {link.name}
 
-                <span
-                  className="
-                    absolute
-                    bottom-0
-                    left-1/2
-                    h-0.5
-                    w-0
-                    -translate-x-1/2
-                    bg-white
-                    transition-all
-                    duration-300
-                    ease-out
-                    group-hover:w-full
-                  "
-                />
+                <span className="absolute bottom-0 left-1/2 h-0.5 w-0 -translate-x-1/2 bg-(--color-text-primary) transition-all duration-300 ease-out group-hover:w-full" />
               </Link>
             ))}
           </nav>
@@ -165,18 +140,9 @@ export default function Navbar() {
 
             <div className="group relative hidden lg:block">
               <Search
-                size={24}
-                className="
-                  absolute
-                  left-2
-                  top-1/2
-                  z-10
-                  -translate-y-1/2
-                  text-gray-400
-                  transition-colors
-                  duration-300
-                  group-focus-within:text-white
-                "
+                size={21}
+                aria-hidden="true"
+                className="absolute left-3 top-1/2 z-10 -translate-y-1/2 text-(--color-text-secondary) transition-colors duration-300 group-focus-within:text-(--color-text-primary)"
               />
 
               <input
@@ -195,26 +161,7 @@ export default function Navbar() {
                     }
                   }
                 }}
-                className="
-                  w-100
-                  rounded-full
-                  border
-                  border-white/30
-                  bg-white/5
-                  py-2.5
-                  pl-11
-                  pr-5
-                  text-sm
-                  text-white
-                  placeholder:text-gray-400
-                  placeholder:transition-opacity
-                  focus:placeholder:opacity-0
-                  outline-none
-                  transition-all
-                  duration-300
-                  backdrop-blur-md
-                  focus:border-white/60
-                "
+                className="w-100 rounded-full border border-(--color-input-border) bg-(--color-input-background) py-2.5 pl-11 pr-5 text-sm text-(--color-text-primary) placeholder:text-(--color-input-placeholder) outline-none transition-all duration-300 focus:border-(--color-input-focus) focus:placeholder:opacity-0"
               />
             </div>
 
@@ -224,35 +171,12 @@ export default function Navbar() {
               <button
                 type="button"
                 aria-label="Account"
-                className="
-                  flex
-                  h-full
-                  items-center
-                  justify-center
-                  px-2
-                  text-gray-300
-                  transition
-                  hover:text-white
-                "
+                className="flex h-full items-center justify-center px-2 text-(--color-text-secondary) transition-colors hover:text-(--color-text-primary)"
               >
                 <User size={24} strokeWidth={1.8} />
               </button>
 
-              <span
-                className="
-                  absolute
-                  bottom-0
-                  left-1/2
-                  h-0.5
-                  w-0
-                  -translate-x-1/2
-                  bg-white
-                  transition-all
-                  duration-300
-                  ease-out
-                  group-hover:w-full
-                "
-              />
+              <span className="absolute bottom-0 left-1/2 h-0.5 w-0 -translate-x-1/2 bg-(--color-text-primary) transition-all duration-300 ease-out group-hover:w-full" />
 
               <UserDropdown
                 onNotification={(message, type) => {
@@ -272,36 +196,12 @@ export default function Navbar() {
               <Link
                 href="/cart"
                 aria-label="Shopping cart"
-                className="
-                  flex
-                  items-center
-                  justify-center
-                  text-gray-300
-                  transition
-                  hover:text-white
-                "
+                className="flex items-center justify-center text-(--color-text-secondary) transition-colors hover:text-(--color-text-primary)"
               >
                 <ShoppingCart size={24} strokeWidth={1.8} />
 
                 {totalQuantity > 0 && (
-                  <span
-                    className="
-                      absolute
-                      -right-2
-                      -top-2
-                      flex
-                      h-5
-                      min-w-5
-                      items-center
-                      justify-center
-                      rounded-full
-                      bg-white
-                      px-1
-                      text-[10px]
-                      font-bold
-                      text-black
-                    "
-                  >
+                  <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-(--color-text-primary) px-1 text-[10px] font-bold text-(--color-white)">
                     {totalQuantity}
                   </span>
                 )}
