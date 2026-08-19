@@ -41,22 +41,40 @@ export default function ToolRail({
   onChange,
 }: ToolRailProps) {
   return (
-    <aside className="flex w-20 flex-col items-center gap-3 border-r border-white/10 bg-[#111114] py-5">
+    <aside className="flex w-16 flex-col items-center gap-2 bg-[#111114] py-3 lg:w-18 lg:gap-3 lg:py-5">
       {tools.map((tool) => {
         const Icon = tool.icon;
+
+        const isActive = activeTool === tool.id;
 
         return (
           <button
             key={tool.id}
+            type="button"
             onClick={() => onChange(tool.id)}
             title={tool.label}
-            className={`flex h-14 w-14 items-center justify-center rounded-2xl transition-all ${
-              activeTool === tool.id
+            aria-label={tool.label}
+            className={`group relative flex h-11 w-11 items-center justify-center rounded-xl transition-all lg:h-14 lg:w-14 lg:rounded-2xl ${
+              isActive
                 ? "bg-white text-black shadow-lg"
-                : "bg-white/5 text-white hover:bg-white/10"
+                : "text-gray-400 hover:bg-white/10 hover:text-white"
             }`}
           >
-            <Icon size={24} />
+            <Icon
+              size={20}
+              strokeWidth={isActive ? 2.4 : 2}
+              className="lg:hidden"
+            />
+
+            <Icon
+              size={24}
+              strokeWidth={isActive ? 2.4 : 2}
+              className="hidden lg:block"
+            />
+
+            <span className="pointer-events-none absolute left-full z-20 ml-3 hidden whitespace-nowrap rounded-lg border border-white/10 bg-[#232329] px-3 py-1.5 text-xs font-medium text-white shadow-xl group-hover:block">
+              {tool.label}
+            </span>
           </button>
         );
       })}

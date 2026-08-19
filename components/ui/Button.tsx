@@ -21,16 +21,16 @@ export default function Button({
 }: ButtonProps) {
   const variants = {
     primary:
-      "bg-white text-black hover:bg-zinc-200 border border-white",
+      "bg-(--color-text-primary) text-(--color-white) border border-(--color-text-primary) hover:bg-(--color-text-secondary)",
 
     secondary:
-      "bg-zinc-800 text-white hover:bg-zinc-700 border border-zinc-700",
+      "bg-(--color-surface-muted) text-(--color-text-primary) border border-(--color-border) hover:bg-(--color-surface)",
 
     outline:
-      "bg-transparent text-white border border-zinc-700 hover:bg-zinc-900",
+      "bg-transparent text-(--color-text-primary) border border-(--color-border) hover:border-(--color-text-primary) hover:bg-(--color-surface-muted)",
 
     danger:
-      "bg-red-600 text-white hover:bg-red-700 border border-red-600",
+      "bg-(--color-error) text-(--color-white) border border-(--color-error) hover:opacity-90",
   };
 
   return (
@@ -40,11 +40,11 @@ export default function Button({
         inline-flex
         items-center
         justify-center
-        rounded-xl
+        rounded-(--radius-sm)
         px-5
         py-3
-        font-semibold
-        transition-all
+        font-medium
+        transition-colors
         duration-200
         disabled:cursor-not-allowed
         disabled:opacity-60

@@ -85,7 +85,6 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
       }
     } catch (error) {
       console.error("Logout Error:", error);
-
       onNotification("Something went wrong", "error");
     }
   };
@@ -184,6 +183,7 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
 
             <div className="border-t border-[#eee8df] px-2 py-2">
               <button
+                type="button"
                 onClick={handleLogout}
                 className="
                   flex

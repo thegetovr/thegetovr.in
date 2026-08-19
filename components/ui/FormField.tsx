@@ -18,20 +18,23 @@ export default function FormField({
 }: FormFieldProps) {
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-zinc-200">
+      <label className="block text-sm font-medium text-(--color-text-primary)">
         {label}
-        {required && <span className="ml-1 text-red-500">*</span>}
+        {required && <span className="ml-1 text-(--color-error)">*</span>}
       </label>
 
       <input
         {...registration}
         {...props}
-        className={`w-full rounded-xl border bg-zinc-900 px-4 py-3 text-white placeholder:text-zinc-500 transition-all outline-none
+        className={`w-full rounded-sm border bg-(--color-input-background) px-4 py-3 text-(--color-text-primary) placeholder:text-(--color-input-placeholder) outline-none transition-colors
         ${
           error
-            ? "border-red-500 focus:border-red-500"
-            : "border-zinc-700 focus:border-white"
+            ? "border-(--color-error) focus:border-(--color-error)"
+            : "border-(--color-input-border) focus:border-(--color-input-focus)"
         }
+        disabled:cursor-not-allowed
+        disabled:bg-(--color-surface-muted)
+        disabled:text-(--color-text-muted)
         ${className}`}
       />
 

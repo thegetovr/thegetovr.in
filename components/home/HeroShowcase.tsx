@@ -1,16 +1,15 @@
 export default function HeroShowcase() {
   return (
     <div className="relative h-[700px] w-[620px]">
-
-      {/* Glow */}
-      <div className="absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.04] blur-[140px]" />
+      {/* Editorial Glow */}
+      <div className="absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-(--color-accent)/10 blur-[140px]" />
 
       {/* Rings */}
-      <div className="absolute left-1/2 top-1/2 h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/5" />
-      <div className="absolute left-1/2 top-1/2 h-[430px] w-[430px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/[0.05]" />
+      <div className="absolute left-1/2 top-1/2 h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-(--color-border)" />
+      <div className="absolute left-1/2 top-1/2 h-[430px] w-[430px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-(--color-border)" />
 
       {/* Oversized Tee */}
-      <div className="absolute left-8 top-20 rotate-[-12deg] z-10">
+      <div className="absolute left-8 top-20 z-10 rotate-[-12deg]">
         <PlaceholderCard
           title="Oversized Tee"
           width="w-52"
@@ -29,7 +28,7 @@ export default function HeroShowcase() {
       </div>
 
       {/* T-Shirt */}
-      <div className="absolute right-8 bottom-12 rotate-[10deg] z-20">
+      <div className="absolute bottom-12 right-8 z-20 rotate-[10deg]">
         <PlaceholderCard
           title="Regular Tee"
           width="w-56"
@@ -38,22 +37,23 @@ export default function HeroShowcase() {
       </div>
 
       {/* Badge */}
-      <div className="absolute right-0 top-8 rounded-full border border-white/10 bg-black/70 px-5 py-3 backdrop-blur-xl">
-        <p className="text-[10px] uppercase tracking-[0.35em] text-gray-500">
-          PREMIUM
+      <div className="absolute right-0 top-8 rounded-full border border-(--color-border) bg-(--color-surface) px-5 py-3 shadow-(--shadow-soft)">
+        <p className="text-[10px] uppercase tracking-[0.35em] text-(--color-text-muted)">
+          Premium
         </p>
-        <p className="mt-1 text-sm font-semibold">
+
+        <p className="mt-1 text-sm font-semibold text-(--color-text-primary)">
           240 GSM Cotton
         </p>
       </div>
 
       {/* Design Card */}
-      <div className="absolute bottom-8 left-0 rounded-2xl border border-white/10 bg-white/5 px-6 py-5 backdrop-blur-xl">
-        <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
-          DESIGN STUDIO
+      <div className="absolute bottom-8 left-0 rounded-md border border-(--color-border) bg-(--color-surface) px-6 py-5 shadow-(--shadow-soft)">
+        <p className="text-xs uppercase tracking-[0.3em] text-(--color-text-muted)">
+          Design Studio
         </p>
 
-        <h3 className="mt-3 text-lg font-bold leading-8">
+        <h3 className="mt-3 font-(--font-editorial) text-2xl font-normal leading-8 text-(--color-text-primary)">
           Upload.
           <br />
           Customize.
@@ -81,28 +81,18 @@ function PlaceholderCard({
   return (
     <div
       className={`${width} ${height}
-      rounded-[32px]
-      border border-white/10
-      bg-gradient-to-br
-      from-zinc-900
-      via-black
-      to-zinc-950
-      shadow-[0_40px_80px_rgba(0,0,0,0.75)]
-      backdrop-blur-xl
-      flex
-      flex-col
-      items-center
-      justify-center
-      transition-all
-      duration-300
-      hover:-translate-y-2
-      ${
-        featured ? "ring-1 ring-white/10" : ""
-      }`}
+        flex flex-col items-center justify-center
+        rounded-(--radius-lg)
+        border border-(--color-border)
+        bg-(--color-surface)
+        shadow-(--shadow-elevated)
+        transition-all duration-300
+        hover:-translate-y-2
+        ${featured ? "ring-1 ring-(--color-accent)" : ""}`}
     >
-      <div className="mb-5 h-16 w-16 rounded-full border border-white/10 bg-white/5" />
+      <div className="mb-5 h-16 w-16 rounded-full border border-(--color-border) bg-(--color-surface-muted)" />
 
-      <h3 className="text-xl font-bold text-white">
+      <h3 className="font-(--font-editorial) text-xl font-normal text-(--color-text-primary)">
         {title}
       </h3>
     </div>

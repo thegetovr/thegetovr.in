@@ -1,15 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { createOrder } from "@/lib/generateOrder";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useFormContext } from "react-hook-form";
+
+import { createOrder } from "@/lib/generateOrder";
 import type { CheckoutFormData } from "@/lib/validation/checkoutSchema";
 import { useCartStore } from "@/stores/cartStore";
+import { useCheckoutStore } from "@/stores/checkoutStore";
+
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
-import { useCheckoutStore } from "@/stores/checkoutStore";
-import { useRouter } from "next/navigation";
+
+function getProductName(product: "hoodie" | "oversized" | "tshirt") {
+  const names = {
+    hoodie: "Hoodie",
+    oversized: "Oversized T-Shirt",
+    tshirt: "Classic T-Shirt",
+  };
+
+  return names[product];
+}
 
 export default function OrderSummary() {
   const { items, readyMadeItems, clearCart } = useCartStore();
@@ -117,7 +129,7 @@ export default function OrderSummary() {
           checkoutItems.map((item) => (
             <div
               key={item.id}
-              className="rounded-xl border border-white/10 bg-[#111118] p-4"
+              className="rounded-xl border border-(--color-border) bg-(--color-surface) p-4"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0 flex-1">
@@ -141,21 +153,21 @@ export default function OrderSummary() {
                     </div>
                   )}
 
-                  <p className="mt-3 text-sm text-zinc-400">
+                  <p className="mt-3 text-sm text-(--color-text-muted)">
                     Quantity:{" "}
-                    <span className="font-medium text-white">
+                    <span className="font-medium text-(--color-text-primary)">
                       {item.quantity}
                     </span>
                   </p>
                 </div>
 
                 <div className="text-right">
-                  <p className="text-lg font-bold text-white">
-                    ₹{item.totalPrice}
+                  <p className="text-lg font-bold">
+                    ₹{item.totalPrice.toLocaleString("en-IN")}
                   </p>
 
-                  <p className="mt-1 text-sm text-zinc-500">
-                    ₹{item.unitPrice} each
+                  <p className="mt-1 text-sm text-(--color-text-muted)">
+                    ₹{item.unitPrice.toLocaleString("en-IN")} each
                   </p>
                 </div>
               </div>
@@ -171,13 +183,13 @@ export default function OrderSummary() {
           type="text"
           placeholder="Coupon Code"
           value={couponCode}
-          onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-          className="flex-1 rounded-lg border border-white/10 bg-[#111118] px-4 py-3 text-white outline-none"
+          onChange={(event) => setCouponCode(event.target.value.toUpperCase())}
+          className="flex-1 rounded-lg border border-(--color-input-border) bg-(--color-input-background) px-4 py-3 text-(--color-text-primary) outline-none"
         />
 
         <Button
           loading={couponLoading}
-          disabled={!couponCode.trim()}
+          disabled={!couponCode.trim() || allItems.length === 0}
           onClick={async () => {
             setCouponLoading(true);
 
@@ -210,6 +222,7 @@ export default function OrderSummary() {
           Apply
         </Button>
       </div>
+
       {couponMessage && (
         <p className="mt-2 text-center text-sm text-green-400">
           {couponMessage}
@@ -220,22 +233,22 @@ export default function OrderSummary() {
           PRICE
       ===================================================== */}
       <div className="space-y-3">
-        <div className="flex justify-between text-gray-300">
+        <div className="flex justify-between text-(--color-text-secondary)">
           <span>Subtotal</span>
-          <span>₹{subtotal}</span>
+          <span>₹{subtotal.toLocaleString("en-IN")}</span>
         </div>
 
-        <div className="flex justify-between text-gray-300">
+        <div className="flex justify-between text-(--color-text-secondary)">
           <span>Shipping</span>
-          <span className="text-green-400">FREE</span>
+          <span className="text-(--color-success)">FREE</span>
         </div>
 
         {discount > 0 && (
-          <div className="flex items-center justify-between text-green-400">
+          <div className="flex items-center justify-between text-(--color-success)">
             <span>Coupon ({coupon})</span>
 
             <div className="flex items-center gap-3">
-              <span>-₹{discount}</span>
+              <span>-₹{discount.toLocaleString("en-IN")}</span>
 
               <button
                 type="button"
@@ -244,7 +257,7 @@ export default function OrderSummary() {
                   setCouponCode("");
                   setCouponMessage("");
                 }}
-                className="text-sm text-red-400 hover:text-red-300"
+                className="text-sm text-(--color-error) transition-colors hover:opacity-80"
               >
                 Remove
               </button>
@@ -252,10 +265,10 @@ export default function OrderSummary() {
           </div>
         )}
 
-        <div className="border-t border-white/10 pt-4">
-          <div className="flex justify-between text-xl font-semibold text-white">
+        <div className="border-t border-(--color-border) pt-4">
+          <div className="flex justify-between text-xl font-semibold">
             <span>Total</span>
-            <span>₹{finalTotal}</span>
+            <span>₹{finalTotal.toLocaleString("en-IN")}</span>
           </div>
         </div>
       </div>
@@ -268,12 +281,13 @@ export default function OrderSummary() {
           <span>{checkoutItems.length}</span>
         </div>
 
-        <div className="mt-2 flex items-center justify-between text-sm text-zinc-400">
+        <div className="mt-2 flex items-center justify-between text-sm text-(--color-text-secondary)">
           <span>Estimated Delivery</span>
           <span>3–5 Days</span>
         </div>
       </div>
-      <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-900 p-4 text-sm text-zinc-300">
+
+      <div className="mt-6 rounded-xl border border-(--color-border) bg-(--color-surface-muted) p-4 text-sm text-(--color-text-secondary)">
         <p>🔒 Secure SSL Checkout</p>
         <p>🚚 Free Shipping</p>
         <p>↩️ Easy Returns</p>
@@ -293,7 +307,7 @@ export default function OrderSummary() {
       </Button>
       <Link
         href="/cart"
-        className="mt-4 block text-center text-sm text-gray-400 transition hover:text-white"
+        className="mt-4 block text-center text-sm text-(--color-text-muted) transition-colors hover:text-(--color-text-primary)"
       >
         Back to Cart
       </Link>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { ChevronLeft, Shirt } from "lucide-react";
 import LayersPanel from "@/components/studio/LayersPanel";
 import DesignCanvas from "@/components/studio/canvas/DesignCanvas";
 import StudioSidebar from "@/components/studio/StudioSidebar";
@@ -23,11 +24,16 @@ export default function StudioPage() {
   const [product, setProduct] = useState<Product>("hoodie");
   const [view, setView] = useState<"front" | "back">("front");
   const [activeTool, setActiveTool] = useState<StudioTool>("product");
+  const [mobileToolPanelOpen, setMobileToolPanelOpen] = useState(false);
   const [productColor, setProductColor] = useState<ProductColor>("black");
   const [productSize, setProductSize] = useState<ProductSize>("M");
   const [quantity, setQuantity] = useState<ProductQuantity>(1);
   const [printSide, setPrintSide] = useState<PrintSide>("front");
   const addItem = useCartStore((state) => state.addItem);
+  const [exportDesign, setExportDesign] = useState<(() => void) | null>(null);
+  const handleExportReady = useCallback((exportFn: (() => void) | null) => {
+    setExportDesign(() => exportFn);
+  }, []);
   const [designs, setDesigns] = useState<{
     front: DesignElement[];
     back: DesignElement[];
@@ -225,27 +231,37 @@ export default function StudioPage() {
     };
   }, [undo, redo, selectedElementId, setElements]);
   return (
-    <main className="flex h-screen flex-col bg-[#0b0b0d] pt-24 text-white">
-      <div className="mx-auto flex h-full min-h-0 w-full max-w-[1700px] gap-5 overflow-hidden px-5 pb-5">
-        {/* Studio */}
-        <section className="flex flex-1 flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#151519]">
-          {/* Header */}
-          <div className="flex items-center justify-between border-b border-white/10 px-8 py-5">
-            <div>
-              <h1 className="text-4xl font-bold tracking-tight">
-                Design Studio
-              </h1>
+    <main className="flex h-dvh min-h-0 flex-col overflow-hidden bg-[#0b0b0d] pt-20 text-white md:pt-24">
+      <div className="mx-auto flex min-h-0 w-full max-w-[1700px] flex-1 overflow-hidden px-0 sm:px-4 md:px-5 md:pb-5">
+        <section className="flex min-h-0 flex-1 flex-col overflow-hidden border-y border-white/10 bg-[#151519] sm:rounded-2xl sm:border md:rounded-3xl">
+          <div className="flex flex-col gap-4 border-b border-white/10 px-4 py-4 sm:px-6 md:flex-row md:items-center md:justify-between md:px-8 md:py-5">
+            <div className="flex min-w-0 items-center gap-3">
+              <button
+                type="button"
+                onClick={() => router.back()}
+                aria-label="Go back"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-gray-300 transition hover:bg-white/10 hover:text-white"
+              >
+                <ChevronLeft size={20} />
+              </button>
 
-              <p className="mt-1 text-gray-400">
-                Create your own premium apparel
-              </p>
+              <div className="min-w-0">
+                <h1 className="truncate text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">
+                  Design Studio
+                </h1>
+
+                <p className="mt-0.5 truncate text-sm text-gray-400 sm:mt-1 sm:text-base">
+                  Create your own premium apparel
+                </p>
+              </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <div className="flex overflow-hidden rounded-full border border-white/10 bg-white/5">
                 <button
+                  type="button"
                   onClick={() => setView("front")}
-                  className={`px-5 py-2 text-sm font-semibold transition ${
+                  className={`px-4 py-2 text-sm font-semibold transition sm:px-5 ${
                     view === "front"
                       ? "bg-white text-black"
                       : "text-white hover:bg-white/10"
@@ -255,8 +271,9 @@ export default function StudioPage() {
                 </button>
 
                 <button
+                  type="button"
                   onClick={() => setView("back")}
-                  className={`px-5 py-2 text-sm font-semibold transition ${
+                  className={`px-4 py-2 text-sm font-semibold transition sm:px-5 ${
                     view === "back"
                       ? "bg-white text-black"
                       : "text-white hover:bg-white/10"
@@ -266,15 +283,22 @@ export default function StudioPage() {
                 </button>
               </div>
 
-              <div className="rounded-full border border-white/10 bg-white/5 px-5 py-2 text-sm font-semibold tracking-wide">
-                🧥 {product.toUpperCase()}
+              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold tracking-wide text-gray-200 sm:px-5 sm:text-sm">
+                <Shirt size={16} />
+                <span>{product.toUpperCase()}</span>
               </div>
             </div>
           </div>
 
           <StudioLayout
             toolRail={
-              <ToolRail activeTool={activeTool} onChange={setActiveTool} />
+              <ToolRail
+                activeTool={activeTool}
+                onChange={(tool) => {
+                  setActiveTool(tool);
+                  setMobileToolPanelOpen(true);
+                }}
+              />
             }
             toolPanel={
               <StudioSidebar
@@ -282,8 +306,6 @@ export default function StudioPage() {
                 setProduct={setProduct}
                 productColor={productColor}
                 productSize={productSize}
-                quantity={quantity}
-                setQuantity={setQuantity}
                 printSide={printSide}
                 setPrintSide={setPrintSide}
                 setProductSize={setProductSize}
@@ -293,9 +315,29 @@ export default function StudioPage() {
                 selectedElementId={selectedElementId}
                 setSelectedElementId={setSelectedElementId}
                 activeTool={activeTool}
-                onAddToCart={handleAddToCart}
+                onExport={() => exportDesign?.()}
               />
             }
+            mobileToolPanel={
+              <StudioSidebar
+                product={product}
+                setProduct={setProduct}
+                productColor={productColor}
+                productSize={productSize}
+                printSide={printSide}
+                setPrintSide={setPrintSide}
+                setProductSize={setProductSize}
+                setProductColor={setProductColor}
+                elements={elements}
+                setElements={setElements}
+                selectedElementId={selectedElementId}
+                setSelectedElementId={setSelectedElementId}
+                activeTool={activeTool}
+                onExport={() => exportDesign?.()}
+              />
+            }
+            mobileToolPanelOpen={mobileToolPanelOpen}
+            onCloseMobileToolPanel={() => setMobileToolPanelOpen(false)}
             canvas={
               <DesignCanvas
                 product={product}
@@ -305,6 +347,7 @@ export default function StudioPage() {
                 setElements={setElements}
                 selectedElementId={selectedElementId}
                 setSelectedElementId={setSelectedElementId}
+                onExportReady={handleExportReady}
               />
             }
             inspector={
@@ -336,46 +379,109 @@ export default function StudioPage() {
               />
             }
             toolbar={
-              <div className="flex h-16 items-center justify-center gap-3">
-                <button
-                  onClick={undo}
-                  disabled={currentHistory.length === 0}
-                  className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  ↶ Undo
-                </button>
+              <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 sm:px-5">
+                {/* Editing controls */}
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={undo}
+                    disabled={currentHistory.length === 0}
+                    className="rounded-lg border border-white/10 bg-white/[0.06] px-3 py-1.5 text-sm text-gray-200 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Undo
+                  </button>
 
-                <button
-                  onClick={redo}
-                  disabled={currentRedoHistory.length === 0}
-                  className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  ↷ Redo
-                </button>
+                  <button
+                    type="button"
+                    onClick={redo}
+                    disabled={currentRedoHistory.length === 0}
+                    className="rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-gray-200 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Redo
+                  </button>
 
-                <button
-                  onClick={resetCanvas}
-                  disabled={elements.length === 0}
-                  className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  Reset
-                </button>
+                  <button
+                    type="button"
+                    onClick={resetCanvas}
+                    disabled={elements.length === 0}
+                    className="rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-gray-200 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Reset
+                  </button>
 
-                <button
-                  onClick={bringToFront}
-                  disabled={!selectedElementId}
-                  className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  ↑ Front
-                </button>
+                  <div className="mx-1 hidden h-6 w-px bg-white/10 sm:block" />
 
-                <button
-                  onClick={sendToBack}
-                  disabled={!selectedElementId}
-                  className="rounded-xl bg-white/5 px-5 py-2 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  ↓ Back
-                </button>
+                  <button
+                    type="button"
+                    onClick={bringToFront}
+                    disabled={!selectedElementId}
+                    className="hidden rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-gray-200 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 lg:inline-flex"
+                  >
+                    Bring Forward
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={sendToBack}
+                    disabled={!selectedElementId}
+                    className="hidden rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-gray-200 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 lg:inline-flex"
+                  >
+                    Send Back
+                  </button>
+                </div>
+
+                {/* Purchase controls */}
+                <div className="flex items-center gap-2 border-t border-white/10 pt-3 sm:border-t-0 sm:border-l sm:pl-5 sm:pt-0">
+                  <div className="rounded-xl border border-white/10 bg-white/4 px-4 py-2">
+                    <span className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-500">
+                      Total
+                    </span>
+
+                    <span className="text-base font-bold text-white">
+                      ₹{calculatePrice(product, printSide, quantity).totalPrice}
+                    </span>
+                  </div>
+
+                  <div className="flex h-11 items-center overflow-hidden rounded-xl border border-white/10 bg-white/4">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        quantity > 1 &&
+                        setQuantity((quantity - 1) as ProductQuantity)
+                      }
+                      disabled={quantity <= 1}
+                      aria-label="Decrease quantity"
+                      className="flex h-full w-10 items-center justify-center text-lg font-semibold text-gray-300 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      −
+                    </button>
+
+                    <span className="flex min-w-10 justify-center border-x border-white/10 text-sm font-semibold text-white">
+                      {quantity}
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        quantity < 5 &&
+                        setQuantity((quantity + 1) as ProductQuantity)
+                      }
+                      disabled={quantity >= 5}
+                      aria-label="Increase quantity"
+                      className="flex h-full w-10 items-center justify-center text-lg font-semibold text-gray-300 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleAddToCart}
+                    className="h-11 rounded-xl bg-white px-5 text-sm font-bold text-black transition hover:bg-gray-200 sm:px-7"
+                  >
+                    Add to Cart
+                  </button>
+                </div>
               </div>
             }
           />

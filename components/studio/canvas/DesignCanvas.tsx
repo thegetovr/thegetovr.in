@@ -8,7 +8,6 @@ import ProductMockup from "./ProductMockup";
 import ImageElement from "./ImageElement";
 import TextElement from "./TextElement";
 
-
 import { CANVAS, PRODUCT_CONFIG, SNAP_THRESHOLD } from "./constants";
 
 import type { DesignElement, Product, ProductColor } from "@/types/design";
@@ -21,6 +20,7 @@ interface DesignCanvasProps {
   setElements: React.Dispatch<React.SetStateAction<DesignElement[]>>;
   selectedElementId: string | null;
   setSelectedElementId: (id: string | null) => void;
+  onExportReady: (exportFn: (() => void) | null) => void;
 }
 
 export default function DesignCanvas({
@@ -31,17 +31,47 @@ export default function DesignCanvas({
   setElements,
   selectedElementId,
   setSelectedElementId,
+  onExportReady,
 }: DesignCanvasProps) {
   const [loadedImages, setLoadedImages] = useState<
-  Record<string, HTMLImageElement>
->({});
-const [guides, setGuides] = useState({
-  vertical: null as number | null,
-  horizontal: null as number | null,
-});
-const elementRefs = useRef<Record<string, Konva.Node>>({});
-const transformerRef = useRef<Konva.Transformer | null>(null);
-const stageRef = useRef<Konva.Stage | null>(null);
+    Record<string, HTMLImageElement>
+  >({});
+  const [guides, setGuides] = useState({
+    vertical: null as number | null,
+    horizontal: null as number | null,
+  });
+  const elementRefs = useRef<Record<string, Konva.Node>>({});
+  const transformerRef = useRef<Konva.Transformer | null>(null);
+  const stageRef = useRef<Konva.Stage | null>(null);
+
+  useEffect(() => {
+    onExportReady(() => {
+      const stage = stageRef.current;
+
+      if (!stage) return;
+
+      const editorOnlyNodes = stage.find(".editor-only");
+
+      editorOnlyNodes.forEach((node) => {
+        node.visible(false);
+      });
+
+      const dataUrl = stage.toDataURL({
+        pixelRatio: 2,
+      });
+
+      editorOnlyNodes.forEach((node) => {
+        node.visible(true);
+      });
+
+      const link = document.createElement("a");
+      link.download = "the-getovr-design.png";
+      link.href = dataUrl;
+      link.click();
+    });
+
+    return () => onExportReady(null);
+  }, [onExportReady]);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -84,8 +114,7 @@ const stageRef = useRef<Konva.Stage | null>(null);
     const updateScale = () => {
       if (!containerRef.current) return;
 
-      const { width, height } =
-        containerRef.current.getBoundingClientRect();
+      const { width, height } = containerRef.current.getBoundingClientRect();
 
       const availableWidth = width - 48;
       const availableHeight = height - 48;
@@ -93,7 +122,7 @@ const stageRef = useRef<Konva.Stage | null>(null);
       const scale = Math.min(
         availableWidth / CANVAS.width,
         availableHeight / CANVAS.height,
-        1
+        1,
       );
 
       setStageScale(scale);
@@ -103,8 +132,7 @@ const stageRef = useRef<Konva.Stage | null>(null);
 
     window.addEventListener("resize", updateScale);
 
-    return () =>
-      window.removeEventListener("resize", updateScale);
+    return () => window.removeEventListener("resize", updateScale);
   }, []);
   const PRINT_AREA = PRODUCT_CONFIG[product].printArea;
 
@@ -161,9 +189,9 @@ const stageRef = useRef<Konva.Stage | null>(null);
       prev.map((item) =>
         item.id === id
           ? ({
-            ...item,
-            ...updates,
-          } as DesignElement)
+              ...item,
+              ...updates,
+            } as DesignElement)
           : item,
       ),
     );
@@ -199,6 +227,7 @@ const stageRef = useRef<Konva.Stage | null>(null);
               view={view}
             />
             <Rect
+              name="editor-only"
               x={PRINT_AREA.x}
               y={PRINT_AREA.y}
               width={PRINT_AREA.width}
@@ -213,6 +242,7 @@ const stageRef = useRef<Konva.Stage | null>(null);
             {elements.length === 0 && (
               <>
                 <Text
+                  name="editor-only"
                   x={PRINT_AREA.x}
                   y={PRINT_AREA.y + PRINT_AREA.height / 2 - 42}
                   width={PRINT_AREA.width}
@@ -225,6 +255,7 @@ const stageRef = useRef<Konva.Stage | null>(null);
                 />
 
                 <Text
+                  name="editor-only"
                   x={PRINT_AREA.x}
                   y={PRINT_AREA.y + PRINT_AREA.height / 2 - 8}
                   width={PRINT_AREA.width}
@@ -236,6 +267,7 @@ const stageRef = useRef<Konva.Stage | null>(null);
                 />
 
                 <Text
+                  name="editor-only"
                   x={PRINT_AREA.x}
                   y={PRINT_AREA.y + PRINT_AREA.height / 2 + 18}
                   width={PRINT_AREA.width}
@@ -247,6 +279,7 @@ const stageRef = useRef<Konva.Stage | null>(null);
                 />
 
                 <Text
+                  name="editor-only"
                   x={PRINT_AREA.x}
                   y={PRINT_AREA.y + PRINT_AREA.height / 2 + 48}
                   width={PRINT_AREA.width}
@@ -384,6 +417,7 @@ const stageRef = useRef<Konva.Stage | null>(null);
             <>
               {guides.vertical !== null && (
                 <Rect
+                  name="editor-only"
                   x={guides.vertical}
                   y={PRINT_AREA.y}
                   width={2}
@@ -395,6 +429,7 @@ const stageRef = useRef<Konva.Stage | null>(null);
 
               {guides.horizontal !== null && (
                 <Rect
+                  name="editor-only"
                   x={PRINT_AREA.x}
                   y={guides.horizontal}
                   width={PRINT_AREA.width}
@@ -405,6 +440,7 @@ const stageRef = useRef<Konva.Stage | null>(null);
               )}
 
               <Transformer
+                name="editor-only"
                 ref={transformerRef}
                 rotateEnabled
                 keepRatio={false}

@@ -4,7 +4,7 @@ import GalleryImage from "./GalleryImage";
 
 export default function CommunityGallery() {
   return (
-    <section className="bg-black py-32">
+    <section className="bg-(--color-page) py-24 lg:py-32">
       <Container>
         <SectionHeader
           eyebrow="COMMUNITY"
@@ -14,7 +14,6 @@ export default function CommunityGallery() {
         />
 
         <div className="grid grid-cols-12 gap-6">
-          {/* Row 1 */}
           <div className="col-span-12 md:col-span-4">
             <GalleryImage />
           </div>
@@ -27,7 +26,6 @@ export default function CommunityGallery() {
             <GalleryImage />
           </div>
 
-          {/* Row 2 */}
           <div className="col-span-12 md:col-span-8">
             <GalleryImage large />
           </div>

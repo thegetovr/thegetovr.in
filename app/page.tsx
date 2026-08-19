@@ -1,40 +1,27 @@
 import Hero from "@/components/home/Hero";
 import Categories from "@/components/home/Categories";
+import FeaturedCollection from "@/components/home/FeaturedCollection";
 import StudioPreview from "@/components/home/StudioPreview";
 import BestSellers from "@/components/home/BestSellers";
-import HowItWorks from "@/components/home/HowItWorks";
-import SectionDivider from "@/components/ui/SectionDivider";
-import FeaturedCollection from "@/components/home/FeaturedCollection";
 import CommunityGallery from "@/components/home/CommunityGallery";
+import HowItWorks from "@/components/home/HowItWorks";
 
 export default function Home() {
   return (
-    <>
-<Hero />
+    <main>
+      <Hero />
 
-<SectionDivider />
+      <Categories />
 
-<Categories />
+      <FeaturedCollection />
 
-<SectionDivider />
+      <StudioPreview />
 
-<FeaturedCollection />
+      <BestSellers />
 
-<SectionDivider />
+      <CommunityGallery />
 
-<StudioPreview />
-
-<SectionDivider />
-
-<BestSellers />
-
-<SectionDivider />
-
-<CommunityGallery />
-
-<SectionDivider />
-
-<HowItWorks />
-</>
+      <HowItWorks />
+    </main>
   );
 }

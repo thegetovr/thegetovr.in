@@ -4,7 +4,7 @@ import CollectionCard from "./CollectionCard";
 
 export default function FeaturedCollection() {
   return (
-    <section className="bg-black py-32">
+    <section className="bg-(--color-page) py-24 lg:py-32">
       <Container>
         <SectionHeader
           eyebrow="FEATURED COLLECTION"
@@ -14,7 +14,6 @@ export default function FeaturedCollection() {
         />
 
         <div className="grid gap-6 lg:grid-cols-3">
-          {/* Large Card */}
           <div className="lg:col-span-2">
             <CollectionCard
               title="Premium Hoodies"
@@ -23,7 +22,6 @@ export default function FeaturedCollection() {
             />
           </div>
 
-          {/* Right Side */}
           <div className="flex flex-col gap-6">
             <CollectionCard
               title="Oversized Tees"

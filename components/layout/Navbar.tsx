@@ -1,6 +1,5 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { User, ShoppingCart, Search } from "lucide-react";
@@ -20,6 +19,7 @@ export default function Navbar() {
   const readyMadeItems = useCartStore((state) => state.readyMadeItems);
 
   const pathname = usePathname();
+  const router = useRouter();
 
   const totalQuantity =
     items.reduce((total, item) => total + item.quantity, 0) +
@@ -96,8 +96,8 @@ export default function Navbar() {
         <div
           className={`fixed right-6 top-24 z-[100] flex items-center gap-3 rounded-xl border px-5 py-4 shadow-2xl ${
             notificationType === "success"
-              ? "border-green-500/40 bg-green-500/10 text-green-400"
-              : "border-red-500/40 bg-red-500/10 text-red-400"
+              ? "border-(--color-success) bg-(--color-success-background) text-(--color-success)"
+              : "border-(--color-error) bg-(--color-error-background) text-(--color-error)"
           }`}
         >
           <span className="text-xl">
