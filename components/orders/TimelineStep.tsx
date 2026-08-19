@@ -3,37 +3,55 @@ interface TimelineStepProps {
   completed: boolean;
   current: boolean;
   isLast: boolean;
+  date?: string;
+  isExpectedDelivery?: boolean;
 }
 
 export default function TimelineStep({
   title,
   completed,
   current,
+  date,
+  isExpectedDelivery = false,
 }: TimelineStepProps) {
   return (
     <div className="flex flex-1 flex-col items-center">
       <div className="flex flex-1 flex-col items-center">
         <div
-          className={`relative z-10 flex items-center justify-center rounded-full border-2 shadow-lg transition-all duration-300 ${
+          className={`relative z-10 flex items-center justify-center rounded-full border-2 shadow-sm transition-all duration-300 ${
             completed || current ? "h-12 w-12" : "h-10 w-10"
-          }
-            ${
-              completed
+          } ${
+            completed
+              ? "border-green-500 bg-green-500 text-black"
+              : current
                 ? "border-green-500 bg-green-500 text-black"
-                : current
-                  ? "border-white bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.35)]"
-                  : "border-zinc-700 bg-zinc-900 text-zinc-500"
-            }`}
+                : "border-gray-200 bg-white text-gray-400"
+          }`}
         >
-          {completed ? "✓" : current ? "●" : ""}
+          {completed || current ? "✓" : ""}
         </div>
 
         <p
-          className={`mt-4 max-w-18 text-center text-[11px] font-medium leading-4 md:max-w-none md:text-sm
-            ${completed || current ? "text-white" : "text-zinc-500"}`}
+          className={`mt-4 max-w-20 text-center text-[11px] font-medium leading-4 md:max-w-none md:text-sm ${
+            completed || current ? "text-black" : "text-gray-500"
+          }`}
         >
           {title}
         </p>
+
+        {date && (
+          <div className="mt-2 text-center">
+            {isExpectedDelivery && (
+              <p className="text-[10px] font-medium uppercase tracking-wide text-gray-500">
+                Expected Delivery
+              </p>
+            )}
+
+            <p className="text-[11px] leading-4 text-gray-500 md:text-xs">
+              {date}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -23,11 +23,11 @@ export default function Card({
   return (
     <Component
       className={`
-        rounded-2xl
+        rounded-(--radius-md)
         border
-        border-zinc-800
-        bg-zinc-950
-        shadow-lg
+        border-(--color-border)
+        bg-(--color-surface)
+        shadow-(--shadow-soft)
         ${paddings[padding]}
         ${className}
       `}

@@ -1,12 +1,12 @@
-
-
 interface OrderHeaderProps {
   orderNumber: string;
+  status: string;
   createdAt: string;
 }
 
 export default function OrderHeader({
   orderNumber,
+  status,
   createdAt,
 }: OrderHeaderProps) {
   return (
@@ -28,6 +28,10 @@ export default function OrderHeader({
               month: "long",
               year: "numeric",
             })}
+          </p>
+
+          <p className="mt-2 text-sm text-zinc-400">
+            Status: <span className="font-medium text-white">{status}</span>
           </p>
         </div>
       </div>

@@ -1,7 +1,4 @@
-import type {
-  ImageAdjustments,
-  PrintStyle,
-} from "./design";
+import type { ImageAdjustments, PrintStyle } from "./design";
 
 interface CartBaseElement {
   id: string;
@@ -25,7 +22,7 @@ export interface CartImageElement extends CartBaseElement {
   type: "image";
 
   imageId: string;
-
+  src: string;
   originalWidth: number;
   originalHeight: number;
 
@@ -46,6 +43,4 @@ export interface CartTextElement extends CartBaseElement {
   fontFamily: string;
 }
 
-export type CartDesignElement =
-  | CartImageElement
-  | CartTextElement;
+export type CartDesignElement = CartImageElement | CartTextElement;

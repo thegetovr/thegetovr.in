@@ -5,14 +5,15 @@ import { useFormContext } from "react-hook-form";
 import FormField from "@/components/ui/FormField";
 import { useCheckoutStore } from "@/stores/checkoutStore";
 import type { CheckoutFormData } from "@/lib/validation/checkoutSchema";
+
 export default function CustomerForm() {
   const { setCustomer, setIsValid } = useCheckoutStore();
 
- const {
-  register,
-  watch,
-  formState: { errors, isValid },
-} = useFormContext<CheckoutFormData>();
+  const {
+    register,
+    watch,
+    formState: { errors, isValid },
+  } = useFormContext<CheckoutFormData>();
 
   useEffect(() => {
     const subscription = watch((value) => {
@@ -36,8 +37,10 @@ export default function CustomerForm() {
   }, [isValid, setIsValid]);
 
   return (
-    <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-8 shadow-xl">
-      <h2 className="mb-6 text-2xl font-semibold">Customer Details</h2>
+    <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-8 shadow-[var(--shadow-sm)]">
+      <h2 className="mb-6 text-2xl font-semibold text-[var(--color-text-primary)]">
+        Customer Details
+      </h2>
 
       <div className="grid gap-4 md:grid-cols-2">
         <FormField

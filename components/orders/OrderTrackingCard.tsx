@@ -1,12 +1,17 @@
 import OrderHeader from "./OrderHeader";
-import OrderProgressBar from "./OrderProgressBar";
 import OrderTimeline from "./OrderTimeline";
 import { ORDER_STATUS } from "@/lib/order-status";
+
+interface StatusHistoryItem {
+  status: string;
+  updatedAt: string;
+}
 
 interface OrderTrackingCardProps {
   orderNumber: string;
   status: string;
   createdAt: string;
+  statusHistory?: StatusHistoryItem[];
 }
 
 export default function OrderTrackingCard({
@@ -18,36 +23,23 @@ export default function OrderTrackingCard({
     ORDER_STATUS[status as keyof typeof ORDER_STATUS] ?? ORDER_STATUS.pending;
 
   return (
-    <section className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-950 overflow-hidden">
-      <div className="p-8">
+    <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
+      <div className="p-6">
         <div className="mb-8">
-          <p className="text-sm uppercase tracking-widest text-zinc-500">
-            Current Status
-          </p>
+          <OrderHeader orderNumber={orderNumber} createdAt={createdAt} />
 
-          <h2 className="mt-2 text-3xl font-bold text-white">
+          <h2 className="mt-6 text-2xl font-semibold text-black">
             {statusInfo.label}
           </h2>
 
-          <p className="mt-3 max-w-xl text-zinc-400">
+          <p className="mt-2 max-w-xl text-sm text-gray-500">
             {statusInfo.description}
           </p>
-          <div className="mt-8">
-            <OrderProgressBar status={status} />
-          </div>
-        </div>
 
-        <div className="border-t border-zinc-800 pt-8">
-          <OrderHeader
-            orderNumber={orderNumber}
-            status={status}
-            createdAt={createdAt}
-          />
+          <p className="mt-2 max-w-xl text-sm text-gray-500">
+            Expected Delivery in 3-5 business days.
+          </p>
         </div>
-      </div>
-
-      <div className="border-t border-zinc-800 p-8">
-        <OrderTimeline status={status} />
       </div>
     </section>
   );

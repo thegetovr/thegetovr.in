@@ -6,7 +6,7 @@ export default function Logo() {
       href="/"
       className="cursor-pointer select-none transition-opacity duration-300 hover:opacity-80"
     >
-      <h1 className="text-xl font-black tracking-[0.25em] text-white">
+      <h1 className="text-xl font-black tracking-[0.25em] text-(--color-text-primary)">
         THE GETOVR
       </h1>
     </Link>

@@ -9,7 +9,7 @@ export default function ReviewSummary({
 }: ReviewSummaryProps) {
   if (reviewCount === 0) {
     return (
-      <p className="text-sm text-zinc-500">
+      <p className="text-sm text-(--color-text-muted)">
         No reviews yet
       </p>
     );
@@ -26,8 +26,8 @@ export default function ReviewSummary({
             key={index}
             className={
               index < Math.round(averageRating)
-                ? "text-yellow-400"
-                : "text-zinc-600"
+                ? "text-(--color-accent)"
+                : "text-(--color-border)"
             }
           >
             ★
@@ -35,11 +35,11 @@ export default function ReviewSummary({
         ))}
       </div>
 
-      <span className="font-medium text-white">
+      <span className="font-medium text-(--color-text-primary)">
         {averageRating.toFixed(1)}
       </span>
 
-      <span className="text-zinc-500">
+      <span className="text-(--color-text-muted)">
         ({reviewCount} {reviewCount === 1 ? "review" : "reviews"})
       </span>
     </div>

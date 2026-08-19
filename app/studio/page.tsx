@@ -64,6 +64,7 @@ export default function StudioPage() {
 
       product,
       color: productColor,
+
       size: productSize,
       quantity,
       printSide,

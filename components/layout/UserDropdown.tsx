@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingBag, User } from "lucide-react";
+import { ShoppingBag, User, Heart, Headphones, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 interface UserData {
   firstName: string;
@@ -17,9 +17,15 @@ interface UserDropdownProps {
 }
 
 export default function UserDropdown({ onNotification }: UserDropdownProps) {
+  const router = useRouter();
   const pathname = usePathname();
+
   const [user, setUser] = useState<UserData | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
+
+  // =====================================================
+  // SESSION
+  // =====================================================
 
   useEffect(() => {
     const checkSession = async () => {
@@ -43,6 +49,10 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
     checkSession();
   }, [pathname]);
 
+  // =====================================================
+  // LOGOUT
+  // =====================================================
+
   const handleLogout = async () => {
     try {
       const response = await fetch("/api/auth/logout", {
@@ -53,139 +63,199 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
 
       if (result.success) {
         setUser(null);
-        onNotification(result.message, "success");
+
+        const message = result.message || "Logout Successful";
+
+        window.dispatchEvent(
+          new CustomEvent("auth-notification", {
+            detail: {
+              message,
+              type: "success",
+            },
+          }),
+        );
+
+        router.push("/");
       } else {
         onNotification(result.message, "error");
       }
     } catch (error) {
       console.error("Logout Error:", error);
-
       onNotification("Something went wrong", "error");
     }
   };
 
+  // =====================================================
+  // LOADING
+  // =====================================================
+
   if (loadingUser) {
     return (
       <div className="absolute left-1/2 top-full z-50 hidden w-72 -translate-x-1/2 group-hover:block">
-        <div className="rounded-xl border border-white/20 bg-black px-5 py-4 shadow-2xl">
-          <p className="text-sm text-gray-400">Checking account...</p>
+        <div className="rounded-(--radius-md) border border-(--color-border) bg-(--color-surface) px-5 py-4 shadow-(--shadow-elevated)">
+          <p className="text-sm text-(--color-text-muted)">
+            Checking account...
+          </p>
         </div>
       </div>
     );
   }
 
+  // =====================================================
+  // DROPDOWN
+  // =====================================================
+
   return (
     <div className="absolute left-1/2 top-full z-50 hidden -translate-x-1/2 group-hover:block">
-      <div className="w-80 overflow-hidden rounded-xl border border-white/20 bg-black shadow-2xl">
+      <div className="w-80 overflow-hidden rounded-(--radius-md) border border-(--color-border) bg-(--color-surface) shadow-(--shadow-elevated)">
         {user ? (
-          /* =========================
-             LOGGED IN
-          ========================== */
           <div>
             {/* User Info */}
+
             <div className="px-5 py-5">
               <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-black">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-(--color-text-primary) text-(--color-white)">
                   <User size={20} strokeWidth={1.8} />
                 </div>
 
                 <div className="min-w-0">
-                  <h3 className="truncate text-sm font-semibold text-white">
+                  <h3 className="truncate text-sm font-semibold text-(--color-text-primary)">
                     {user.firstName} {user.lastName}
                   </h3>
 
-                  <p className="truncate text-xs text-gray-400">{user.email}</p>
+                  <p className="truncate text-xs text-(--color-text-muted)">
+                    {user.email}
+                  </p>
                 </div>
               </div>
             </div>
 
             {/* Logged In Menu */}
-            <div className="border-t border-white/10 px-2 py-2">
+
+            <div className="border-t border-(--color-border) px-2 py-2">
               <Link
                 href="/profile"
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-300 transition hover:bg-white/5 hover:text-white"
+                className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
-                <User size={18} strokeWidth={1.8} />
+                <User
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-(--color-text-muted)"
+                />
                 My Profile
               </Link>
 
               <Link
-                href="/orders"
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-300 transition hover:bg-white/5 hover:text-white"
+                href="/profile?tab=orders"
+                className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
-                <ShoppingBag size={18} strokeWidth={1.8} />
+                <ShoppingBag
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-(--color-text-muted)"
+                />
                 My Orders
               </Link>
 
               <Link
-                href="/wishlist"
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-300 transition hover:bg-white/5 hover:text-white"
+                href="/profile?tab=wishlist"
+                className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
-                <span className="text-lg">♡</span>
+                <Heart
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-(--color-text-muted)"
+                />
                 Wishlist
               </Link>
 
               <Link
                 href="/contact"
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-300 transition hover:bg-white/5 hover:text-white"
+                className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
-                <span className="text-lg">•</span>
+                <Headphones
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-(--color-text-muted)"
+                />
                 Contact Us
               </Link>
             </div>
 
             {/* Logout */}
-            <div className="border-t border-white/10 px-2 py-2">
+
+            <div className="border-t border-(--color-border) px-2 py-2">
               <button
+                type="button"
                 onClick={handleLogout}
-                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
+                className="flex w-full items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-error) transition-colors hover:bg-(--color-error-background)"
               >
-                <span className="text-lg">↪</span>
+                <LogOut
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-(--color-text-muted)"
+                />
                 Logout
               </button>
             </div>
           </div>
         ) : (
-          /* =========================
-             LOGGED OUT
-          ========================== */
           <div>
             {/* Welcome */}
-            <div className="px-5 py-5">
-              <h3 className="text-lg font-semibold text-white">Welcome</h3>
 
-              <p className="mt-1 text-sm leading-5 text-gray-400">
+            <div className="px-5 py-5">
+              <h3 className="text-lg font-semibold text-(--color-text-primary)">
+                Welcome
+              </h3>
+
+              <p className="mt-1 text-sm leading-5 text-(--color-text-muted)">
                 To access account and manage orders
               </p>
 
               <Link
                 href="/login"
-                className="mt-5 inline-flex items-center justify-center rounded-md border border-[#F4B400] px-7 py-2.5 text-sm font-semibold text-[#F4B400] transition-all duration-300 hover:bg-[#F4B400] hover:text-black"
+                className="mt-5 inline-flex items-center justify-center rounded-(--radius-sm) border border-(--color-accent) px-7 py-2.5 text-sm font-semibold text-(--color-accent) transition-colors hover:bg-(--color-accent) hover:text-(--color-white)"
               >
                 LOGIN / SIGNUP
               </Link>
             </div>
 
             {/* Logged Out Menu */}
-            <div className="border-t border-white/10 px-2 py-2">
+
+            <div className="border-t border-(--color-border) px-2 py-2">
               <Link
-                href="/orders"
-                className="block rounded-lg px-3 py-2.5 text-sm text-gray-300 transition hover:bg-white/5 hover:text-white"
+                href="/login?redirect=/profile%3Ftab%3Dorders"
+                className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
+                <ShoppingBag
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-(--color-text-muted)"
+                />
                 Orders
               </Link>
 
               <Link
-                href="/wishlist"
-                className="block rounded-lg px-3 py-2.5 text-sm text-gray-300 transition hover:bg-white/5 hover:text-white"
+                href="/login?redirect=%2Fprofile%3Ftab%3Dwishlist"
+                className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
+                <Heart
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-(--color-text-muted)"
+                />
                 Wishlist
               </Link>
 
               <Link
                 href="/contact"
-                className="block rounded-lg px-3 py-2.5 text-sm text-gray-300 transition hover:bg-white/5 hover:text-white"
+                className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
+                <Headphones
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-(--color-text-muted)"
+                />
                 Contact Us
               </Link>
             </div>

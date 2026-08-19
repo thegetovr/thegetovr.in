@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 import { connectToDatabase } from "@/lib/mongodb";
-import User from "@/app/models/User";
+import User from "@/models/User";
 
 export async function POST(request: Request) {
   try {

@@ -1,9 +1,4 @@
-import type {
-  PrintSide,
-  Product,
-  ProductColor,
-  ProductSize,
-} from "./design";
+import type { PrintSide, Product, ProductColor, ProductSize } from "./design";
 
 import type { CartDesignElement } from "./cartDesign";
 

@@ -11,12 +11,15 @@ The goal is to finalize the database architecture before backend development beg
 # Database Stack
 
 Database
+
 - PostgreSQL
 
 ORM
+
 - Prisma
 
 Authentication
+
 - Better Auth
 
 ---
@@ -80,8 +83,6 @@ Fields
 - userId
 - fullName
 - phone
-- addressLine1
-- addressLine2
 - city
 - state
 - country

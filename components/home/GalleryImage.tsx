@@ -7,38 +7,25 @@ export default function GalleryImage({
 }: GalleryImageProps) {
   return (
     <div
-      className={`
-        group
-        relative
-        overflow-hidden
-        rounded-[32px]
-        border
-        border-white/10
-        bg-gradient-to-br
-        from-zinc-900
-        via-black
-        to-zinc-950
-        transition-all
-        duration-500
-        hover:-translate-y-2
-        hover:border-white/20
+      className={`group relative overflow-hidden rounded-(--radius-lg)
+        border border-(--color-border)
+        bg-(--color-surface)
+        transition-all duration-500
+        hover:-translate-y-1
+        hover:shadow-(--shadow-elevated)
         ${
           large
             ? "min-h-[520px]"
             : "min-h-[260px]"
-        }
-      `}
+        }`}
     >
-      {/* Soft Glow */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
-
-      {/* Placeholder Image */}
-      <div className="absolute inset-6 rounded-3xl border border-white/5 bg-zinc-900 flex items-center justify-center">
-        <div className="h-20 w-20 rounded-full border border-white/10 bg-black" />
+      {/* Editorial Image Placeholder */}
+      <div className="absolute inset-6 flex items-center justify-center rounded-(--radius-md) border border-(--color-border) bg-(--color-surface-muted)">
+        <div className="h-20 w-20 rounded-full border border-(--color-border) bg-(--color-surface)" />
       </div>
 
       {/* Hover Overlay */}
-      <div className="absolute inset-0 bg-white/0 transition duration-500 group-hover:bg-white/[0.03]" />
+      <div className="absolute inset-0 bg-(--color-accent)/0 transition-colors duration-500 group-hover:bg-(--color-accent)/5" />
     </div>
   );
 }
