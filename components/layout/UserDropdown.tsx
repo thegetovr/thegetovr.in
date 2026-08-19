@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingBag, User } from "lucide-react";
+import { ShoppingBag, User, Heart, Headphones } from "lucide-react";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 interface UserData {
   firstName: string;
@@ -16,12 +16,16 @@ interface UserDropdownProps {
   onNotification: (message: string, type: "success" | "error") => void;
 }
 
-export default function UserDropdown({
-  onNotification,
-}: UserDropdownProps) {
+export default function UserDropdown({ onNotification }: UserDropdownProps) {
+  const router = useRouter();
   const pathname = usePathname();
+
   const [user, setUser] = useState<UserData | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
+
+  // =====================================================
+  // SESSION
+  // =====================================================
 
   useEffect(() => {
     const checkSession = async () => {
@@ -45,6 +49,10 @@ export default function UserDropdown({
     checkSession();
   }, [pathname]);
 
+  // =====================================================
+  // LOGOUT
+  // =====================================================
+
   const handleLogout = async () => {
     try {
       const response = await fetch("/api/auth/logout", {
@@ -55,7 +63,19 @@ export default function UserDropdown({
 
       if (result.success) {
         setUser(null);
-        onNotification(result.message, "success");
+
+        const message = result.message || "Logout Successful";
+
+        window.dispatchEvent(
+          new CustomEvent("auth-notification", {
+            detail: {
+              message,
+              type: "success",
+            },
+          }),
+        );
+
+        router.push("/");
       } else {
         onNotification(result.message, "error");
       }
@@ -64,6 +84,10 @@ export default function UserDropdown({
       onNotification("Something went wrong", "error");
     }
   };
+
+  // =====================================================
+  // LOADING
+  // =====================================================
 
   if (loadingUser) {
     return (
@@ -77,11 +101,17 @@ export default function UserDropdown({
     );
   }
 
+  // =====================================================
+  // DROPDOWN
+  // =====================================================
+
   return (
     <div className="absolute left-1/2 top-full z-50 hidden -translate-x-1/2 group-hover:block">
       <div className="w-80 overflow-hidden rounded-(--radius-md) border border-(--color-border) bg-(--color-surface) shadow-(--shadow-elevated)">
         {user ? (
           <div>
+            {/* User Info */}
+
             <div className="px-5 py-5">
               <div className="flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-full bg-(--color-text-primary) text-(--color-white)">
@@ -100,28 +130,42 @@ export default function UserDropdown({
               </div>
             </div>
 
+            {/* Logged In Menu */}
+
             <div className="border-t border-(--color-border) px-2 py-2">
               <Link
                 href="/profile"
                 className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
-                <User size={18} strokeWidth={1.8} />
+                <User
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-(--color-text-muted)"
+                />
                 My Profile
               </Link>
 
               <Link
-                href="/orders"
+                href="/profile?tab=orders"
                 className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
-                <ShoppingBag size={18} strokeWidth={1.8} />
+                <ShoppingBag
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-(--color-text-muted)"
+                />
                 My Orders
               </Link>
 
               <Link
-                href="/wishlist"
+                href="/profile?tab=wishlist"
                 className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
-                <span className="text-lg">♡</span>
+                <Heart
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-(--color-text-muted)"
+                />
                 Wishlist
               </Link>
 
@@ -129,10 +173,16 @@ export default function UserDropdown({
                 href="/contact"
                 className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
-                <span className="text-lg">•</span>
+                <Headphones
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-(--color-text-muted)"
+                />
                 Contact Us
               </Link>
             </div>
+
+            {/* Logout */}
 
             <div className="border-t border-(--color-border) px-2 py-2">
               <button
@@ -147,6 +197,8 @@ export default function UserDropdown({
           </div>
         ) : (
           <div>
+            {/* Welcome */}
+
             <div className="px-5 py-5">
               <h3 className="text-lg font-semibold text-(--color-text-primary)">
                 Welcome
@@ -164,25 +216,42 @@ export default function UserDropdown({
               </Link>
             </div>
 
+            {/* Logged Out Menu */}
+
             <div className="border-t border-(--color-border) px-2 py-2">
               <Link
-                href="/orders"
-                className="block rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+                href="/login?redirect=/profile%3Ftab%3Dorders"
+                className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
+                <ShoppingBag
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-(--color-text-muted)"
+                />
                 Orders
               </Link>
 
               <Link
-                href="/wishlist"
-                className="block rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+                href="/login?redirect=%2Fprofile%3Ftab%3Dwishlist"
+                className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
+                <Heart
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-(--color-text-muted)"
+                />
                 Wishlist
               </Link>
 
               <Link
                 href="/contact"
-                className="block rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+                className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
+                <Headphones
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-(--color-text-muted)"
+                />
                 Contact Us
               </Link>
             </div>

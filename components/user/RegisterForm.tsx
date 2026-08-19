@@ -48,7 +48,20 @@ export default function RegisterForm() {
       console.log(result);
 
       if (result.success) {
-        sessionStorage.setItem("auth_notification", "Registration Successful");
+        const message = "Registration Successful";
+
+        // Store as fallback
+        sessionStorage.setItem("auth_notification", message);
+
+        // Show immediately
+        window.dispatchEvent(
+          new CustomEvent("auth-notification", {
+            detail: {
+              message,
+              type: "success",
+            },
+          }),
+        );
 
         router.push("/");
       } else {
@@ -57,7 +70,7 @@ export default function RegisterForm() {
 
         setTimeout(() => {
           setNotification("");
-        }, 3000);
+        }, 2000);
       }
     } catch (error) {
       console.error("Register Error:", error);
@@ -67,7 +80,7 @@ export default function RegisterForm() {
 
       setTimeout(() => {
         setNotification("");
-      }, 3000);
+      }, 2000);
     }
   };
 
@@ -75,26 +88,40 @@ export default function RegisterForm() {
 
   return (
     <>
-      {notification && (
+      {notification && notificationType === "error" && (
         <div
-          className={`fixed right-6 top-24 z-[100] flex items-center gap-3 rounded-xl border px-5 py-4 shadow-2xl ${
-            notificationType === "success"
-              ? "border-green-500/40 bg-green-500/10 text-green-400"
-              : "border-red-500/40 bg-red-500/10 text-red-400"
-          }`}
+          className="
+            fixed
+            right-6
+            top-24
+            z-[100]
+            flex
+            items-center
+            gap-3
+            rounded-xl
+            border
+            border-red-200
+            bg-white
+            px-5
+            py-4
+            text-red-600
+            shadow-2xl
+          "
         >
-          <span className="text-xl">
-            {notificationType === "success" ? "✓" : "!"}
-          </span>
+          <span className="text-xl">!</span>
 
           <p className="text-sm font-medium">{notification}</p>
         </div>
       )}
-      <main className="flex h-[calc(100vh-80px)] items-center justify-center bg-black px-8 py-8">
+      <main
+        className="flex h-[calc(100vh-80px)]
+       items-center justify-center bg-[#fcfbf9]  px-8 py-8"
+      >
         <div className="mx-auto w-full max-w-5xl">
           <section
             className=" w-full max-w-5xl max-h-[calc(100vh-140px)] overflow-hidden rounded-[32px]
-            border border-white/30 bg-black shadow-2xl"
+            border border-[#ddd5ca] bg-white
+             shadow-2xl"
           >
             <div className="flex flex-col lg:flex-row">
               {/* Left Side - Image */}
@@ -110,19 +137,32 @@ export default function RegisterForm() {
                 />
               </div>
               {/* Right Side - Form */}
-              <div className="flex min-h-full items-center justify-center p-4 lg:w-[55%] lg:p-6 text-white">
+              <div
+                className="flex min-h-full items-center
+               justify-center p-4 lg:w-[55%] lg:p-6  bg-[#fcfaf7]
+                text-zinc-900"
+              >
                 <div className="w-full max-w-lg ">
                   {/* Welcome Text */}
-                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#F4B400]">
+                  <p
+                    className="text-xs font-semibold 
+                  uppercase tracking-[0.3em] text-[#a67c35]"
+                  >
                     CREATE ACCOUNT
                   </p>
 
                   {/* Heading */}
-                  <h1 className="mt-2 text-4xl font-bold leading-[1.1] text-white">
-                    Join <span className="text-[#F4B400]">The GetOvr</span>
+                  <h1
+                    className="mt-2 text-4xl 
+                  font-bold leading-[1.1] text-zinc-900"
+                  >
+                    Join <span className="text-[#a67c35]">The GetOvr</span>
                   </h1>
                   {/* Description */}
-                  <p className="mt-4 text-sm leading-6 text-zinc-400">
+                  <p
+                    className="mt-4 text-sm leading-6
+                   text-[#77736d]"
+                  >
                     Create your account and start your
                     <br />
                     journey with The GetOvr.
@@ -136,7 +176,8 @@ export default function RegisterForm() {
                           className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400
                        transition-all
                       duration-300
-                      group-focus-within:text-[#F4B400]
+                       text-[#9a958d]
+                      group-focus-within:text-[#a67c35]
                        group-focus-within:scale-110"
                         />
                         <input
@@ -154,13 +195,15 @@ export default function RegisterForm() {
                         pr-4
                         rounded-xl
                         border
-                        border-white/50
-                        bg-transparent
-                      text-white
+                      border-[#d5cec3]
+                      bg-[#fcfaf7]                        
+                      text-zinc-900
                         outline-none
                         transition-all
                         duration-300
-                        focus:border-[#F4B400]
+                        focus:border-[#a67c35]
+                          focus:ring-1
+                          focus:ring-[#a67c35]/20
     "
                         />
 
@@ -171,22 +214,21 @@ export default function RegisterForm() {
                         left-10
                         top-1/2
                         -translate-y-1/2
-                        bg-black
+                          bg-[#fcfaf7]
+                       text-[#77736d]
                         px-2
                         text-sm
-                        text-zinc-300
                         transition-all
                         duration-300
-
+                      peer-focus:text-[#a67c35]
                         peer-focus:top-0
                          peer-focus:left-9
                         peer-focus:text-xs
-                        peer-focus:text-[#F4B400]
+                        
 
                         peer-[:not(:placeholder-shown)]:top-0
                         peer-[:not(:placeholder-shown)]:text-xs
-                        peer-[:not(:placeholder-shown)]:text-[#F4B400]
-    "
+                      peer-not-placeholder-shown:text-[#a67c35]"
                         >
                           First Name
                         </label>
@@ -196,11 +238,14 @@ export default function RegisterForm() {
                       <div className="group relative">
                         <User
                           size={20}
-                          className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400
-                       transition-all
-                      duration-300
-                      group-focus-within:text-[#F4B400]
-                       group-focus-within:scale-110"
+                          className="absolute left-4 
+                          top-1/2 -translate-y-1/2
+                            
+                        transition-all
+                        duration-300
+                        text-[#9a958d]
+                        group-focus-within:text-[#a67c35]
+                        group-focus-within:scale-110"
                         />
                         <input
                           id="lastName"
@@ -217,13 +262,15 @@ export default function RegisterForm() {
                         pl-12
                         pr-4
                         border
-                        border-white/50
-                        bg-transparent
-                      text-white
+                        border-[#d5cec3]
+                      bg-[#fcfaf7]                        
+                      text-zinc-900
                         outline-none
                         transition-all
                         duration-300
-                        focus:border-[#F4B400]"
+                        focus:border-[#a67c35]
+                          focus:ring-1
+                          focus:ring-[#a67c35]/20"
                         />
 
                         <label
@@ -234,21 +281,21 @@ export default function RegisterForm() {
                         left-10
                         top-1/2
                         -translate-y-1/2
-                        bg-black
+                     bg-[#fcfaf7]
+                       text-[#77736d]
                         px-2
-                        text-sm
-                        text-zinc-300
+                        text-sm              
                         transition-all
                         duration-300
 
                         peer-focus:top-0
                         peer-focus:left-9
                         peer-focus:text-xs
-                        peer-focus:text-[#F4B400]
+                       peer-focus:text-[#a67c35]
 
                         peer-[:not(:placeholder-shown)]:top-0
                         peer-[:not(:placeholder-shown)]:text-xs
-                      peer-[:not(:placeholder-shown)]:text-[#F4B400]
+                      peer-not-placeholder-shown:text-[#a67c35]
     "
                         >
                           Last Name
@@ -260,10 +307,12 @@ export default function RegisterForm() {
                         <div className="group relative">
                           <Mail
                             size={20}
-                            className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400
+                            className="absolute left-4 top-1/2 
+                            -translate-y-1/2
                        transition-all
                       duration-300
-                      group-focus-within:text-[#F4B400]
+                      text-[#9a958d]
+                      group-focus-within:text-[#a67c35]
                        group-focus-within:scale-110"
                           />
 
@@ -280,15 +329,17 @@ export default function RegisterForm() {
                         w-full
                         rounded-xl
                         border
-                    border-white/50
-                        bg-transparent
+                    border-[#d5cec3]
+                      bg-[#fcfaf7]                        
+                      text-zinc-900
                         pl-12
                         pr-4
-                    text-white
                         outline-none
                         transition-all
                         duration-300
-                    focus:border-[#F4B400]
+                  focus:border-[#a67c35]
+                          focus:ring-1
+                          focus:ring-[#a67c35]/20
                     "
                           />
 
@@ -299,21 +350,22 @@ export default function RegisterForm() {
                       left-10
                       top-1/2
                       -translate-y-1/2
-                      bg-black
+                     bg-[#fcfaf7]
+                       text-[#77736d]
                       px-2
-                      text-base
-                      text-zinc-300
+                      text-sm
+                     
                       transition-all
                       duration-300
 
                       peer-focus:top-0
                       peer-focus:left-9                    
                       peer-focus:text-sm
-                      peer-focus:text-[#F4B400]
+                      peer-focus:text-[#a67c35]
 
                       peer-not-placeholder-shown:top-0                    
                       peer-not-placeholder-shown:text-sm
-                      peer-not-placeholder-shown:text-[#F4B400]
+                      peer-not-placeholder-shown:text-[#a67c35]
                      "
                           >
                             Email
@@ -325,10 +377,12 @@ export default function RegisterForm() {
                       <div className="group relative">
                         <Phone
                           size={20}
-                          className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400
+                          className="absolute left-4 
+                          top-1/2 -translate-y-1/2
                        transition-all
                       duration-300
-                      group-focus-within:text-[#F4B400]
+                      text-[#9a958d]
+                      group-focus-within:text-[#a67c35]
                        group-focus-within:scale-110"
                         />
 
@@ -347,15 +401,17 @@ export default function RegisterForm() {
                     w-full
                     rounded-xl
                     border
-                  border-white/50
-                    bg-transparent
+                  border-[#d5cec3]
+                      bg-[#fcfaf7]                        
+                      text-zinc-900
                     pl-12
                     pr-4
-                  text-white
                     outline-none
                     transition-all
                     duration-300
-                  focus:border-[#F4B400]
+                  focus:border-[#a67c35]
+                          focus:ring-1
+                          focus:ring-[#a67c35]/20
     "
                         />
 
@@ -366,22 +422,21 @@ export default function RegisterForm() {
                       left-10
                       top-1/2
                       -translate-y-1/2
-                      bg-black
+                     bg-[#fcfaf7]
+                       text-[#77736d]
                       px-2
-                      text-base
-                      text-zinc-300
+                      text-sm
                       transition-all
                       duration-300
 
                       peer-focus:top-0
                       peer-focus:left-9                   
                       peer-focus:text-xs
-                      peer-focus:text-[#F4B400]
+                      peer-focus:text-[#a67c35]
 
                       peer-not-placeholder-shown:top-0                    
                       peer-not-placeholder-shown:text-xs
-                      peer-not-placeholder-shown:text-[#F4B400]
-                     "
+                      peer-not-placeholder-shown:text-[#a67c35]"
                         >
                           Phone Number
                         </label>
@@ -391,10 +446,13 @@ export default function RegisterForm() {
                       <div className="group relative">
                         <Lock
                           size={20}
-                          className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400
+                          className="absolute left-4
+                           top-1/2 -translate-y-1/2
+                           
                        transition-all
                       duration-300
-                       group-focus-within:text-[#F4B400]
+                      text-[#9a958d]
+                      group-focus-within:text-[#a67c35]
                        group-focus-within:scale-110"
                         />
                         <input
@@ -411,15 +469,18 @@ export default function RegisterForm() {
                         w-full
                         rounded-xl
                         border
-                        border-white/50
-                        bg-transparent
+                        border-[#d5cec3]
+                      bg-[#fcfaf7]                        
+                      text-zinc-900
                         pl-12
                         pr-12
                         text-white
                         outline-none
                         transition-all
                         duration-300
-                        focus:border-[#F4B400]
+                        focus:border-[#a67c35]
+                          focus:ring-1
+                          focus:ring-[#a67c35]/20
                   "
                         />
 
@@ -430,21 +491,21 @@ export default function RegisterForm() {
                       left-10
                       top-1/2
                       -translate-y-1/2
-                      bg-black
+                     bg-[#fcfaf7]
+                       text-[#77736d]
                       px-2
-                      text-base
-                      text-zinc-300
+                      text-sm
                       transition-all
                       duration-300
 
                       peer-focus:top-0
                       peer-focus:left-9
                       peer-focus:text-xs
-                      peer-focus:text-[#F4B400]
+                    peer-focus:text-[#a67c35]
 
                       peer-not-placeholder-shown:top-0
                       peer-not-placeholder-shown:text-xs
-                    peer-not-placeholder-shown:text-[#F4B400]
+                    peer-not-placeholder-shown:text-[#a67c35]
                     "
                         >
                           Password
@@ -483,7 +544,10 @@ export default function RegisterForm() {
                     </div>
 
                     {/* Terms and Condition */}
-                    <div className="mt-5 flex items-start gap-3">
+                    <div
+                      className="mt-5 flex 
+                    items-start gap-3"
+                    >
                       <input
                         id="terms"
                         type="checkbox"
@@ -492,28 +556,30 @@ export default function RegisterForm() {
                     h-4
                     w-4
                     rounded
-                    border-white/30
+                    border-white/20
                     bg-transparent
-                    accent-[#F4B400]
+                    accent-[#a67c35]
+                    bg-[#a67c35]
                     cursor-pointer
                              "
                       />
 
                       <label
                         htmlFor="terms"
-                        className="text-sm leading-6 text-zinc-400"
+                        className="text-sm leading-6 text-zinc-900"
                       >
                         I agree to the{" "}
                         <Link
                           href="/terms"
-                          className="font-medium text-[#F4B400] hover:underline"
+                          className="font-medium
+                           text-[#a67c35] hover:underline"
                         >
                           Terms & Conditions
                         </Link>{" "}
                         and{" "}
                         <Link
                           href="/privacy"
-                          className="font-medium text-[#F4B400] hover:underline"
+                          className="font-medium text-[#a67c35] hover:underline"
                         >
                           Privacy Policy
                         </Link>
@@ -525,26 +591,27 @@ export default function RegisterForm() {
                       <button
                         type="submit"
                         className="
-                    group
-                    grid
-                    h-14
-                    w-full
-                    grid-cols-[1fr_auto_1fr]
-                    items-center
-                    rounded-2xl
-                    bg-[#F4B400]
-                    px-6
-                    text-black
-                    transition-all
-                    duration-300
-                    hover:bg-[#F6C026]
-                    active:scale-[0.98]
+                        group
+                        grid
+                        h-14
+                        w-full
+                        grid-cols-[1fr_auto_1fr]
+                        items-center
+                        rounded-2xl
+                        border-[#d5c7b4]
+                        bg-[#eee3d5]
+                      hover:bg-[#e6d8c6]
+                        px-6
+                        text-black
+                        transition-all
+                        duration-300
+                        active:scale-[0.98]
                              "
                       >
                         <div></div>
 
                         <span
-                          className="transition-all
+                          className="transition-all 
                         duration-300 group-hover:scale-110 justify-self-center text-md font-semibold"
                         >
                           CREATE ACCOUNT
@@ -570,11 +637,11 @@ export default function RegisterForm() {
                   </form>
 
                   <div className="mt-8 text-center">
-                    <p className="text-sm text-zinc-300">
+                    <p className="text-sm text-[#77736d]">
                       Already have an account?{" "}
                       <Link
                         href="/login"
-                        className="font-semibold text-[#F4B400] transition-colors duration-300 hover:text-[#FFD54A]"
+                        className="font-semibold text-[#a67c35] transition-colors duration-300 hover:text-[#FFD54A]"
                       >
                         Login Here
                       </Link>

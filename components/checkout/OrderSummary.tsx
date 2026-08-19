@@ -52,6 +52,10 @@ export default function OrderSummary() {
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponMessage, setCouponMessage] = useState("");
 
+  // =====================================================
+  // PLACE ORDER
+  // =====================================================
+
   const handlePlaceOrder = async () => {
     setIsSubmitting(true);
 
@@ -67,6 +71,8 @@ export default function OrderSummary() {
       });
 
       const data = await response.json();
+
+      console.log("ORDER RESPONSE:", data);
 
       if (data.success) {
         clearCart();
@@ -93,6 +99,8 @@ export default function OrderSummary() {
           `/order-success?orderNumber=${encodeURIComponent(order.orderNumber)}`,
         );
       }
+    } catch (error) {
+      console.error("PLACE ORDER ERROR:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -101,6 +109,10 @@ export default function OrderSummary() {
   return (
     <Card className="sticky top-6 h-fit">
       <h2 className="text-2xl font-semibold">Order Summary</h2>
+
+      {/* =================================================
+          ITEMS
+      ================================================= */}
 
       <div className="mt-6 space-y-5">
         {allItems.length === 0 ? (
@@ -164,6 +176,10 @@ export default function OrderSummary() {
         )}
       </div>
 
+      {/* =================================================
+          COUPON
+      ================================================= */}
+
       <div className="mt-6 flex gap-2">
         <input
           type="text"
@@ -216,6 +232,10 @@ export default function OrderSummary() {
 
       <div className="my-6 border-t border-(--color-border)" />
 
+      {/* =================================================
+          PRICE
+      ================================================= */}
+
       <div className="space-y-3">
         <div className="flex justify-between text-(--color-text-secondary)">
           <span>Subtotal</span>
@@ -257,6 +277,10 @@ export default function OrderSummary() {
         </div>
       </div>
 
+      {/* =================================================
+          DELIVERY INFO
+      ================================================= */}
+
       <div className="mt-6 rounded-xl border border-(--color-border) bg-(--color-surface-muted) p-4">
         <div className="flex items-center justify-between text-sm text-(--color-text-secondary)">
           <span>Items</span>
@@ -274,6 +298,10 @@ export default function OrderSummary() {
         <p>🚚 Free Shipping</p>
         <p>↩️ Easy Returns</p>
       </div>
+
+      {/* =================================================
+          PLACE ORDER
+      ================================================= */}
 
       <Button
         className="mt-8"

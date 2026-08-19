@@ -20,9 +20,7 @@ export default function FormField({
     <div className="space-y-2">
       <label className="block text-sm font-medium text-(--color-text-primary)">
         {label}
-        {required && (
-          <span className="ml-1 text-(--color-error)">*</span>
-        )}
+        {required && <span className="ml-1 text-(--color-error)">*</span>}
       </label>
 
       <input
@@ -40,11 +38,7 @@ export default function FormField({
         ${className}`}
       />
 
-      {error && (
-        <p className="text-sm text-(--color-error)">
-          {error}
-        </p>
-      )}
+      {error && <p className="text-sm text-(--color-error)">{error}</p>}
     </div>
   );
 }
