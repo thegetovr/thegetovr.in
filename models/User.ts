@@ -6,6 +6,10 @@ export interface IUser {
   email: string;
   phone: string;
   password: string;
+
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
+
   dateOfBirth?: string;
   gender?: string;
 }
@@ -43,6 +47,16 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: true,
       minlength: 8,
+    },
+
+    resetPasswordToken: {
+      type: String,
+      default: undefined,
+    },
+
+    resetPasswordExpires: {
+      type: Date,
+      default: undefined,
     },
 
     dateOfBirth: {

@@ -415,21 +415,21 @@ export default function LoginForm() {
                     ================================================= */}
 
                     <div className="mt-4 flex justify-end">
-                      <button
-                        type="button"
+                      <Link
+                        href="/forgot-password"
                         className="
-                          text-sm
-                          font-medium
-                          text-[#756d60]
-                          underline-offset-4
-                          transition-all
-                          duration-300
-                          hover:text-[#a67c35]
-                          hover:underline
-                        "
+                      text-sm
+                      font-medium
+                      text-[#756d60]
+                      underline-offset-4
+                      transition-all
+                      duration-300
+                      hover:text-[#a67c35]
+                      hover:underline
+                    "
                       >
                         Forgot Password?
-                      </button>
+                      </Link>
                     </div>
 
                     {/* =================================================
@@ -492,14 +492,14 @@ export default function LoginForm() {
                       REGISTER
                   ================================================= */}
 
-                  <div className="mt-8 text-center">
+                  <div className="mt-5 text-center">
                     <p className="text-sm text-[#77736d]">
                       Don&apos;t have an account?{" "}
                       <Link
                         href="/register"
                         className="
                           font-semibold
-                          text-[#a67c35]
+                         text-[#a67c35]
                           transition-colors
                           duration-300
                           hover:text-[#8f6a2e]

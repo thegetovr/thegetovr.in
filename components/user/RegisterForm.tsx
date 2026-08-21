@@ -127,7 +127,7 @@ export default function RegisterForm() {
               {/* Left Side - Image */}
               <div className="relative h-52 w-full overflow-hidden lg:h-auto lg:w-[45%] border-r border-white/30">
                 <Image
-                  src="/images/user/RegisterBanner.png"
+                  src="/images/user/RegisterBanner2.png"
                   alt="The GetOvr Login"
                   sizes="(max-width: 1024px) 100vw, 45vw"
                   quality={70}
@@ -641,7 +641,7 @@ export default function RegisterForm() {
                       Already have an account?{" "}
                       <Link
                         href="/login"
-                        className="font-semibold text-[#a67c35] transition-colors duration-300 hover:text-[#FFD54A]"
+                        className="font-semibold text-[#a67c35] transition-colors duration-300 hover:text-[#8f6a2e]"
                       >
                         Login Here
                       </Link>
