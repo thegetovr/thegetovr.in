@@ -92,7 +92,7 @@ export async function POST(request: Request) {
     // =====================================================
 
     const { error } = await resend.emails.send({
-      from: "The GetOvr <onboarding@resend.dev>",
+      from: "The GetOvr <customer@thegetovr.in>",
       to: user.email,
       subject: "Reset Your The GetOvr Password",
 

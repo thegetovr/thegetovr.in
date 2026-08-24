@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import { createOrder, getOrders } from "@/lib/orderService";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
+import { sendOrderPlacedEmail } from "@/lib/emails/orderPlaced";
 
 async function getLoggedInUser() {
   const cookieStore = await cookies();
@@ -88,7 +89,26 @@ export async function POST(request: NextRequest) {
       },
     };
 
+    // =================================================
+    // SAVE ORDER
+    // =================================================
+
     const savedOrder = await createOrder(orderWithUserEmail);
+
+    // =================================================
+    // SEND ORDER PLACED EMAIL
+    // =================================================
+
+    try {
+      await sendOrderPlacedEmail(savedOrder);
+    } catch (emailError) {
+      // Email failure should NOT make the order fail.
+      console.error("ORDER PLACED EMAIL ERROR:", emailError);
+    }
+
+    // =================================================
+    // SUCCESS
+    // =================================================
 
     return NextResponse.json({
       success: true,
