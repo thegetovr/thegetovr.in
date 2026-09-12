@@ -29,7 +29,7 @@
     "react-hook-form": "^7.82.0",
     "react-konva": "^19.2.5",
     "recharts": "^3.10.1",
-    "resend": "^6.21.0",
+    "resend": "^6.28.0",
     "validator": "^13.15.35",
     "zod": "^4.4.3",
     "zustand": "^5.0.14"

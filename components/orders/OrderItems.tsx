@@ -1,6 +1,7 @@
 import type { CartItem } from "@/types/cart";
 import { PRODUCTS, PRINT_SIDE_LABELS } from "@/lib/product";
 import DesignPreviewCanvas from "@/components/admin/orders/DesignPreviewCanvas";
+import Image from "next/image";
 
 interface OrderItemsProps {
   items: CartItem[];
@@ -25,11 +26,12 @@ export default function OrderItems({ items }: OrderItemsProps) {
               <div className="flex items-start justify-between gap-6">
                 {isReadyMade ? (
                   <div className="flex items-start gap-4">
-                    <div className="h-24 w-24 shrink-0 overflow-hidden bg-(--color-surface-muted)">
+                    <div className="relative h-24 w-24 shrink-0 overflow-hidden bg-(--color-surface-muted)">
                       {item.image && (
-                        <img
+                        <Image
                           src={item.image}
                           alt={item.name}
+                          fill
                           className="h-full w-full object-contain"
                         />
                       )}

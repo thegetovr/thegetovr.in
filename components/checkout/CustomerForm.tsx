@@ -37,8 +37,8 @@ export default function CustomerForm() {
   }, [isValid, setIsValid]);
 
   return (
-    <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-8 shadow-[var(--shadow-sm)]">
-      <h2 className="mb-6 text-2xl font-semibold text-[var(--color-text-primary)]">
+    <div className="rounded-md border border-(--color-border) bg-(--color-surface) p-8 shadow-(--shadow-sm)">
+      <h2 className="mb-6 text-2xl font-semibold text-(--color-text-primary)">
         Customer Details
       </h2>
 

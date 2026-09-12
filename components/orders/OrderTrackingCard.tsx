@@ -26,7 +26,11 @@ export default function OrderTrackingCard({
     <section className="overflow-hidden border border-(--color-border) bg-(--color-surface) shadow-(--shadow-subtle)">
       <div className="p-6">
         <div className="mb-8">
-          <OrderHeader orderNumber={orderNumber} createdAt={createdAt} />
+          <OrderHeader
+            orderNumber={orderNumber}
+            createdAt={createdAt}
+            status={status}
+          />
 
           <h2 className="mt-6 text-2xl font-semibold tracking-tight text-(--color-text-primary)">
             {statusInfo.label}
