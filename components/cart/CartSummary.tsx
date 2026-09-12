@@ -21,7 +21,7 @@ export default function CartSummary({ items }: CartSummaryProps) {
         <div className="flex justify-between text-(--color-text-secondary)">
           <span>Items ({items.length})</span>
 
-          <span>₹{subtotal.toLocaleString("en-IN")}</span>
+          <span>{"\u20B9"}{subtotal.toLocaleString("en-IN")}</span>
         </div>
 
         <div className="flex justify-between text-(--color-text-secondary)">
@@ -39,7 +39,7 @@ export default function CartSummary({ items }: CartSummaryProps) {
         </span>
 
         <span className="text-3xl font-bold text-(--color-text-primary)">
-          ₹{total.toLocaleString("en-IN")}
+          {"\u20B9"}{total.toLocaleString("en-IN")}
         </span>
       </div>
 

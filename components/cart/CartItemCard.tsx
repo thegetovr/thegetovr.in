@@ -81,7 +81,7 @@ export default function CartItemCard({
           </p>
 
           <p className="text-2xl font-bold text-(--color-text-primary)">
-            ₹{item.unitPrice.toLocaleString("en-IN")}
+            {"\u20B9"}{item.unitPrice.toLocaleString("en-IN")}
           </p>
         </div>
       </div>
@@ -132,7 +132,7 @@ export default function CartItemCard({
               onClick={() => decreaseQuantity(item.id)}
               className="flex h-8 w-8 items-center justify-center rounded-sm border border-(--color-border) text-(--color-text-primary) transition hover:bg-(--color-surface-muted)"
             >
-              −
+              -
             </button>
 
             <span className="w-8 text-center font-semibold text-(--color-text-primary)">
@@ -155,7 +155,7 @@ export default function CartItemCard({
           </p>
 
           <p className="text-3xl font-bold text-(--color-text-primary)">
-            ₹{item.totalPrice.toLocaleString("en-IN")}
+            {"\u20B9"}{item.totalPrice.toLocaleString("en-IN")}
           </p>
         </div>
       </div>

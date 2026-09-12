@@ -3,7 +3,13 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Search, ShoppingCart, User } from "lucide-react";
+import {
+  Menu,
+  Search,
+  ShoppingCart,
+  User,
+  X,
+} from "lucide-react";
 
 import UserDropdown from "@/components/layout/UserDropdown";
 import Logo from "@/components/ui/Logo";
@@ -31,10 +37,9 @@ export default function Navbar() {
   const [notificationType, setNotificationType] = useState<"success" | "error">(
     "success",
   );
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // =====================================================
-  // AUTH NOTIFICATION
-  // =====================================================
+  const closeMobileMenu = () => setMobileMenuOpen(false);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | null = null;
@@ -79,20 +84,12 @@ export default function Navbar() {
     };
   }, []);
 
-  // =====================================================
-  // ADMIN
-  // =====================================================
-
   if (pathname.startsWith("/admin")) {
     return null;
   }
 
   return (
     <>
-      {/* =================================================
-          NOTIFICATION
-      ================================================= */}
-
       {notification && (
         <div
           className={`fixed right-6 top-24 z-50 flex items-center gap-3 rounded-[var(--radius-sm)] border px-5 py-4 shadow-[var(--shadow-soft)] ${
@@ -109,15 +106,11 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* =================================================
-          HEADER
-      ================================================= */}
-
       <header className="sticky top-0 z-50 border-b border-(--color-border) bg-(--color-page)/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-8">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 sm:px-8">
           <Logo />
 
-          {/* Navigation */}
+          {/* Desktop Navigation */}
 
           <nav className="hidden h-full items-center gap-8 text-md text-(--color-text-primary) md:flex">
             {navLinks.map((link) => (
@@ -135,7 +128,7 @@ export default function Navbar() {
 
           {/* Right Side */}
 
-          <div className="flex h-full items-center gap-6">
+          <div className="flex h-full items-center gap-3 sm:gap-6">
             {/* Search */}
 
             <div className="group relative hidden lg:block">
@@ -154,8 +147,12 @@ export default function Navbar() {
                   if (event.key === "Enter") {
                     const value = event.currentTarget.value.trim();
 
+                    setMobileMenuOpen(false);
+
                     if (value) {
-                      router.push(`/shop?search=${encodeURIComponent(value)}`);
+                      router.push(
+                        `/shop?search=${encodeURIComponent(value)}`,
+                      );
                     } else {
                       router.push("/shop");
                     }
@@ -207,8 +204,61 @@ export default function Navbar() {
                 )}
               </Link>
             </div>
+
+            {/* Mobile Menu */}
+
+            <button
+              type="button"
+              aria-label={mobileMenuOpen ? "Close navigation" : "Open navigation"}
+              aria-expanded={mobileMenuOpen}
+              onClick={() => setMobileMenuOpen((open) => !open)}
+              className="flex items-center justify-center px-2 text-(--color-text-secondary) transition-colors hover:text-(--color-text-primary) md:hidden"
+            >
+              {mobileMenuOpen ? (
+                <X size={24} strokeWidth={1.8} />
+              ) : (
+                <Menu size={24} strokeWidth={1.8} />
+              )}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Navigation */}
+
+        {mobileMenuOpen && (
+          <nav className="border-t border-(--color-border) bg-(--color-page) md:hidden">
+            <div className="mx-auto max-w-7xl px-6 py-4">
+              <div className="flex flex-col">
+                {navLinks.map((link) => {
+                  const isActive =
+                    pathname === link.href ||
+                    pathname.startsWith(`${link.href}/`);
+
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={closeMobileMenu}
+                      className={`border-b border-(--color-border) py-4 text-sm font-medium uppercase tracking-[0.2em] transition-colors last:border-b-0 ${
+                        isActive
+                          ? "text-(--color-text-primary)"
+                          : "text-(--color-text-secondary) hover:text-(--color-text-primary)"
+                      }`}
+                    >
+                      <span className="flex items-center justify-between">
+                        {link.name}
+
+                        {isActive && (
+                          <span className="h-1.5 w-1.5 rounded-full bg-(--color-accent)" />
+                        )}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </nav>
+        )}
       </header>
     </>
   );
