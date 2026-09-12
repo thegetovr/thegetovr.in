@@ -47,33 +47,43 @@ export default async function OrderDetailsPage({ params }: OrderPageProps) {
   // VERIFY JWT
   // =====================================================
 
-  let decoded: jwt.JwtPayload;
+  let decoded: jwt.JwtPayload | null = null;
+  let authErrorMessage: string | null = null;
 
   try {
     const verifiedToken = jwt.verify(token, process.env.JWT_SECRET!);
 
     if (typeof verifiedToken === "string" || !verifiedToken.userId) {
-      return (
-        <main className="flex min-h-screen items-center justify-center bg-(--color-page) px-6 text-(--color-text-primary)">
-          <div className="text-center">
-            <h1 className="text-3xl font-semibold">Unauthorized</h1>
-          </div>
-        </main>
-      );
+      authErrorMessage = "Unauthorized";
+    } else {
+      decoded = verifiedToken;
     }
-
-    decoded = verifiedToken;
   } catch (error) {
     console.error("ORDER AUTH ERROR:", error);
+    authErrorMessage = "Please login again.";
+  }
 
+  if (authErrorMessage) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-(--color-page) px-6 text-(--color-text-primary)">
         <div className="text-center">
           <h1 className="text-3xl font-semibold">Unauthorized</h1>
 
-          <p className="mt-2 text-sm text-(--color-text-muted)">
-            Please login again.
-          </p>
+          {authErrorMessage !== "Unauthorized" && (
+            <p className="mt-2 text-sm text-(--color-text-muted)">
+              {authErrorMessage}
+            </p>
+          )}
+        </div>
+      </main>
+    );
+  }
+
+  if (!decoded) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-(--color-page) px-6 text-(--color-text-primary)">
+        <div className="text-center">
+          <h1 className="text-3xl font-semibold">Unauthorized</h1>
         </div>
       </main>
     );
@@ -171,6 +181,7 @@ export default async function OrderDetailsPage({ params }: OrderPageProps) {
         <div className="mb-8">
           <OrderHeader
             orderNumber={order.orderNumber}
+            status={order.status}
             createdAt={order.createdAt}
           />
         </div>

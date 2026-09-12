@@ -33,7 +33,9 @@ export default function ProfileEdit({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
+ const handleSubmit = async (
+  event: React.FormEvent<HTMLFormElement>,
+) => {
     event.preventDefault();
 
     setError("");

@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { Suspense } from "react";
 import { Lock, Eye, EyeOff, ArrowRight, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
-export default function ResetPasswordPage() {
+function ResetPasswordPage() {
   const searchParams = useSearchParams();
 
   const token = searchParams.get("token");
@@ -561,5 +562,12 @@ export default function ResetPasswordPage() {
         </div>
       </main>
     </>
+  );
+}
+export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <ResetPasswordPage />
+    </Suspense>
   );
 }
