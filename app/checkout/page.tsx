@@ -29,11 +29,24 @@ export default function CheckoutPage() {
 
   return (
     <FormProvider {...methods}>
-      <main className="min-h-screen bg-(--color-page) py-10 text-(--color-text-primary)">
-        <div className="mx-auto max-w-7xl px-6">
-          <h1 className="mb-10 text-4xl font-bold tracking-tight">Checkout</h1>
+      <main className="min-h-screen bg-(--color-page) py-12 text-(--color-text-primary)">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mb-12 max-w-2xl">
+            <p className="text-sm uppercase tracking-[0.45em] text-(--color-text-secondary)">
+              Complete your order
+            </p>
 
-          <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
+            <h1 className="mt-4 font-(--font-editorial) text-5xl font-normal leading-tight">
+              Checkout
+            </h1>
+
+            <p className="mt-4 text-base leading-7 text-(--color-text-secondary)">
+              Confirm your delivery details and review your order before
+              placing it.
+            </p>
+          </div>
+
+          <div className="grid items-start gap-8 lg:grid-cols-[2fr_1fr]">
             <CustomerAddress />
             <OrderSummary />
           </div>

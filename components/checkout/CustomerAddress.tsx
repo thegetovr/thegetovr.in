@@ -34,10 +34,6 @@ export default function CustomerAddress() {
     null,
   );
 
-  // =====================================================
-  // SELECT ADDRESS
-  // =====================================================
-
   const handleSelectAddress = useCallback(
     (address: SavedAddress) => {
       setSelectedAddressId(address._id);
@@ -47,7 +43,6 @@ export default function CustomerAddress() {
       const firstName = nameParts[0] ?? "";
       const lastName = nameParts.slice(1).join(" ");
 
-      // React Hook Form
       setValue("firstName", firstName, {
         shouldValidate: true,
         shouldDirty: true,
@@ -83,7 +78,6 @@ export default function CustomerAddress() {
         shouldDirty: true,
       });
 
-      // Checkout Store
       setCustomer({
         firstName,
         lastName,
@@ -98,28 +92,12 @@ export default function CustomerAddress() {
     [setValue, setCustomer],
   );
 
-  // =====================================================
-  // EDIT ADDRESS
-  // =====================================================
-
-  const handleEditAddress = useCallback(
-    (address: SavedAddress) => {
-      router.push("/profile?tab=addresses");
-    },
-    [router],
-  );
-
-  // =====================================================
-  // ADD NEW ADDRESS
-  // =====================================================
-
+  const handleEditAddress = useCallback(() => {
+    router.push("/profile?tab=addresses");
+  }, [router]);
   const handleAddNewAddress = useCallback(() => {
     router.push("/profile?tab=addresses");
   }, [router]);
-
-  // =====================================================
-  // VALIDATION
-  // =====================================================
 
   useEffect(() => {
     setIsValid(isValid);

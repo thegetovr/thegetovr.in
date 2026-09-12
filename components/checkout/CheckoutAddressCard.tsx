@@ -21,13 +21,6 @@ interface CheckoutAddressCardProps {
   onEdit: () => void;
 }
 
-interface CheckoutAddressCardProps {
-  address: CheckoutAddress;
-  selected: boolean;
-  onSelect: () => void;
-  onEdit: () => void;
-}
-
 export default function CheckoutAddressCard({
   address,
   selected,
@@ -36,34 +29,32 @@ export default function CheckoutAddressCard({
 }: CheckoutAddressCardProps) {
   return (
     <div
-      className={`rounded-xl border p-5 transition-colors duration-200 ${
+      className={`border p-5 transition-colors duration-200 ${
         selected
           ? "border-(--color-text-primary) bg-(--color-surface)"
           : "border-(--color-border) bg-(--color-surface)"
       }`}
     >
-      <div className="flex items-start justify-between gap-4">
-        {/* LEFT */}
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
         <button
           type="button"
           onClick={onSelect}
           className="flex min-w-0 flex-1 text-left"
         >
           <div className="flex gap-3">
-            {/* RADIO */}
             <div
               className={`mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
                 selected
                   ? "border-(--color-text-primary) bg-(--color-text-primary)"
                   : "border-(--color-border) bg-(--color-surface)"
               }`}
+              aria-hidden="true"
             >
               {selected && (
                 <span className="h-2 w-2 rounded-full bg-(--color-white)" />
               )}
             </div>
 
-            {/* DETAILS */}
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <h4 className="font-semibold text-(--color-text-primary)">
@@ -71,7 +62,7 @@ export default function CheckoutAddressCard({
                 </h4>
 
                 {address.isDefault && (
-                  <span className="inline-flex items-center gap-1 rounded-md bg-(--color-surface-muted) px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-(--color-text-primary)">
+                  <span className="inline-flex items-center gap-1 bg-(--color-surface-muted) px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-(--color-text-primary)">
                     <Star size={10} fill="currentColor" />
                     Default
                   </span>
@@ -82,10 +73,10 @@ export default function CheckoutAddressCard({
                 {address.phone}
               </p>
 
-              <div className="mt-2 flex items-start gap-2 text-sm leading-5 text-(--color-text-muted)">
+              <div className="mt-3 flex items-start gap-2 text-sm leading-6 text-(--color-text-secondary)">
                 <MapPin
                   size={15}
-                  className="mt-0.5 shrink-0 text-(--color-text-muted)"
+                  className="mt-1 shrink-0 text-(--color-text-muted)"
                 />
 
                 <span>
@@ -97,8 +88,7 @@ export default function CheckoutAddressCard({
           </div>
         </button>
 
-        {/* RIGHT ACTIONS */}
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2 sm:ml-4">
           <button
             type="button"
             onClick={onEdit}
@@ -106,7 +96,6 @@ export default function CheckoutAddressCard({
               flex
               items-center
               gap-1.5
-              rounded-(--radius-sm)
               border
               border-(--color-border)
               bg-(--color-surface)
@@ -128,7 +117,7 @@ export default function CheckoutAddressCard({
           <button
             type="button"
             onClick={onSelect}
-            className={`rounded-(--radius-sm) px-3 py-2 text-xs font-medium transition-colors duration-200 ${
+            className={`px-3 py-2 text-xs font-medium transition-colors duration-200 ${
               selected
                 ? "bg-(--color-text-primary) text-(--color-white)"
                 : "border border-(--color-border) bg-(--color-surface) text-(--color-text-secondary) hover:border-(--color-text-primary) hover:text-(--color-text-primary)"
