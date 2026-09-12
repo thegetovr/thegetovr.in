@@ -28,7 +28,7 @@ export default function ProductGallery({
             fill
             sizes="(max-width: 1024px) 100vw, 50vw"
             priority
-            className="object-contain object-center p-10 transition-transform duration-500 hover:scale-[1.03]"
+            className="object-contain object-center p-2 transition-transform duration-500 hover:scale-[1.03]"
           />
         ) : (
           <div className="flex h-full items-center justify-center text-(--color-text-muted)">
