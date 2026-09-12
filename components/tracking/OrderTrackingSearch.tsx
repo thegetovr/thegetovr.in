@@ -3,11 +3,13 @@ import { useState } from "react";
 interface OrderTrackingSearchProps {
   onSearch: (orderNumber: string, email: string) => void;
 }
+
 export default function OrderTrackingSearch({
   onSearch,
 }: OrderTrackingSearchProps) {
   const [orderNumber, setOrderNumber] = useState("");
   const [email, setEmail] = useState("");
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -15,12 +17,13 @@ export default function OrderTrackingSearch({
     setOrderNumber("");
     setEmail("");
   }
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
         <label
           htmlFor="orderNumber"
-          className="text-sm font-medium text-zinc-300"
+          className="text-sm font-medium text-(--color-text-primary)"
         >
           Order Number
         </label>
@@ -32,12 +35,15 @@ export default function OrderTrackingSearch({
           placeholder="e.g. GET-1001"
           value={orderNumber}
           onChange={(e) => setOrderNumber(e.target.value)}
-          className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-white placeholder:text-zinc-500 focus:border-white focus:outline-none"
+          className="w-full border border-(--color-border) bg-(--color-page) px-4 py-3 text-(--color-text-primary) placeholder:text-(--color-text-muted) outline-none transition focus:border-(--color-accent)"
         />
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="email" className="text-sm font-medium text-zinc-300">
+        <label
+          htmlFor="email"
+          className="text-sm font-medium text-(--color-text-primary)"
+        >
           Email Address
         </label>
 
@@ -48,13 +54,13 @@ export default function OrderTrackingSearch({
           placeholder="you@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-white placeholder:text-zinc-500 focus:border-white focus:outline-none"
+          className="w-full border border-(--color-border) bg-(--color-page) px-4 py-3 text-(--color-text-primary) placeholder:text-(--color-text-muted) outline-none transition focus:border-(--color-accent)"
         />
       </div>
 
       <button
         type="submit"
-        className="w-full rounded-xl bg-white py-3 font-semibold text-black transition hover:bg-zinc-200"
+        className="w-full bg-(--color-text-primary) py-3 font-semibold text-white transition hover:bg-(--color-accent)"
       >
         Track Order
       </button>
