@@ -38,11 +38,8 @@ export default function MyOrders({ user }: MyOrdersProps) {
   const router = useRouter();
 
   const [orders, setOrders] = useState<Order[]>([]);
-
   const [filteredOrders, setFilteredOrders] = useState<FilterOrder[]>([]);
-
   const [ordersLoading, setOrdersLoading] = useState(true);
-
   const [currentPage, setCurrentPage] = useState(1);
 
   // =====================================================
@@ -158,10 +155,7 @@ export default function MyOrders({ user }: MyOrdersProps) {
           : [];
 
         setOrders(mappedOrders);
-
         setFilteredOrders(mappedOrders);
-
-        // Fresh orders always start from page 1
         setCurrentPage(1);
       } catch (error) {
         console.error("My Orders Error:", error);
@@ -179,17 +173,10 @@ export default function MyOrders({ user }: MyOrdersProps) {
 
   // =====================================================
   // RECEIVE FILTERED ORDERS
-  //
-  // useCallback is IMPORTANT.
-  // It prevents Pagination Page 2 from jumping
-  // back to Page 1 on every parent render.
   // =====================================================
 
   const handleFilteredOrdersChange = useCallback((newOrders: FilterOrder[]) => {
     setFilteredOrders(newOrders);
-
-    // Whenever search/filter actually
-    // produces a new result, start from page 1.
     setCurrentPage(1);
   }, []);
 
@@ -253,7 +240,7 @@ export default function MyOrders({ user }: MyOrdersProps) {
 
   if (ordersLoading) {
     return (
-      <section className="flex min-h-[400px] items-center justify-center rounded-xl border border-[#e6e0d8] bg-white">
+      <section className="flex min-h-[400px] min-w-0 items-center justify-center rounded-xl border border-[#e6e0d8] bg-white px-4">
         <p className="text-sm text-zinc-500">Loading orders...</p>
       </section>
     );
@@ -264,29 +251,29 @@ export default function MyOrders({ user }: MyOrdersProps) {
   // =====================================================
 
   return (
-    <section className="min-w-0 flex-1 rounded-xl border border-[#e6e0d8] bg-white p-6 md:p-7">
+    <section className="min-w-0 flex-1 overflow-hidden rounded-xl border border-[#e6e0d8] bg-white p-4 sm:p-5 md:p-7">
       {/* =================================================
           HEADER
       ================================================= */}
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
+      <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
           <h1 className="font-serif text-2xl text-black">My Orders</h1>
 
           <div className="mt-2 h-[2px] w-8 bg-[#b7965d]" />
 
-          <p className="mt-3 text-sm leading-6 text-zinc-500">
+          <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-500">
             Track and manage all your orders in one place.
           </p>
         </div>
 
-        <button
+        {/* <button
           type="button"
-          className="inline-flex w-fit items-center gap-2 rounded-lg border border-[#ddd5ca] bg-white px-4 py-2.5 text-sm font-medium text-zinc-800 transition hover:bg-[#fcfaf7]"
+          className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-lg border border-[#ddd5ca] bg-white px-4 py-2.5 text-sm font-medium text-zinc-800 transition hover:bg-[#fcfaf7] sm:w-fit"
         >
           <Download size={16} strokeWidth={1.7} />
           Download Invoices
-        </button>
+        </button> */}
       </div>
 
       {/* =================================================
@@ -302,8 +289,8 @@ export default function MyOrders({ user }: MyOrdersProps) {
           ORDER LIST
       ================================================= */}
 
-      <div className="mt-6">
-        <div className="overflow-hidden rounded-xl border border-[#ddd5ca] bg-white">
+      <div className="mt-5 min-w-0 sm:mt-6">
+        <div className="min-w-0 overflow-hidden rounded-xl border border-[#ddd5ca] bg-white">
           {paginatedOrders.length > 0 ? (
             paginatedOrders.map((filterOrder) => {
               const order = orders.find((item) => item.id === filterOrder.id);
@@ -315,12 +302,113 @@ export default function MyOrders({ user }: MyOrdersProps) {
               return (
                 <div
                   key={order.id}
-                  className="border-b border-[#e8e2da] px-4 py-4 last:border-b-0 md:px-5"
+                  className="border-b border-[#e8e2da] p-3.5 last:border-b-0 sm:p-4 md:px-5 md:py-4"
                 >
-                  <div className="grid grid-cols-[92px_minmax(0,1fr)_95px_120px] items-center gap-4">
-                    {/* =================================
-                          PRODUCT IMAGE
-                      ================================= */}
+                  {/* =================================================
+                      MOBILE LAYOUT
+                  ================================================= */}
+
+                  <div className="block md:hidden">
+                    {/* PRODUCT TOP */}
+                    <div className="flex min-w-0 items-start gap-3">
+                      {/* IMAGE */}
+                      <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#f8f6f2]">
+                        {order.image ? (
+                          <img
+                            src={order.image}
+                            alt={order.productName}
+                            className="h-full w-full object-contain"
+                          />
+                        ) : (
+                          <ShoppingBag
+                            size={24}
+                            strokeWidth={1.3}
+                            className="text-zinc-300"
+                          />
+                        )}
+                      </div>
+
+                      {/* INFO */}
+                      <div className="min-w-0 flex-1">
+                        <h2 className="line-clamp-2 text-sm font-semibold leading-5 text-black">
+                          {order.productName}
+                        </h2>
+
+                        <p className="mt-1 text-xs text-zinc-500">
+                          {order.date}
+                          {order.time ? `, ${order.time}` : ""}
+                        </p>
+
+                        <p className="mt-1 text-xs text-zinc-600">
+                          {order.items} {order.items === 1 ? "Item" : "Items"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* STATUS + DELIVERY */}
+                    <div className="mt-3 flex min-w-0 flex-col gap-2">
+                      <div>
+                        <span
+                          className={`inline-flex max-w-full items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[11px] font-medium ${getStatusStyle(
+                            order.status,
+                          )}`}
+                        >
+                          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-current" />
+
+                          <span className="truncate">{order.status}</span>
+                        </span>
+                      </div>
+
+                      <div className="flex min-w-0 items-start gap-1.5 text-xs text-zinc-500">
+                        <Truck
+                          size={13}
+                          strokeWidth={1.7}
+                          className="mt-0.5 shrink-0"
+                        />
+
+                        <span className="min-w-0 break-words">
+                          {order.deliveryText}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* PRICE + ACTION */}
+                    <div className="mt-4 flex min-w-0 items-center justify-between gap-3 border-t border-[#eee9e2] pt-3.5">
+                      <p className="shrink-0 text-sm font-semibold text-black">
+                        ₹{order.price}
+                      </p>
+
+                      {order.status === "Shipped" ? (
+                        <button
+                          type="button"
+                          className="inline-flex min-w-0 items-center justify-center gap-1 rounded-lg border border-[#d8cfc3] px-3 py-2 text-xs font-medium text-zinc-800 transition hover:bg-[#fcfaf7]"
+                        >
+                          <span className="truncate">Track Order</span>
+                          <ChevronRight size={14} className="shrink-0" />
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            router.push(
+                              `/orders/${encodeURIComponent(order.id)}`,
+                            )
+                          }
+                          className="inline-flex min-w-0 items-center justify-center gap-1 rounded-lg bg-[#eee3d5] px-3 py-2 text-xs font-medium text-zinc-900 transition hover:bg-[#e6d8c6]"
+                        >
+                          <span className="truncate">View Details</span>
+                          <ChevronRight size={14} className="shrink-0" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* =================================================
+                      DESKTOP LAYOUT
+                  ================================================= */}
+
+                  <div className="hidden md:grid md:grid-cols-[92px_minmax(0,1fr)_95px_120px] md:items-center md:gap-4">
+                    {/* PRODUCT IMAGE */}
 
                     <div className="flex h-[88px] w-[88px] items-center justify-center overflow-hidden rounded-lg bg-[#f8f6f2]">
                       {order.image ? (
@@ -338,9 +426,7 @@ export default function MyOrders({ user }: MyOrdersProps) {
                       )}
                     </div>
 
-                    {/* =================================
-                          ORDER INFO
-                      ================================= */}
+                    {/* ORDER INFO */}
 
                     <div className="min-w-0">
                       <h2 className="truncate text-sm font-semibold text-black">
@@ -349,7 +435,6 @@ export default function MyOrders({ user }: MyOrdersProps) {
 
                       <p className="mt-1 text-xs text-zinc-500">
                         {order.date}
-
                         {order.time ? `, ${order.time}` : ""}
                       </p>
 
@@ -357,16 +442,18 @@ export default function MyOrders({ user }: MyOrdersProps) {
                         {order.items} {order.items === 1 ? "Item" : "Items"}
                       </p>
 
-                      <div className="mt-2 flex items-center gap-1.5 text-xs text-zinc-500">
-                        <Truck size={13} strokeWidth={1.7} />
+                      <div className="mt-2 flex min-w-0 items-center gap-1.5 text-xs text-zinc-500">
+                        <Truck
+                          size={13}
+                          strokeWidth={1.7}
+                          className="shrink-0"
+                        />
 
-                        <span>{order.deliveryText}</span>
+                        <span className="truncate">{order.deliveryText}</span>
                       </div>
                     </div>
 
-                    {/* =================================
-                          STATUS
-                      ================================= */}
+                    {/* STATUS */}
 
                     <div>
                       <span
@@ -380,9 +467,7 @@ export default function MyOrders({ user }: MyOrdersProps) {
                       </span>
                     </div>
 
-                    {/* =================================
-                          PRICE + ACTION
-                      ================================= */}
+                    {/* PRICE + ACTION */}
 
                     <div className="flex flex-col items-end">
                       <p className="text-sm font-semibold text-black">
@@ -417,11 +502,11 @@ export default function MyOrders({ user }: MyOrdersProps) {
               );
             })
           ) : (
-            /* =============================================
+            /* =================================================
                EMPTY STATE
-            ============================================= */
+            ================================================= */
 
-            <div className="flex min-h-[360px] flex-col items-center justify-center px-5 text-center">
+            <div className="flex min-h-[320px] flex-col items-center justify-center px-5 text-center sm:min-h-[360px]">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#f5f1eb]">
                 <ShoppingBag
                   size={26}
@@ -446,11 +531,13 @@ export default function MyOrders({ user }: MyOrdersProps) {
           REUSABLE PAGINATION
       ================================================= */}
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
+      <div className="min-w-0 overflow-x-auto">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      </div>
     </section>
   );
 }
