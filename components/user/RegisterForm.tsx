@@ -8,7 +8,10 @@ import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
   const router = useRouter();
+
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const [notification, setNotification] = useState("");
   const [notificationType, setNotificationType] = useState<"success" | "error">(
     "success",
@@ -22,25 +25,68 @@ export default function RegisterForm() {
     password: "",
   });
 
+  // =====================================================
+  // CONSENT
+  // =====================================================
+
+  const [consentGiven, setConsentGiven] = useState(false);
+
+  const passwordRef = useRef<HTMLInputElement>(null);
+
+  // =====================================================
+  // INPUT CHANGE
+  // =====================================================
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  // =====================================================
+  // NOTIFICATION
+  // =====================================================
+
+  const showError = (message: string) => {
+    setNotificationType("error");
+    setNotification(message);
+
+    setTimeout(() => {
+      setNotification("");
+    }, 2000);
+  };
+
+  // =====================================================
+  // REGISTER
+  // =====================================================
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // =====================================================
+    // CONSENT CHECK
+    // =====================================================
+
+    if (!consentGiven) {
+      showError("Please accept the Terms & Conditions and Privacy Policy.");
+      return;
+    }
+
     try {
+      setLoading(true);
+
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          consentGiven: true,
+        }),
       });
 
       const result = await response.json();
@@ -65,70 +111,123 @@ export default function RegisterForm() {
 
         router.push("/");
       } else {
-        setNotificationType("error");
-        setNotification(result.message);
-
-        setTimeout(() => {
-          setNotification("");
-        }, 2000);
+        showError(result.message);
       }
     } catch (error) {
       console.error("Register Error:", error);
 
-      setNotificationType("error");
-      setNotification("Something went wrong");
-
-      setTimeout(() => {
-        setNotification("");
-      }, 2000);
+      showError("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const passwordRef = useRef<HTMLInputElement>(null);
-
   return (
     <>
+      {/* =================================================
+          ERROR NOTIFICATION
+      ================================================= */}
+
       {notification && notificationType === "error" && (
         <div
           className="
             fixed
-            right-6
-            top-24
+            left-5
+            right-5
+            top-[105px]
             z-[100]
             flex
-            items-center
+            items-start
             gap-3
-            rounded-xl
+            rounded-2xl
             border
             border-red-200
             bg-white
-            px-5
-            py-4
+            px-4
+            py-3.5
             text-red-600
             shadow-2xl
+            sm:left-auto
+            sm:right-6
+            sm:top-24
+            sm:max-w-md
+            sm:items-center
+            sm:rounded-xl
+            sm:px-5
+            sm:py-4
           "
         >
-          <span className="text-xl">!</span>
+          <span className="mt-0.5 shrink-0 text-lg sm:mt-0 sm:text-xl">!</span>
 
-          <p className="text-sm font-medium">{notification}</p>
+          <p className="min-w-0 flex-1 break-words text-sm font-medium leading-5">
+            {notification}
+          </p>
         </div>
       )}
+
+      {/* =================================================
+          MAIN
+      ================================================= */}
+
       <main
-        className="flex h-[calc(100vh-80px)]
-       items-center justify-center bg-[#fcfbf9]  px-8 py-8"
+        className="
+          flex
+          min-h-[calc(100dvh-80px)]
+          items-start
+          justify-center
+          bg-[#fcfbf9]
+          px-4
+          py-4
+          sm:px-6
+          sm:py-6
+          lg:items-center
+          lg:px-8
+          lg:py-8
+        "
       >
         <div className="mx-auto w-full max-w-5xl">
+          {/* =================================================
+              MAIN CARD
+          ================================================= */}
+
           <section
-            className=" w-full max-w-5xl max-h-[calc(100vh-140px)] overflow-hidden rounded-[32px]
-            border border-[#ddd5ca] bg-white
-             shadow-2xl"
+            className="
+              w-full
+              max-w-5xl
+              overflow-hidden
+              rounded-[24px]
+              border
+              border-[#ddd5ca]
+              bg-white
+              shadow-2xl
+              sm:rounded-[28px]
+              lg:max-h-[calc(100dvh-140px)]
+              lg:rounded-[32px]
+            "
           >
             <div className="flex flex-col lg:flex-row">
-              {/* Left Side - Image */}
-              <div className="relative h-52 w-full overflow-hidden lg:h-auto lg:w-[45%] border-r border-white/30">
+              {/* =================================================
+                  LEFT SIDE - IMAGE
+              ================================================= */}
+
+              <div
+                className="
+                  relative
+                  h-40
+                  w-full
+                  overflow-hidden
+                  border-b
+                  border-white/30
+                  sm:h-52
+                  lg:h-auto
+                  lg:w-[45%]
+                  lg:border-b-0
+                  lg:border-r
+                "
+              >
                 <Image
                   src="/images/user/RegisterBanner2.png"
-                  alt="The GetOvr Login"
+                  alt="The GetOvr Register"
                   sizes="(max-width: 1024px) 100vw, 45vw"
                   quality={70}
                   fill
@@ -136,50 +235,116 @@ export default function RegisterForm() {
                   className="object-cover object-center"
                 />
               </div>
-              {/* Right Side - Form */}
+
+              {/* =================================================
+                  RIGHT SIDE - FORM
+              ================================================= */}
+
               <div
-                className="flex min-h-full items-center
-               justify-center p-4 lg:w-[55%] lg:p-6  bg-[#fcfaf7]
-                text-zinc-900"
+                className="
+                  flex
+                  w-full
+                  items-center
+                  justify-center
+                  bg-[#fcfaf7]
+                  p-5
+                  text-zinc-900
+                  sm:p-6
+                  lg:w-[55%]
+                  lg:p-8
+                "
               >
-                <div className="w-full max-w-lg ">
-                  {/* Welcome Text */}
+                <div className="w-full max-w-lg">
+                  {/* =================================================
+                      WELCOME TEXT
+                  ================================================= */}
+
                   <p
-                    className="text-xs font-semibold 
-                  uppercase tracking-[0.3em] text-[#a67c35]"
+                    className="
+                      text-[11px]
+                      font-semibold
+                      uppercase
+                      tracking-[0.25em]
+                      text-[#a67c35]
+                      sm:text-xs
+                      sm:tracking-[0.3em]
+                    "
                   >
                     CREATE ACCOUNT
                   </p>
 
-                  {/* Heading */}
+                  {/* =================================================
+                      HEADING
+                  ================================================= */}
+
                   <h1
-                    className="mt-2 text-4xl 
-                  font-bold leading-[1.1] text-zinc-900"
+                    className="
+                      mt-2
+                      text-3xl
+                      font-bold
+                      leading-[1.1]
+                      text-zinc-900
+                      sm:text-4xl
+                    "
                   >
                     Join <span className="text-[#a67c35]">The GetOvr</span>
                   </h1>
-                  {/* Description */}
+
+                  {/* =================================================
+                      DESCRIPTION
+                  ================================================= */}
+
                   <p
-                    className="mt-4 text-sm leading-6
-                   text-[#77736d]"
+                    className="
+                      mt-3
+                      text-sm
+                      leading-6
+                      text-[#77736d]
+                      sm:mt-4
+                    "
                   >
                     Create your account and start your
-                    <br />
+                    <br className="hidden sm:block" />
+                    <span className="sm:hidden"> </span>
                     journey with The GetOvr.
                   </p>
+
+                  {/* =================================================
+                      FORM
+                  ================================================= */}
+
                   <form onSubmit={handleSubmit}>
-                    <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
-                      {/* First Name */}
+                    {/* =================================================
+                        NAME FIELDS
+                    ================================================= */}
+
+                    <div
+                      className="
+                        mt-5
+                        grid
+                        grid-cols-1
+                        gap-4
+                        sm:grid-cols-2
+                      "
+                    >
+                      {/* FIRST NAME */}
+
                       <div className="group relative">
                         <User
                           size={20}
-                          className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400
-                       transition-all
-                      duration-300
-                       text-[#9a958d]
-                      group-focus-within:text-[#a67c35]
-                       group-focus-within:scale-110"
+                          className="
+                            absolute
+                            left-4
+                            top-1/2
+                            -translate-y-1/2
+                            text-[#9a958d]
+                            transition-all
+                            duration-300
+                            group-focus-within:scale-110
+                            group-focus-within:text-[#a67c35]
+                          "
                         />
+
                         <input
                           id="firstName"
                           type="text"
@@ -187,66 +352,72 @@ export default function RegisterForm() {
                           name="firstName"
                           value={formData.firstName}
                           onChange={handleChange}
+                          required
+                          autoComplete="given-name"
                           className="
-                        peer
-                        h-12
-                        w-full
-                        pl-12
-                        pr-4
-                        rounded-xl
-                        border
-                      border-[#d5cec3]
-                      bg-[#fcfaf7]                        
-                      text-zinc-900
-                        outline-none
-                        transition-all
-                        duration-300
-                        focus:border-[#a67c35]
-                          focus:ring-1
-                          focus:ring-[#a67c35]/20
-    "
+                            peer
+                            h-12
+                            w-full
+                            rounded-xl
+                            border
+                            border-[#d5cec3]
+                            bg-[#fcfaf7]
+                            pl-12
+                            pr-4
+                            text-zinc-900
+                            outline-none
+                            transition-all
+                            duration-300
+                            focus:border-[#a67c35]
+                            focus:ring-1
+                            focus:ring-[#a67c35]/20
+                          "
                         />
 
                         <label
                           htmlFor="firstName"
                           className="
-                        absolute
-                        left-10
-                        top-1/2
-                        -translate-y-1/2
-                          bg-[#fcfaf7]
-                       text-[#77736d]
-                        px-2
-                        text-sm
-                        transition-all
-                        duration-300
-                      peer-focus:text-[#a67c35]
-                        peer-focus:top-0
-                         peer-focus:left-9
-                        peer-focus:text-xs
-                        
-
-                        peer-[:not(:placeholder-shown)]:top-0
-                        peer-[:not(:placeholder-shown)]:text-xs
-                      peer-not-placeholder-shown:text-[#a67c35]"
+                            absolute
+                            left-10
+                            top-1/2
+                            -translate-y-1/2
+                            bg-[#fcfaf7]
+                            px-2
+                            text-sm
+                            text-[#77736d]
+                            transition-all
+                            duration-300
+                            peer-focus:left-9
+                            peer-focus:top-0
+                            peer-focus:text-xs
+                            peer-focus:text-[#a67c35]
+                            peer-not-placeholder-shown:top-0
+                            peer-not-placeholder-shown:text-xs
+                            peer-not-placeholder-shown:text-[#a67c35]
+                          "
                         >
                           First Name
                         </label>
                       </div>
 
-                      {/* Last Name */}
+                      {/* LAST NAME */}
+
                       <div className="group relative">
                         <User
                           size={20}
-                          className="absolute left-4 
-                          top-1/2 -translate-y-1/2
-                            
-                        transition-all
-                        duration-300
-                        text-[#9a958d]
-                        group-focus-within:text-[#a67c35]
-                        group-focus-within:scale-110"
+                          className="
+                            absolute
+                            left-4
+                            top-1/2
+                            -translate-y-1/2
+                            text-[#9a958d]
+                            transition-all
+                            duration-300
+                            group-focus-within:scale-110
+                            group-focus-within:text-[#a67c35]
+                          "
                         />
+
                         <input
                           id="lastName"
                           type="text"
@@ -254,136 +425,144 @@ export default function RegisterForm() {
                           name="lastName"
                           value={formData.lastName}
                           onChange={handleChange}
+                          required
+                          autoComplete="family-name"
                           className="
-                        peer
-                        h-12
-                        w-full
-                        rounded-xl
-                        pl-12
-                        pr-4
-                        border
-                        border-[#d5cec3]
-                      bg-[#fcfaf7]                        
-                      text-zinc-900
-                        outline-none
-                        transition-all
-                        duration-300
-                        focus:border-[#a67c35]
-                          focus:ring-1
-                          focus:ring-[#a67c35]/20"
+                            peer
+                            h-12
+                            w-full
+                            rounded-xl
+                            border
+                            border-[#d5cec3]
+                            bg-[#fcfaf7]
+                            pl-12
+                            pr-4
+                            text-zinc-900
+                            outline-none
+                            transition-all
+                            duration-300
+                            focus:border-[#a67c35]
+                            focus:ring-1
+                            focus:ring-[#a67c35]/20
+                          "
                         />
 
                         <label
                           htmlFor="lastName"
                           className="
-                        absolute
-                        
-                        left-10
-                        top-1/2
-                        -translate-y-1/2
-                     bg-[#fcfaf7]
-                       text-[#77736d]
-                        px-2
-                        text-sm              
-                        transition-all
-                        duration-300
-
-                        peer-focus:top-0
-                        peer-focus:left-9
-                        peer-focus:text-xs
-                       peer-focus:text-[#a67c35]
-
-                        peer-[:not(:placeholder-shown)]:top-0
-                        peer-[:not(:placeholder-shown)]:text-xs
-                      peer-not-placeholder-shown:text-[#a67c35]
-    "
+                            absolute
+                            left-10
+                            top-1/2
+                            -translate-y-1/2
+                            bg-[#fcfaf7]
+                            px-2
+                            text-sm
+                            text-[#77736d]
+                            transition-all
+                            duration-300
+                            peer-focus:left-9
+                            peer-focus:top-0
+                            peer-focus:text-xs
+                            peer-focus:text-[#a67c35]
+                            peer-not-placeholder-shown:top-0
+                            peer-not-placeholder-shown:text-xs
+                            peer-not-placeholder-shown:text-[#a67c35]
+                          "
                         >
                           Last Name
                         </label>
                       </div>
 
-                      {/* Email Input */}
-                      <div className="md:col-span-2">
-                        <div className="group relative">
-                          <Mail
-                            size={20}
-                            className="absolute left-4 top-1/2 
+                      {/* EMAIL */}
+
+                      <div className="group relative sm:col-span-2">
+                        <Mail
+                          size={20}
+                          className="
+                            absolute
+                            left-4
+                            top-1/2
                             -translate-y-1/2
-                       transition-all
-                      duration-300
-                      text-[#9a958d]
-                      group-focus-within:text-[#a67c35]
-                       group-focus-within:scale-110"
-                          />
+                            text-[#9a958d]
+                            transition-all
+                            duration-300
+                            group-focus-within:scale-110
+                            group-focus-within:text-[#a67c35]
+                          "
+                        />
 
-                          <input
-                            id="email"
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            placeholder=" "
-                            className="
-                        peer
-                        h-12
-                        w-full
-                        rounded-xl
-                        border
-                    border-[#d5cec3]
-                      bg-[#fcfaf7]                        
-                      text-zinc-900
-                        pl-12
-                        pr-4
-                        outline-none
-                        transition-all
-                        duration-300
-                  focus:border-[#a67c35]
-                          focus:ring-1
-                          focus:ring-[#a67c35]/20
-                    "
-                          />
+                        <input
+                          id="email"
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          placeholder=" "
+                          required
+                          autoComplete="email"
+                          className="
+                            peer
+                            h-13
+                            w-full
+                            rounded-xl
+                            border
+                            border-[#d5cec3]
+                            bg-[#fcfaf7]
+                            pl-12
+                            pr-4
+                            text-zinc-900
+                            outline-none
+                            transition-all
+                            duration-300
+                            focus:border-[#a67c35]
+                            focus:ring-1
+                            focus:ring-[#a67c35]/20
+                            sm:h-14
+                          "
+                        />
 
-                          <label
-                            htmlFor="email"
-                            className="
-                      absolute
-                      left-10
-                      top-1/2
-                      -translate-y-1/2
-                     bg-[#fcfaf7]
-                       text-[#77736d]
-                      px-2
-                      text-sm
-                     
-                      transition-all
-                      duration-300
-
-                      peer-focus:top-0
-                      peer-focus:left-9                    
-                      peer-focus:text-sm
-                      peer-focus:text-[#a67c35]
-
-                      peer-not-placeholder-shown:top-0                    
-                      peer-not-placeholder-shown:text-sm
-                      peer-not-placeholder-shown:text-[#a67c35]
-                     "
-                          >
-                            Email
-                          </label>
-                        </div>
+                        <label
+                          htmlFor="email"
+                          className="
+                            absolute
+                            left-10
+                            top-1/2
+                            -translate-y-1/2
+                            bg-[#fcfaf7]
+                            px-2
+                            text-sm
+                            text-[#77736d]
+                            transition-all
+                            duration-300
+                            peer-focus:left-9
+                            peer-focus:top-0
+                            peer-focus:text-xs
+                            peer-focus:text-[#a67c35]
+                            peer-not-placeholder-shown:top-0
+                            peer-not-placeholder-shown:text-xs
+                            peer-not-placeholder-shown:text-[#a67c35]
+                          "
+                        >
+                          Email
+                        </label>
                       </div>
 
-                      {/* Phone Input */}
+                      {/* PHONE */}
+
                       <div className="group relative">
                         <Phone
                           size={20}
-                          className="absolute left-4 
-                          top-1/2 -translate-y-1/2
-                       transition-all
-                      duration-300
-                      text-[#9a958d]
-                      group-focus-within:text-[#a67c35]
-                       group-focus-within:scale-110"
+                          className="
+                            absolute
+                            left-4
+                            top-1/2
+                            -translate-y-1/2
+                            text-[#9a958d]
+                            transition-all
+                            duration-300
+                            group-focus-within:scale-110
+                            group-focus-within:text-[#a67c35]
+                          "
                         />
 
                         <input
@@ -395,66 +574,73 @@ export default function RegisterForm() {
                           value={formData.phone}
                           onChange={handleChange}
                           placeholder=" "
+                          required
+                          autoComplete="tel"
                           className="
-                    peer
-                    h-12
-                    w-full
-                    rounded-xl
-                    border
-                  border-[#d5cec3]
-                      bg-[#fcfaf7]                        
-                      text-zinc-900
-                    pl-12
-                    pr-4
-                    outline-none
-                    transition-all
-                    duration-300
-                  focus:border-[#a67c35]
-                          focus:ring-1
-                          focus:ring-[#a67c35]/20
-    "
+                            peer
+                            h-13
+                            w-full
+                            rounded-xl
+                            border
+                            border-[#d5cec3]
+                            bg-[#fcfaf7]
+                            pl-12
+                            pr-4
+                            text-zinc-900
+                            outline-none
+                            transition-all
+                            duration-300
+                            focus:border-[#a67c35]
+                            focus:ring-1
+                            focus:ring-[#a67c35]/20
+                            sm:h-14
+                          "
                         />
 
                         <label
                           htmlFor="phone"
                           className="
-                      absolute
-                      left-10
-                      top-1/2
-                      -translate-y-1/2
-                     bg-[#fcfaf7]
-                       text-[#77736d]
-                      px-2
-                      text-sm
-                      transition-all
-                      duration-300
-
-                      peer-focus:top-0
-                      peer-focus:left-9                   
-                      peer-focus:text-xs
-                      peer-focus:text-[#a67c35]
-
-                      peer-not-placeholder-shown:top-0                    
-                      peer-not-placeholder-shown:text-xs
-                      peer-not-placeholder-shown:text-[#a67c35]"
+                            absolute
+                            left-10
+                            top-1/2
+                            -translate-y-1/2
+                            bg-[#fcfaf7]
+                            px-2
+                            text-sm
+                            text-[#77736d]
+                            transition-all
+                            duration-300
+                            peer-focus:left-9
+                            peer-focus:top-0
+                            peer-focus:text-xs
+                            peer-focus:text-[#a67c35]
+                            peer-not-placeholder-shown:top-0
+                            peer-not-placeholder-shown:text-xs
+                            peer-not-placeholder-shown:text-[#a67c35]
+                          "
                         >
                           Phone Number
                         </label>
                       </div>
 
-                      {/* Password Input */}
+                      {/* PASSWORD */}
+
                       <div className="group relative">
                         <Lock
                           size={20}
-                          className="absolute left-4
-                           top-1/2 -translate-y-1/2
-                           
-                       transition-all
-                      duration-300
-                      text-[#9a958d]
-                      group-focus-within:text-[#a67c35]
-                       group-focus-within:scale-110"
+                          className="
+                            absolute
+                            left-4
+                            top-1/2
+                            -translate-y-1/2
+                            text-[#9a958d]
+                            transition-all
+                            duration-300
+                            group-focus-within:scale-110
+                            group-focus-within:text-[#a67c35]
+                          "
                         />
+
                         <input
                           ref={passwordRef}
                           id="password"
@@ -463,50 +649,51 @@ export default function RegisterForm() {
                           value={formData.password}
                           onChange={handleChange}
                           placeholder=" "
+                          required
+                          minLength={8}
+                          autoComplete="new-password"
                           className="
-                        peer
-                        h-12    
-                        w-full
-                        rounded-xl
-                        border
-                        border-[#d5cec3]
-                      bg-[#fcfaf7]                        
-                      text-zinc-900
-                        pl-12
-                        pr-12
-                        text-white
-                        outline-none
-                        transition-all
-                        duration-300
-                        focus:border-[#a67c35]
-                          focus:ring-1
-                          focus:ring-[#a67c35]/20
-                  "
+                            peer
+                            h-13
+                            w-full
+                            rounded-xl
+                            border
+                            border-[#d5cec3]
+                            bg-[#fcfaf7]
+                            pl-12
+                            pr-12
+                            text-zinc-900
+                            outline-none
+                            transition-all
+                            duration-300
+                            focus:border-[#a67c35]
+                            focus:ring-1
+                            focus:ring-[#a67c35]/20
+                            sm:h-14
+                          "
                         />
 
                         <label
                           htmlFor="password"
                           className="
-                      absolute
-                      left-10
-                      top-1/2
-                      -translate-y-1/2
-                     bg-[#fcfaf7]
-                       text-[#77736d]
-                      px-2
-                      text-sm
-                      transition-all
-                      duration-300
-
-                      peer-focus:top-0
-                      peer-focus:left-9
-                      peer-focus:text-xs
-                    peer-focus:text-[#a67c35]
-
-                      peer-not-placeholder-shown:top-0
-                      peer-not-placeholder-shown:text-xs
-                    peer-not-placeholder-shown:text-[#a67c35]
-                    "
+                            absolute
+                            left-10
+                            top-1/2
+                            -translate-y-1/2
+                            bg-[#fcfaf7]
+                            px-2
+                            text-sm
+                            text-[#77736d]
+                            transition-all
+                            duration-300
+                            peer-focus:left-9
+                            peer-focus:top-0
+                            peer-focus:text-xs
+                            peer-focus:text-[#a67c35]
+                            peer-not-placeholder-shown:top-0
+                            peer-not-placeholder-shown:text-xs
+                            peer-not-placeholder-shown:text-[#a67c35]
+                          "
                         >
                           Password
                         </label>
@@ -521,6 +708,7 @@ export default function RegisterForm() {
                                 passwordRef.current.focus();
 
                                 const length = passwordRef.current.value.length;
+
                                 passwordRef.current.setSelectionRange(
                                   length,
                                   length,
@@ -528,11 +716,23 @@ export default function RegisterForm() {
                               }
                             });
                           }}
-                          className="absolute right-5 top-1/2 -translate-y-1/2
-                     text-zinc-400 
-                     transition-all duration-300 
-                     hover:scale-110 
-                     hover:text-white active:scale-95"
+                          aria-label={
+                            showPassword ? "Hide password" : "Show password"
+                          }
+                          className="
+                            absolute
+                            right-4
+                            top-1/2
+                            -translate-y-1/2
+                            p-1
+                            text-[#9a958d]
+                            transition-all
+                            duration-300
+                            hover:scale-110
+                            hover:text-[#181715]
+                            active:scale-95
+                            sm:right-5
+                          "
                         >
                           {showPassword ? (
                             <EyeOff size={20} />
@@ -543,105 +743,148 @@ export default function RegisterForm() {
                       </div>
                     </div>
 
-                    {/* Terms and Condition */}
-                    <div
-                      className="mt-5 flex 
-                    items-start gap-3"
-                    >
+                    {/* =================================================
+                        CONSENT
+                    ================================================= */}
+
+                    <div className="mt-5 flex items-start gap-3">
                       <input
                         id="terms"
                         type="checkbox"
+                        checked={consentGiven}
+                        onChange={(e) => setConsentGiven(e.target.checked)}
                         className="
-                    mt-1
-                    h-4
-                    w-4
-                    rounded
-                    border-white/20
-                    bg-transparent
-                    accent-[#a67c35]
-                    bg-[#a67c35]
-                    cursor-pointer
-                             "
+                          mt-1
+                          h-4
+                          w-4
+                          shrink-0
+                          cursor-pointer
+                          rounded
+                          border-[#d5cec3]
+                          accent-[#a67c35]
+                        "
                       />
 
                       <label
                         htmlFor="terms"
-                        className="text-sm leading-6 text-zinc-900"
+                        className="
+                          cursor-pointer
+                          text-sm
+                          leading-6
+                          text-zinc-900
+                        "
                       >
                         I agree to the{" "}
                         <Link
                           href="/terms"
-                          className="font-medium
-                           text-[#a67c35] hover:underline"
+                          onClick={(e) => e.stopPropagation()}
+                          className="
+                            font-medium
+                            text-[#a67c35]
+                            hover:underline
+                          "
                         >
                           Terms & Conditions
                         </Link>{" "}
                         and{" "}
                         <Link
                           href="/privacy"
-                          className="font-medium text-[#a67c35] hover:underline"
+                          onClick={(e) => e.stopPropagation()}
+                          className="
+                            font-medium
+                            text-[#a67c35]
+                            hover:underline
+                          "
                         >
                           Privacy Policy
                         </Link>
                       </label>
                     </div>
 
-                    {/* Create Account Button */}
-                    <div className="mt-6">
+                    {/* =================================================
+                        CREATE ACCOUNT BUTTON
+                    ================================================= */}
+
+                    <div className="mt-5 sm:mt-6">
                       <button
                         type="submit"
+                        disabled={loading}
                         className="
-                        group
-                        grid
-                        h-14
-                        w-full
-                        grid-cols-[1fr_auto_1fr]
-                        items-center
-                        rounded-2xl
-                        border-[#d5c7b4]
-                        bg-[#eee3d5]
-                      hover:bg-[#e6d8c6]
-                        px-6
-                        text-black
-                        transition-all
-                        duration-300
-                        active:scale-[0.98]
-                             "
+                          group
+                          grid
+                          h-13
+                          w-full
+                          grid-cols-[1fr_auto_1fr]
+                          items-center
+                          rounded-2xl
+                          border
+                          border-[#d5c7b4]
+                          bg-[#eee3d5]
+                          px-4
+                          text-black
+                          transition-all
+                          duration-300
+                          hover:border-[#cdbb9f]
+                          hover:bg-[#e6d8c6]
+                          active:scale-[0.98]
+                          disabled:cursor-not-allowed
+                          disabled:opacity-60
+                          sm:h-14
+                          sm:px-6
+                        "
                       >
-                        <div></div>
+                        <div />
 
                         <span
-                          className="transition-all 
-                        duration-300 group-hover:scale-110 justify-self-center text-md font-semibold"
+                          className="
+                            justify-self-center
+                            text-sm
+                            font-semibold
+                            transition-all
+                            duration-300
+                            group-hover:scale-105
+                            sm:text-base
+                          "
                         >
-                          CREATE ACCOUNT
+                          {loading ? "CREATING..." : "CREATE ACCOUNT"}
                         </span>
 
                         <ArrowRight
                           size={20}
-                          className="justify-self-end transition-transform duration-300 group-hover:translate-x-1"
+                          className="
+                            justify-self-end
+                            text-[#8f6a2e]
+                            transition-transform
+                            duration-300
+                            group-hover:translate-x-1
+                          "
                         />
                       </button>
-
-                      {/* Social Media Logins */}
-                      {/* <div className="my-8 flex items-center gap-4">
-                    <div className="h-px flex-1 bg-white/50"></div>
-
-                    <span className="text-xs font-medium uppercase tracking-[0.25em] text-zinc-300">
-                      Or Continue With
-                    </span>
-
-                    <div className="h-px flex-1 bg-white/50"></div> 
-                    </div>*/}
                     </div>
                   </form>
 
-                  <div className="mt-8 text-center">
-                    <p className="text-sm text-[#77736d]">
+                  {/* =================================================
+                      LOGIN LINK
+                  ================================================= */}
+
+                  <div className="mt-5 text-center sm:mt-6">
+                    <p
+                      className="
+                        text-sm
+                        leading-6
+                        text-[#77736d]
+                      "
+                    >
                       Already have an account?{" "}
                       <Link
                         href="/login"
-                        className="font-semibold text-[#a67c35] transition-colors duration-300 hover:text-[#8f6a2e]"
+                        className="
+                          font-semibold
+                          text-[#a67c35]
+                          transition-colors
+                          duration-300
+                          hover:text-[#8f6a2e]
+                        "
                       >
                         Login Here
                       </Link>
