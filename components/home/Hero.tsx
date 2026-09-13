@@ -5,13 +5,16 @@ import HeroShowcase from "./HeroShowcase";
 export default function Hero() {
   return (
     <section className="relative overflow-hidden bg-(--color-page)">
-      <div className="absolute inset-0 pointer-events-none">
+      {/* Background Atmosphere */}
+      <div className="pointer-events-none absolute inset-0">
         <div className="absolute -right-24 top-16 h-96 w-96 rounded-full bg-(--color-accent)/10 blur-3xl" />
         <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-(--color-accent)/5 blur-3xl" />
       </div>
 
-      <div className="relative mx-auto flex min-h-[calc(100vh-5rem)] max-w-7xl items-center justify-between gap-16 px-6 py-20 lg:px-8 lg:py-24">
-        <div className="max-w-xl">
+      {/* Hero Content */}
+      <div className="relative mx-auto flex max-w-7xl flex-col gap-8 px-6 py-12 sm:gap-12 sm:py-16 lg:min-h-[calc(100vh-5rem)] lg:flex-row lg:items-center lg:justify-between lg:gap-16 lg:px-8 lg:py-24">
+        {/* Copy */}
+        <div className="w-full max-w-xl lg:flex-1">
           <p className="mb-6 text-xs font-medium uppercase tracking-[0.4em] text-(--color-text-muted)">
             Premium Custom Apparel
           </p>
@@ -29,10 +32,10 @@ export default function Hero() {
             branding, and ideas. Designed by you. Printed by us.
           </p>
 
-          <div className="mt-10 flex flex-wrap gap-4">
+          <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
             <Link
               href="/studio"
-              className="group flex items-center gap-2 rounded-sm bg-(--color-text-primary) px-7 py-3.5 font-medium text-(--color-white) transition-colors duration-300 hover:bg-(--color-text-secondary)"
+              className="group flex w-full items-center justify-center gap-2 rounded-sm bg-(--color-text-primary) px-7 py-3.5 font-medium text-(--color-white) transition-colors duration-300 hover:bg-(--color-text-secondary) sm:w-auto"
             >
               Start Designing
 
@@ -44,20 +47,21 @@ export default function Hero() {
 
             <Link
               href="/shop"
-              className="rounded-sm border border-(--color-border) px-7 py-3.5 font-medium text-(--color-text-primary) transition-colors duration-300 hover:border-(--color-text-primary) hover:bg-(--color-surface-muted)"
+              className="flex w-full items-center justify-center rounded-sm border border-(--color-border) px-7 py-3.5 font-medium text-(--color-text-primary) transition-colors duration-300 hover:border-(--color-text-primary) hover:bg-(--color-surface-muted) sm:w-auto"
             >
               Shop Collection
             </Link>
           </div>
 
-          <div className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm text-(--color-text-muted)">
+          <div className="mt-10 flex flex-wrap gap-x-6 gap-y-3 text-sm text-(--color-text-muted) sm:gap-x-8">
             <span>✓ Premium Quality</span>
             <span>✓ Printed On Demand</span>
             <span>✓ Made in India</span>
           </div>
         </div>
 
-        <div className="flex flex-1 justify-center lg:justify-end">
+        {/* Visual Showcase */}
+        <div className="flex w-full justify-center lg:flex-1 lg:justify-end">
           <HeroShowcase />
         </div>
       </div>

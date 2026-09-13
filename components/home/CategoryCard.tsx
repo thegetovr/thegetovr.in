@@ -1,77 +1,73 @@
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 type Props = {
+  number: string;
   title: string;
   subtitle: string;
-  large?: boolean;
+  image: string;
 };
 
 export default function CategoryCard({
+  number,
   title,
   subtitle,
-  large = false,
+  image,
 }: Props) {
   return (
     <Link
       href="/shop"
-      className={`group relative overflow-hidden rounded-(--radius-lg)
-        border border-(--color-border)
-        bg-(--color-surface)
-        transition-all duration-500
-        hover:-translate-y-1
-        hover:shadow-(--shadow-elevated)
-        ${
-          large
-            ? "min-h-[420px]"
-            : "min-h-[300px]"
-        }`}
+      className="group block"
     >
-      {/* Editorial Product Shape */}
-      <div className="absolute right-8 top-8 opacity-80 transition duration-500 group-hover:scale-105 group-hover:rotate-3">
-        <div className="relative">
-          <div className="absolute inset-0 rounded-full bg-(--color-accent)/10 blur-3xl" />
+      {/* Product Image */}
+     <div className="relative aspect-[4/5] overflow-hidden border-y border-(--color-border) bg-(--color-page)">
+  <div className="absolute inset-0 bg-(--color-accent)/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-          <div
-            className={`relative rounded-(--radius-lg)
-              border border-(--color-border)
-              bg-(--color-surface-muted)
-              shadow-(--shadow-soft)
-              ${
-                large
-                  ? "h-52 w-40"
-                  : "h-40 w-32"
-              }`}
-          >
-            <div className="absolute left-1/2 top-5 h-10 w-10 -translate-x-1/2 rounded-full border border-(--color-border) bg-(--color-surface)" />
-          </div>
-        </div>
-      </div>
+  <Image
+    src={image}
+    alt={title}
+    fill
+    sizes="(max-width: 768px) 100vw, 33vw"
+    className="object-contain mix-blend-multiply p-4 transition-transform duration-700 group-hover:scale-105 sm:p-6 lg:p-8"
+  />
 
-      {/* Content */}
-      <div className="relative z-10 flex h-full flex-col justify-between p-8">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-[0.3em] text-(--color-text-muted)">
+  <div className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-(--color-border) bg-(--color-surface) opacity-0 transition-all duration-300 group-hover:opacity-100">
+    <ArrowUpRight size={17} />
+  </div>
+</div>
+
+      {/* Information */}
+      <div className="pt-5">
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] font-medium tracking-[0.3em] text-(--color-text-muted)">
+            {number}
+          </span>
+
+          <span className="h-px w-8 bg-(--color-border)" />
+
+          <span className="text-[10px] font-medium uppercase tracking-[0.3em] text-(--color-text-muted)">
             Category
-          </p>
-
-          <h3 className="mt-4 font-(--font-editorial) text-4xl font-normal text-(--color-text-primary)">
-            {title}
-          </h3>
-
-          <p className="mt-4 max-w-sm leading-7 text-(--color-text-secondary)">
-            {subtitle}
-          </p>
+          </span>
         </div>
 
-        <div className="flex items-center gap-2 font-medium text-(--color-text-primary)">
-          Explore
+        <div className="mt-4 flex items-start justify-between gap-5">
+          <div>
+            <h3 className="font-(--font-editorial) text-3xl font-normal leading-tight text-(--color-text-primary)">
+              {title}
+            </h3>
 
-          <ArrowRight
-            size={18}
-            className="transition-transform duration-300 group-hover:translate-x-1"
-          />
+            <p className="mt-3 max-w-sm text-sm leading-6 text-(--color-text-secondary)">
+              {subtitle}
+            </p>
+          </div>
+
+          <span className="mt-1 shrink-0 text-sm font-medium text-(--color-text-primary)">
+            Explore
+          </span>
         </div>
+
+        <div className="mt-6 h-px w-0 bg-(--color-text-primary) transition-all duration-500 group-hover:w-full" />
       </div>
     </Link>
   );
