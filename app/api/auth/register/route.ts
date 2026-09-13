@@ -7,8 +7,6 @@ import validator from "validator";
 export async function POST(request: Request) {
   const body = await request.json();
 
-  console.log(body);
-
   const { firstName, lastName, email, phone, password } = body;
 
   if (!firstName || !lastName || !email || !phone || !password) {
@@ -60,9 +58,6 @@ export async function POST(request: Request) {
   }
 
   await connectToDatabase();
-
-  /*  console.log("✅ MongoDB Connected"); */
-  console.log("✅ STEP 1 : MongoDB Connected");
 
   const existingUser = await User.findOne({
     $or: [{ email }, { phone }],

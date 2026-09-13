@@ -47,8 +47,6 @@ export async function POST(request: Request) {
     // Compare Password
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
-    console.log("Password Match:", isPasswordCorrect);
-
     if (!isPasswordCorrect) {
       return NextResponse.json(
         {
@@ -365,7 +363,6 @@ export async function POST(request: Request) {
         `,
       });
 
-      console.log("✅ Login email sent to:", user.email);
     } catch (emailError) {
       // Email failure should NOT make login fail
       console.error("❌ LOGIN EMAIL ERROR:", emailError);
