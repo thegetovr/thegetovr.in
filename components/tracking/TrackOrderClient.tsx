@@ -25,11 +25,7 @@ export default function TrackOrderClient() {
       }),
     });
 
-    console.log("Status:", response.status);
-
     const text = await response.text();
-
-    console.log("Response Body:", text);
 
     try {
       const data = JSON.parse(text);

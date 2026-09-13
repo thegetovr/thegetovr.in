@@ -50,16 +50,13 @@ export async function GET() {
       );
     }
 
-    console.log("Decoded JWT:", decoded);
 
     return NextResponse.json({
       success: true,
       message: "User is authenticated",
       user,
     });
-  } catch (error) {
-    console.error("SESSION ERROR:", error);
-
+  } catch {
     return NextResponse.json(
       {
         success: false,

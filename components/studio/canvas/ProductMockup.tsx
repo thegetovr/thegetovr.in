@@ -29,14 +29,6 @@ export default function ProductMockup({
     img.src = `/mockups/${product}/${view}/${productColor}.png`;
 
     img.onload = () => {
-      console.log(
-        "Product:",
-        product,
-        "Size:",
-        img.naturalWidth,
-        "x",
-        img.naturalHeight
-      );
 
       setImage(img);
     };

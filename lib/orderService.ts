@@ -54,12 +54,9 @@ export async function getOrders(
 
   if (email?.trim()) {
     query["customer.email"] = email.trim();
-    console.log("ORDER SEARCH QUERY:", query);
   }
 
   const foundOrders = await Order.find(query).sort({ createdAt: -1 }).lean();
-
-  console.log("FOUND ORDERS:", foundOrders);
 
   return foundOrders;
 }

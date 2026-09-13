@@ -143,7 +143,7 @@ function ResetPasswordPage() {
           fixed
           right-6
           top-24
-          z-[100]
+          z-100
           flex
           items-center
           gap-3
@@ -186,7 +186,7 @@ function ResetPasswordPage() {
             className="
             w-full
             overflow-hidden
-            rounded-[32px]
+            rounded-4xl
             border
             border-[#ddd5ca]
             bg-white
@@ -204,7 +204,7 @@ function ResetPasswordPage() {
                 overflow-hidden
                 border-r
                 border-[#ddd5ca]
-                lg:h-[520px]
+                lg:h-130
                 lg:w-[45%]
               "
               >
@@ -224,7 +224,7 @@ function ResetPasswordPage() {
               <div
                 className="
                 flex
-                min-h-[520px]
+                min-h-130
                 items-center
                 justify-center
                 bg-[#fcfaf7]

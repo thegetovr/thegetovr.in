@@ -45,8 +45,6 @@ export default function RegisterForm() {
 
       const result = await response.json();
 
-      console.log(result);
-
       if (result.success) {
         const message = "Registration Successful";
 

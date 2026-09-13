@@ -109,8 +109,6 @@ export default function Addresses() {
 
       const data = await response.json();
 
-      console.log("ADDRESS API RESPONSE:", data);
-
       if (!response.ok || !data.success) {
         setNotification({
           message: data.message || "Failed to save address",

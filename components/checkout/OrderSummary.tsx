@@ -72,8 +72,6 @@ export default function OrderSummary() {
 
       const data = await response.json();
 
-      console.log("ORDER RESPONSE:", data);
-
       if (data.success) {
         clearCart();
 
