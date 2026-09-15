@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { ChevronRight, Download, Truck, ShoppingBag } from "lucide-react";
+import { ChevronRight, Truck, ShoppingBag } from "lucide-react";
 
 import Pagination from "@/components/common/Pagination";
 
@@ -122,7 +122,7 @@ export default function MyOrders({ user }: MyOrdersProps) {
 
   useEffect(() => {
     const fetchOrders = async () => {
-      if (!user?.email) {
+      if (!user) {
         setOrders([]);
         setFilteredOrders([]);
         setOrdersLoading(false);
@@ -132,12 +132,17 @@ export default function MyOrders({ user }: MyOrdersProps) {
       setOrdersLoading(true);
 
       try {
-        const response = await fetch(
-          `/api/orders?email=${encodeURIComponent(user.email)}`,
-          {
-            cache: "no-store",
-          },
-        );
+        /*
+         * 🔐 IMPORTANT
+         *
+         * Do NOT send email from frontend.
+         *
+         * /api/orders now identifies the logged-in user
+         * using the secure auth_token cookie.
+         */
+        const response = await fetch("/api/orders", {
+          cache: "no-store",
+        });
 
         const result = await response.json();
 
@@ -169,7 +174,7 @@ export default function MyOrders({ user }: MyOrdersProps) {
     };
 
     fetchOrders();
-  }, [user?.email]);
+  }, [user]);
 
   // =====================================================
   // RECEIVE FILTERED ORDERS
@@ -266,14 +271,6 @@ export default function MyOrders({ user }: MyOrdersProps) {
             Track and manage all your orders in one place.
           </p>
         </div>
-
-        {/* <button
-          type="button"
-          className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-lg border border-[#ddd5ca] bg-white px-4 py-2.5 text-sm font-medium text-zinc-800 transition hover:bg-[#fcfaf7] sm:w-fit"
-        >
-          <Download size={16} strokeWidth={1.7} />
-          Download Invoices
-        </button> */}
       </div>
 
       {/* =================================================
@@ -309,9 +306,7 @@ export default function MyOrders({ user }: MyOrdersProps) {
                   ================================================= */}
 
                   <div className="block md:hidden">
-                    {/* PRODUCT TOP */}
                     <div className="flex min-w-0 items-start gap-3">
-                      {/* IMAGE */}
                       <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#f8f6f2]">
                         {order.image ? (
                           <img
@@ -328,7 +323,6 @@ export default function MyOrders({ user }: MyOrdersProps) {
                         )}
                       </div>
 
-                      {/* INFO */}
                       <div className="min-w-0 flex-1">
                         <h2 className="line-clamp-2 text-sm font-semibold leading-5 text-black">
                           {order.productName}
@@ -345,7 +339,6 @@ export default function MyOrders({ user }: MyOrdersProps) {
                       </div>
                     </div>
 
-                    {/* STATUS + DELIVERY */}
                     <div className="mt-3 flex min-w-0 flex-col gap-2">
                       <div>
                         <span
@@ -372,7 +365,6 @@ export default function MyOrders({ user }: MyOrdersProps) {
                       </div>
                     </div>
 
-                    {/* PRICE + ACTION */}
                     <div className="mt-4 flex min-w-0 items-center justify-between gap-3 border-t border-[#eee9e2] pt-3.5">
                       <p className="shrink-0 text-sm font-semibold text-black">
                         ₹{order.price}
@@ -408,8 +400,6 @@ export default function MyOrders({ user }: MyOrdersProps) {
                   ================================================= */}
 
                   <div className="hidden md:grid md:grid-cols-[92px_minmax(0,1fr)_95px_120px] md:items-center md:gap-4">
-                    {/* PRODUCT IMAGE */}
-
                     <div className="flex h-[88px] w-[88px] items-center justify-center overflow-hidden rounded-lg bg-[#f8f6f2]">
                       {order.image ? (
                         <img
@@ -425,8 +415,6 @@ export default function MyOrders({ user }: MyOrdersProps) {
                         />
                       )}
                     </div>
-
-                    {/* ORDER INFO */}
 
                     <div className="min-w-0">
                       <h2 className="truncate text-sm font-semibold text-black">
@@ -453,8 +441,6 @@ export default function MyOrders({ user }: MyOrdersProps) {
                       </div>
                     </div>
 
-                    {/* STATUS */}
-
                     <div>
                       <span
                         className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[11px] font-medium ${getStatusStyle(
@@ -466,8 +452,6 @@ export default function MyOrders({ user }: MyOrdersProps) {
                         {order.status}
                       </span>
                     </div>
-
-                    {/* PRICE + ACTION */}
 
                     <div className="flex flex-col items-end">
                       <p className="text-sm font-semibold text-black">
@@ -502,10 +486,6 @@ export default function MyOrders({ user }: MyOrdersProps) {
               );
             })
           ) : (
-            /* =================================================
-               EMPTY STATE
-            ================================================= */
-
             <div className="flex min-h-[320px] flex-col items-center justify-center px-5 text-center sm:min-h-[360px]">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#f5f1eb]">
                 <ShoppingBag
@@ -528,7 +508,7 @@ export default function MyOrders({ user }: MyOrdersProps) {
       </div>
 
       {/* =================================================
-          REUSABLE PAGINATION
+          PAGINATION
       ================================================= */}
 
       <div className="min-w-0 overflow-x-auto">

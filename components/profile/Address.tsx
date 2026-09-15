@@ -390,6 +390,7 @@ export default function Addresses() {
       <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <h1 className="font-serif text-2xl text-black">My Addresses</h1>
+          <div className="mt-2 h-[2px] w-8 bg-[#b7965d]" />
 
           <p className="mt-1.5 text-sm leading-5 text-gray-500">
             Manage your saved delivery addresses
