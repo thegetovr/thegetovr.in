@@ -8,9 +8,13 @@ import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
 import { sendOrderPlacedEmail } from "@/lib/emails/orderPlaced";
 
-async function getLoggedInUser() {
-  const cookieStore = await cookies();
+type AuthenticatedUser = {
+  userId: string;
+  email: string;
+};
 
+async function getLoggedInUser(): Promise<AuthenticatedUser | null> {
+  const cookieStore = await cookies();
   const token = cookieStore.get("auth_token")?.value;
 
   if (!token || !process.env.JWT_SECRET) {
@@ -19,7 +23,8 @@ async function getLoggedInUser() {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET) as {
-      userId: string;
+      userId?: string;
+      email?: string;
     };
 
     if (!decoded.userId || !mongoose.Types.ObjectId.isValid(decoded.userId)) {
@@ -28,22 +33,29 @@ async function getLoggedInUser() {
 
     await connectToDatabase();
 
-    const user = await User.findById(decoded.userId).select("email");
+    const user = await User.findById(decoded.userId).select("_id email");
 
-    return user;
+    if (!user) {
+      return null;
+    }
+
+    return {
+      userId: user._id.toString(),
+      email: user.email,
+    };
   } catch (error) {
     console.error("GET LOGGED IN USER ERROR:", error);
     return null;
   }
 }
 
-// =====================================================
-// CREATE ORDER
-// =====================================================
-
+/*
+ * =========================
+ * CREATE ORDER
+ * =========================
+ */
 export async function POST(request: NextRequest) {
   try {
-    // Get logged-in user
     const user = await getLoggedInUser();
 
     if (!user) {
@@ -52,63 +64,54 @@ export async function POST(request: NextRequest) {
           success: false,
           message: "Unauthorized. Please login again.",
         },
-        {
-          status: 401,
-        },
+        { status: 401 },
       );
     }
 
-    // Get order data from frontend
     const order = await request.json();
 
-    // Make sure customer object exists
-    if (!order.customer) {
+    if (!order || !order.customer) {
       return NextResponse.json(
         {
           success: false,
           message: "Customer details are required.",
         },
-        {
-          status: 400,
-        },
+        { status: 400 },
       );
     }
 
-    // =================================================
-    // IMPORTANT:
-    // Email always comes from logged-in account.
-    // Frontend email is NOT trusted.
-    // =================================================
-
-    const orderWithUserEmail = {
+    /*
+     * 🔐 IMPORTANT SECURITY RULE
+     *
+     * Never trust userId/email coming from frontend.
+     * We overwrite both values using the authenticated
+     * account from auth_token.
+     */
+    const orderWithUserOwnership = {
       ...order,
+
+      // Remove any frontend supplied userId and force
+      // the authenticated user's actual MongoDB _id.
+      userId: user.userId,
 
       customer: {
         ...order.customer,
+
+        // Force email from the logged-in User account.
         email: user.email,
       },
     };
 
-    // =================================================
-    // SAVE ORDER
-    // =================================================
+    const savedOrder = await createOrder(orderWithUserOwnership);
 
-    const savedOrder = await createOrder(orderWithUserEmail);
-
-    // =================================================
-    // SEND ORDER PLACED EMAIL
-    // =================================================
-
+    /*
+     * Email failure should NOT make the order fail.
+     */
     try {
       await sendOrderPlacedEmail(savedOrder);
     } catch (emailError) {
-      // Email failure should NOT make the order fail.
       console.error("ORDER PLACED EMAIL ERROR:", emailError);
     }
-
-    // =================================================
-    // SUCCESS
-    // =================================================
 
     return NextResponse.json({
       success: true,
@@ -124,17 +127,16 @@ export async function POST(request: NextRequest) {
         message:
           error instanceof Error ? error.message : "Invalid order payload.",
       },
-      {
-        status: 400,
-      },
+      { status: 400 },
     );
   }
 }
 
-// =====================================================
-// GET ORDERS
-// =====================================================
-
+/*
+ * =========================
+ * GET MY ORDERS
+ * =========================
+ */
 export async function GET(request: NextRequest) {
   try {
     const user = await getLoggedInUser();
@@ -145,14 +147,18 @@ export async function GET(request: NextRequest) {
           success: false,
           message: "Unauthorized. Please login again.",
         },
-        {
-          status: 401,
-        },
+        { status: 401 },
       );
     }
 
+    /*
+     * 🔐 Fetch ONLY orders belonging to the
+     * authenticated user's userId.
+     *
+     * We intentionally DO NOT use email here.
+     */
     const orders = await getOrders({
-      email: user.email,
+      userId: user.userId,
     });
 
     return NextResponse.json({
@@ -168,9 +174,7 @@ export async function GET(request: NextRequest) {
         message:
           error instanceof Error ? error.message : "Unable to fetch orders.",
       },
-      {
-        status: 500,
-      },
+      { status: 500 },
     );
   }
 }

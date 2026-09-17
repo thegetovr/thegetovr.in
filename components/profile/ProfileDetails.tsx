@@ -134,20 +134,22 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
 
     const [year, month, day] = date.split("-");
 
-    if (!year || !month || !day) return "Not added";
+    if (!year || !month || !day) {
+      return "Not added";
+    }
 
     return `${day}/${month}/${year}`;
   };
 
   return (
-    <div className="space-y-5">
+    <div className="min-w-0 space-y-5">
       {/* =====================================================
           PERSONAL INFORMATION
       ===================================================== */}
 
-      <section className="rounded-xl border border-zinc-200 bg-white p-6 md:p-7">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
+      <section className="min-w-0 overflow-hidden rounded-xl border border-zinc-200 bg-white p-4 sm:p-5 md:p-7">
+        <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
             <h2 className="font-serif text-2xl text-black">
               Personal Information
             </h2>
@@ -157,14 +159,14 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
 
           <Link
             href="/profile?tab=profile&edit=true"
-            className="inline-flex w-fit items-center gap-2 rounded-lg border border-zinc-200 px-4 py-2.5 text-sm font-medium text-black transition hover:bg-zinc-50"
+            className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-lg border border-zinc-200 px-4 py-3 text-sm font-medium text-black transition hover:bg-zinc-50 sm:w-fit sm:py-2.5"
           >
             <Pencil size={15} strokeWidth={1.8} />
             Edit Profile
           </Link>
         </div>
 
-        <div className="mt-7 grid gap-5 md:grid-cols-2">
+        <div className="mt-6 grid min-w-0 gap-4 sm:gap-5 md:grid-cols-2">
           <InfoField label="First Name" value={user?.firstName} />
 
           <InfoField label="Last Name" value={user?.lastName} />
@@ -189,16 +191,16 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
           SAVED ADDRESS + ACCOUNT SUMMARY
       ===================================================== */}
 
-      <div className="grid items-start gap-5 xl:grid-cols-[1fr_1fr]">
+      <div className="grid min-w-0 items-start gap-5 xl:grid-cols-[1fr_1fr]">
         {/* ===================================================
             SAVED ADDRESSES
         =================================================== */}
 
-        <section className="h-fit rounded-xl border border-zinc-200 bg-white p-6 md:p-7">
+        <section className="h-fit min-w-0 overflow-hidden rounded-xl border border-zinc-200 bg-white p-4 sm:p-5 md:p-7">
           {/* HEADER */}
 
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div>
+          <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
               <h2 className="font-serif text-2xl text-black">
                 Saved Addresses
               </h2>
@@ -208,7 +210,7 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
 
             <Link
               href="/profile?tab=addresses"
-              className="inline-flex w-fit items-center gap-2 rounded-lg border border-zinc-200 px-4 py-2.5 text-sm font-medium text-black transition hover:bg-zinc-50"
+              className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-lg border border-zinc-200 px-4 py-3 text-sm font-medium text-black transition hover:bg-zinc-50 sm:w-fit sm:py-2.5"
             >
               <span className="text-lg leading-none">+</span>
               Add New Address
@@ -218,23 +220,23 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
           {/* ADDRESS */}
 
           {loadingAddresses ? (
-            <div className="mt-6 rounded-lg border border-zinc-200 p-6 text-sm text-zinc-500">
+            <div className="mt-5 rounded-lg border border-zinc-200 p-5 text-sm text-zinc-500 sm:mt-6 sm:p-6">
               Loading saved addresses...
             </div>
           ) : defaultAddress ? (
-            <div className="mt-6 rounded-xl border border-zinc-200 p-5">
-              <div className="flex gap-4">
+            <div className="mt-5 min-w-0 overflow-hidden rounded-xl border border-zinc-200 p-4 sm:mt-6 sm:p-5">
+              <div className="flex min-w-0 flex-col gap-4 sm:flex-row">
                 {/* ICON */}
 
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-[#f4ecdf]">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#f4ecdf] sm:h-12 sm:w-12">
                   <Home size={21} strokeWidth={1.5} />
                 </div>
 
                 {/* DETAILS */}
 
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
+                  <div className="flex min-w-0 items-start justify-between gap-3">
+                    <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         <h3 className="text-sm font-semibold text-black">
                           Home
@@ -247,7 +249,7 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
                         )}
                       </div>
 
-                      <p className="mt-1 text-sm text-zinc-700">
+                      <p className="mt-1 truncate text-sm text-zinc-700">
                         {defaultAddress.name}
                       </p>
                     </div>
@@ -257,7 +259,7 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
                     <div className="flex shrink-0 items-center gap-3">
                       <Link
                         href={`/profile?tab=addresses&edit=${defaultAddress._id}`}
-                        className="text-zinc-600 transition hover:text-black"
+                        className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-600 transition hover:bg-zinc-100 hover:text-black"
                         title="Edit address"
                       >
                         <Pencil size={16} />
@@ -265,7 +267,7 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
 
                       <Link
                         href="/profile?tab=addresses"
-                        className="text-zinc-600 transition hover:text-red-600"
+                        className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-600 transition hover:bg-red-50 hover:text-red-600"
                         title="Manage addresses"
                       >
                         <Trash2 size={16} />
@@ -273,13 +275,13 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
                     </div>
                   </div>
 
-                  <p className="mt-2 text-sm leading-6 text-zinc-500">
+                  <p className="mt-3 break-words text-sm leading-6 text-zinc-500">
                     {defaultAddress.address}, {defaultAddress.city},{" "}
                     {defaultAddress.state} - {defaultAddress.pincode}
                   </p>
 
                   {defaultAddress.country && (
-                    <p className="text-sm text-zinc-500">
+                    <p className="break-words text-sm text-zinc-500">
                       {defaultAddress.country}
                     </p>
                   )}
@@ -291,7 +293,7 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
               </div>
             </div>
           ) : (
-            <div className="mt-6 rounded-xl border border-dashed border-zinc-300 p-8 text-center">
+            <div className="mt-5 rounded-xl border border-dashed border-zinc-300 p-7 text-center sm:mt-6 sm:p-8">
               <MapPin
                 size={28}
                 className="mx-auto text-zinc-400"
@@ -333,21 +335,14 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
             ACCOUNT SUMMARY
         =================================================== */}
 
-        {/* ===================================================
-    ACCOUNT SUMMARY
-            =================================================== */}
-
-        <section className="h-fit rounded-xl border border-zinc-200 bg-white p-6 md:p-6">
-          <div>
+        <section className="h-fit min-w-0 overflow-hidden rounded-xl border border-zinc-200 bg-white p-4 sm:p-5 md:p-7">
+          <div className="min-w-0">
             <h2 className="font-serif text-2xl text-black">Account Summary</h2>
 
             <div className="mt-2 h-[2px] w-8 bg-[#b7965d]" />
           </div>
 
-          <div
-            className="mt-7 grid grid-cols-1 divide-y
-           divide-zinc-200 rounded-xl border border-zinc-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0"
-          >
+          <div className="mt-6 grid min-w-0 grid-cols-1 divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
             {/* ORDERS */}
 
             <SummaryCard
@@ -390,13 +385,13 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
 
 function InfoField({ label, value }: { label: string; value?: string }) {
   return (
-    <div>
+    <div className="min-w-0">
       <label className="mb-2 block text-xs font-medium text-zinc-700">
         {label}
       </label>
 
-      <div className="flex min-h-11 items-center rounded-md border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-800">
-        {value || "Not added"}
+      <div className="flex min-h-11 min-w-0 items-center overflow-hidden rounded-md border border-zinc-200 bg-white px-3 py-3 text-sm text-zinc-800 sm:px-4">
+        <span className="min-w-0 break-words">{value || "Not added"}</span>
       </div>
     </div>
   );
@@ -420,8 +415,8 @@ function SummaryCard({
   linkText: string;
 }) {
   return (
-    <div className="min-w-0 p-4 md:p-5">
-      <div className="flex items-center gap-3">
+    <div className="min-w-0 p-4 sm:p-5">
+      <div className="flex min-w-0 items-center gap-3">
         {/* ICON */}
 
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f4ecdf]">
@@ -441,10 +436,10 @@ function SummaryCard({
 
       <Link
         href={href}
-        className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-black underline underline-offset-4 transition hover:text-zinc-600"
+        className="mt-4 inline-flex max-w-full items-center gap-1 text-xs font-medium text-black underline underline-offset-4 transition hover:text-zinc-600"
       >
-        {linkText}
-        <ArrowRight size={12} />
+        <span className="truncate">{linkText}</span>
+        <ArrowRight size={12} className="shrink-0" />
       </Link>
     </div>
   );

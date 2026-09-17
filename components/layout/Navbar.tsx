@@ -10,6 +10,11 @@ import {
   ShoppingCart,
   User,
   X,
+  ShoppingBag,
+  Heart,
+  Headphones,
+  LogOut,
+  MapPin,
 } from "lucide-react";
 
 import UserDropdown from "@/components/layout/UserDropdown";
@@ -23,6 +28,13 @@ const navLinks = [
   { name: "About", href: "/about" },
   { name: "Reviews", href: "/reviews" },
 ];
+
+interface UserData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+}
 
 export default function Navbar() {
   const items = useCartStore((state) => state.items);
@@ -40,9 +52,68 @@ export default function Navbar() {
   const [notificationType, setNotificationType] = useState<"success" | "error">(
     "success",
   );
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const closeMobileMenu = () => setMobileMenuOpen(false);
+  const [user, setUser] = useState<UserData | null>(null);
+  const [loadingUser, setLoadingUser] = useState(true);
+
+  // =====================================================
+  // CLOSE MOBILE DRAWER
+  // =====================================================
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+  };
+
+  // =====================================================
+  // USER SESSION
+  // =====================================================
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const response = await fetch("/api/auth/session", {
+          cache: "no-store",
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          setUser(result.user);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error("Navbar Session Error:", error);
+        setUser(null);
+      } finally {
+        setLoadingUser(false);
+      }
+    };
+
+    checkSession();
+  }, [pathname]);
+
+  // =====================================================
+  // BODY SCROLL LOCK
+  // =====================================================
+
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
+
+  // =====================================================
+  // AUTH NOTIFICATION
+  // =====================================================
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | null = null;
@@ -87,15 +158,71 @@ export default function Navbar() {
     };
   }, []);
 
+  // =====================================================
+  // LOGOUT
+  // =====================================================
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setUser(null);
+        closeMobileMenu();
+
+        const message = result.message || "Logout Successful";
+
+        window.dispatchEvent(
+          new CustomEvent("auth-notification", {
+            detail: {
+              message,
+              type: "success",
+            },
+          }),
+        );
+
+        router.push("/");
+      } else {
+        setNotificationType("error");
+        setNotification(result.message || "Logout failed");
+
+        setTimeout(() => {
+          setNotification("");
+        }, 2000);
+      }
+    } catch (error) {
+      console.error("Logout Error:", error);
+
+      setNotificationType("error");
+      setNotification("Something went wrong");
+
+      setTimeout(() => {
+        setNotification("");
+      }, 2000);
+    }
+  };
+
+  // =====================================================
+  // ADMIN
+  // =====================================================
+
   if (pathname.startsWith("/admin")) {
     return null;
   }
 
   return (
     <>
+      {/* =====================================================
+          NOTIFICATION
+      ===================================================== */}
+
       {notification && (
         <div
-          className={`fixed right-4 top-20 z-[60] flex items-center gap-3 rounded-[var(--radius-sm)] border px-4 py-3 shadow-[var(--shadow-soft)] sm:right-6 sm:top-24 sm:px-5 sm:py-4 ${
+          className={`fixed left-4 right-4 top-24 z-[100] flex items-center gap-3 rounded-[var(--radius-sm)] border px-4 py-3 shadow-[var(--shadow-soft)] sm:left-auto sm:right-6 sm:max-w-md sm:px-5 sm:py-4 ${
             notificationType === "success"
               ? "border-(--color-success) bg-(--color-success-background) text-(--color-success)"
               : "border-(--color-error) bg-(--color-error-background) text-(--color-error)"
@@ -109,19 +236,17 @@ export default function Navbar() {
         </div>
       )}
 
-      <header className="sticky top-0 z-50 border-b border-(--color-border) bg-(--color-page)/95 backdrop-blur-md">
-        <div className="flex h-[74px] w-full items-center gap-8 px-6 sm:px-8 lg:px-10 xl:px-14">
-          <div className="shrink-0">
-            <Logo />
-          </div>
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
 
-          <nav className="hidden flex-1 items-center justify-center gap-8 lg:flex xl:gap-10">
-            {navLinks.map((link) => {
-              const isActive =
-                link.href === "/"
-                  ? pathname === "/"
-                  : pathname === link.href ||
-                    pathname.startsWith(`${link.href}/`);
+      <header className="sticky top-0 z-50 border-b border-(--color-border) bg-(--color-page)/80 backdrop-blur-xl">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 md:px-8">
+          <Logo />
+
+          {/* =================================================
+              DESKTOP NAVIGATION
+          ================================================= */}
 
               return (
                 <Link
@@ -145,8 +270,14 @@ export default function Navbar() {
             })}
           </nav>
 
-          <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
-            <div className="relative hidden xl:block">
+          {/* =================================================
+              RIGHT SIDE
+          ================================================= */}
+
+          <div className="flex h-full items-center gap-2 sm:gap-4 md:gap-6">
+            {/* SEARCH */}
+
+            <div className="group relative hidden lg:block">
               <Search
                 size={18}
                 aria-hidden="true"
@@ -173,7 +304,11 @@ export default function Navbar() {
               />
             </div>
 
-            <div className="group relative flex h-[74px]">
+            {/* =================================================
+                DESKTOP PROFILE
+            ================================================= */}
+
+            <div className="group relative hidden h-full md:flex">
               <button
                 type="button"
                 aria-label="Account"
@@ -194,27 +329,29 @@ export default function Navbar() {
               />
             </div>
 
-            <Link
-              href="/wishlist"
-              aria-label="Wishlist"
-              className="hidden h-10 w-10 items-center justify-center text-(--color-text-primary) transition-colors hover:text-(--color-text-secondary) sm:flex"
-            >
-              <Heart size={21} strokeWidth={1.8} />
-            </Link>
+            {/* =================================================
+                CART
+            ================================================= */}
 
-            <Link
-              href="/cart"
-              aria-label="Shopping cart"
-              className="relative flex h-10 w-10 items-center justify-center text-(--color-text-primary) transition-colors hover:text-(--color-text-secondary)"
-            >
-              <ShoppingCart size={21} strokeWidth={1.8} />
+            <div className="group relative">
+              <Link
+                href="/cart"
+                aria-label="Shopping cart"
+                className="flex items-center justify-center p-1 text-(--color-text-secondary) transition-colors hover:text-(--color-text-primary)"
+              >
+                <ShoppingCart size={24} strokeWidth={1.8} />
 
-              {totalQuantity > 0 && (
-                <span className="absolute right-0 top-0 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-(--color-text-primary) px-1 text-[9px] font-bold text-(--color-white)">
-                  {totalQuantity}
-                </span>
-              )}
-            </Link>
+                {totalQuantity > 0 && (
+                  <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-(--color-text-primary) px-1 text-[10px] font-bold text-(--color-white)">
+                    {totalQuantity}
+                  </span>
+                )}
+              </Link>
+            </div>
+
+            {/* =================================================
+                MOBILE HAMBURGER
+            ================================================= */}
 
             <button
               type="button"
@@ -223,52 +360,66 @@ export default function Navbar() {
               }
               aria-expanded={mobileMenuOpen}
               onClick={() => setMobileMenuOpen((open) => !open)}
-              className="flex h-10 w-10 items-center justify-center text-(--color-text-primary) lg:hidden"
+              className="flex items-center justify-center p-1 text-(--color-text-secondary) transition-colors hover:text-(--color-text-primary) md:hidden"
             >
               {mobileMenuOpen ? (
-                <X size={22} strokeWidth={1.8} />
+                <X size={25} strokeWidth={1.8} />
               ) : (
-                <Menu size={22} strokeWidth={1.8} />
+                <Menu size={25} strokeWidth={1.8} />
               )}
             </button>
           </div>
         </div>
+      </header>
 
-        {mobileMenuOpen && (
-          <nav className="border-t border-(--color-border) bg-(--color-page) lg:hidden">
-            <div className="px-6 py-4 sm:px-8">
-              <div className="mb-4">
-                <div className="relative">
-                  <Search
-                    size={18}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-(--color-text-muted)"
-                  />
+      {/* =====================================================
+          MOBILE DRAWER
+      ===================================================== */}
 
-                  <input
-                    type="text"
-                    placeholder="Search for products..."
-                    value={search}
-                    onChange={(event) => setSearch(event.target.value)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter") {
-                        const value = event.currentTarget.value.trim();
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-[90] md:hidden">
+          {/* BACKDROP */}
 
-                        closeMobileMenu();
+          <button
+            type="button"
+            aria-label="Close menu"
+            onClick={closeMobileMenu}
+            className="absolute inset-0 bg-black/30 backdrop-blur-[2px]"
+          />
 
-                        if (value) {
-                          router.push(
-                            `/shop?search=${encodeURIComponent(value)}`,
-                          );
-                        } else {
-                          router.push("/shop");
-                        }
-                      }
-                    }}
-                    className="w-full rounded-full border border-(--color-border) py-3 pl-11 pr-4 text-sm outline-none focus:border-(--color-text-primary)"
-                  />
-                </div>
+          {/* DRAWER */}
+
+          <aside className="absolute right-0 top-0 flex h-[100dvh] w-[78%] max-w-[340px] flex-col overflow-y-auto bg-(--color-page) shadow-[-10px_0_35px_rgba(0,0,0,0.12)] animate-[slideInRight_0.28s_ease-out]">
+            {/* =================================================
+                DRAWER HEADER
+            ================================================= */}
+
+            <div className="flex min-h-20 shrink-0 items-center justify-between border-b border-(--color-border) px-5 sm:px-6">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-(--color-text-muted)">
+                  Menu
+                </p>
+
+                <h2 className="mt-1 text-lg font-semibold text-(--color-text-primary)">
+                  The GetOvr
+                </h2>
               </div>
 
+              <button
+                type="button"
+                aria-label="Close menu"
+                onClick={closeMobileMenu}
+                className="flex h-10 w-10 items-center justify-center rounded-full text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+              >
+                <X size={23} strokeWidth={1.8} />
+              </button>
+            </div>
+
+            {/* =================================================
+                NAVIGATION
+            ================================================= */}
+
+            <div className="px-5 py-4 sm:px-6">
               <div className="flex flex-col">
                 {navLinks.map((link) => {
                   const isActive =
@@ -282,27 +433,233 @@ export default function Navbar() {
                       key={link.href}
                       href={link.href}
                       onClick={closeMobileMenu}
-                      className={`border-b border-(--color-border) py-4 text-sm font-semibold uppercase tracking-[0.15em] last:border-b-0 ${
+                      className={`flex items-center justify-between border-b border-(--color-border) py-4 text-sm font-medium uppercase tracking-[0.18em] transition-colors ${
                         isActive
                           ? "text-(--color-text-primary)"
                           : "text-(--color-text-secondary)"
                       }`}
                     >
-                      <span className="flex items-center justify-between">
-                        {link.name}
+                      {link.name}
 
-                        {isActive && (
-                          <span className="h-1.5 w-1.5 rounded-full bg-(--color-text-primary)" />
-                        )}
-                      </span>
+                      {isActive && (
+                        <span className="h-1.5 w-1.5 rounded-full bg-(--color-accent)" />
+                      )}
                     </Link>
                   );
                 })}
               </div>
             </div>
-          </nav>
-        )}
-      </header>
+
+            {/* =================================================
+                ACCOUNT
+            ================================================= */}
+
+            <div className="border-t border-(--color-border) px-5 py-5 sm:px-6">
+              <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-(--color-text-muted)">
+                Account
+              </p>
+
+              {loadingUser ? (
+                <div className="rounded-sm bg-(--color-surface-muted) px-4 py-4">
+                  <p className="text-sm text-(--color-text-muted)">
+                    Checking account...
+                  </p>
+                </div>
+              ) : user ? (
+                <>
+                  {/* USER INFO */}
+
+                  <div className="mb-3 flex items-center gap-3 rounded-sm bg-(--color-surface-muted) px-4 py-3.5">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-(--color-text-primary) text-white">
+                      <User size={18} strokeWidth={1.8} />
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-(--color-text-primary)">
+                        {user.firstName} {user.lastName}
+                      </p>
+
+                      <p className="truncate text-xs text-(--color-text-muted)">
+                        {user.email}
+                      </p>
+                    </div>
+                  </div>
+
+                  <Link
+                    href="/profile"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 rounded-sm px-3 py-3.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+                  >
+                    <User
+                      size={18}
+                      strokeWidth={1.8}
+                      className="text-(--color-text-muted)"
+                    />
+                    My Profile
+                  </Link>
+
+                  <Link
+                    href="/profile?tab=orders"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 rounded-sm px-3 py-3.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+                  >
+                    <ShoppingBag
+                      size={18}
+                      strokeWidth={1.8}
+                      className="text-(--color-text-muted)"
+                    />
+                    My Orders
+                  </Link>
+
+                  <Link
+                    href="/profile?tab=wishlist"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 rounded-sm px-3 py-3.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+                  >
+                    <Heart
+                      size={18}
+                      strokeWidth={1.8}
+                      className="text-(--color-text-muted)"
+                    />
+                    Wishlist
+                  </Link>
+
+                  <Link
+                    href="/track-order"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 rounded-sm px-3 py-3.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+                  >
+                    <MapPin
+                      size={18}
+                      strokeWidth={1.8}
+                      className="text-(--color-text-muted)"
+                    />
+                    Track Order
+                  </Link>
+
+                  <Link
+                    href="/contact"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 rounded-sm px-3 py-3.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+                  >
+                    <Headphones
+                      size={18}
+                      strokeWidth={1.8}
+                      className="text-(--color-text-muted)"
+                    />
+                    Contact Us
+                  </Link>
+
+                  <div className="my-2 border-t border-(--color-border)" />
+
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="flex w-full items-center gap-3 rounded-sm px-3 py-3.5 text-sm text-(--color-error) transition-colors hover:bg-(--color-error-background)"
+                  >
+                    <LogOut
+                      size={18}
+                      strokeWidth={1.8}
+                      className="text-(--color-text-muted)"
+                    />
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  {/* LOGIN / SIGNUP */}
+
+                  <Link
+                    href="/login"
+                    onClick={closeMobileMenu}
+                    className="mb-3 flex w-full items-center justify-center rounded-sm border border-(--color-accent) px-5 py-3.5 text-sm font-semibold text-(--color-accent) transition-colors hover:bg-(--color-accent) hover:text-white"
+                  >
+                    LOGIN / SIGNUP
+                  </Link>
+
+                  <Link
+                    href="/login?redirect=/profile%3Ftab%3Dorders"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 rounded-sm px-3 py-3.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+                  >
+                    <ShoppingBag
+                      size={18}
+                      strokeWidth={1.8}
+                      className="text-(--color-text-muted)"
+                    />
+                    Orders
+                  </Link>
+
+                  <Link
+                    href="/track-order"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 rounded-sm px-3 py-3.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+                  >
+                    <MapPin
+                      size={18}
+                      strokeWidth={1.8}
+                      className="text-(--color-text-muted)"
+                    />
+                    Track Order
+                  </Link>
+
+                  <Link
+                    href="/login?redirect=%2Fprofile%3Ftab%3Dwishlist"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 rounded-sm px-3 py-3.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+                  >
+                    <Heart
+                      size={18}
+                      strokeWidth={1.8}
+                      className="text-(--color-text-muted)"
+                    />
+                    Wishlist
+                  </Link>
+
+                  <Link
+                    href="/contact"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 rounded-sm px-3 py-3.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+                  >
+                    <Headphones
+                      size={18}
+                      strokeWidth={1.8}
+                      className="text-(--color-text-muted)"
+                    />
+                    Contact Us
+                  </Link>
+                </>
+              )}
+            </div>
+
+            {/* =================================================
+                DRAWER FOOTER
+            ================================================= */}
+
+            <div className="mt-auto border-t border-(--color-border) px-5 py-5 sm:px-6">
+              <p className="text-center text-[10px] uppercase tracking-[0.18em] text-(--color-text-muted)">
+                The GetOvr
+              </p>
+            </div>
+          </aside>
+        </div>
+      )}
+
+      {/* =====================================================
+          DRAWER ANIMATION
+      ===================================================== */}
+
+      <style jsx global>{`
+        @keyframes slideInRight {
+          from {
+            transform: translateX(100%);
+          }
+
+          to {
+            transform: translateX(0);
+          }
+        }
+      `}</style>
     </>
   );
 }

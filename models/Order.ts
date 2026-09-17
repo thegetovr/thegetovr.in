@@ -148,12 +148,22 @@ const OrderItemSchema = new Schema(
     _id: false,
   },
 );
+
 const OrderSchema = new Schema(
   {
     orderNumber: {
       type: String,
       required: true,
       unique: true,
+      index: true,
+    },
+
+    // 🔐 Links the order to the actual logged-in User account
+    // Existing old orders may not have this field.
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
       index: true,
     },
 
@@ -208,6 +218,7 @@ const OrderSchema = new Schema(
       default: "pending",
       index: true,
     },
+
     adminNotes: {
       type: String,
       default: "",

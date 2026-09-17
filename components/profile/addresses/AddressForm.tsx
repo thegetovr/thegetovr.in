@@ -84,30 +84,36 @@ export default function AddressForm({
   };
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-6">
-      {/* HEADER */}
+    <div className="min-w-0 overflow-hidden rounded-xl border border-gray-200 bg-white p-4 sm:p-5 md:p-6">
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
 
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-semibold text-black">
-            {isEditing ? "Edit Address" : "Add New Address"}
-          </h2>
+      <div className="min-w-0">
+        <h2 className="text-lg font-semibold text-black sm:text-xl">
+          {isEditing ? "Edit Address" : "Add New Address"}
+        </h2>
 
-          <p className="mt-1 text-sm text-gray-500">
-            {isEditing
-              ? "Update your saved delivery address."
-              : "Save an address for faster checkout."}
-          </p>
-        </div>
+        <p className="mt-1 text-xs leading-5 text-gray-500 sm:text-sm">
+          {isEditing
+            ? "Update your saved delivery address."
+            : "Save an address for faster checkout."}
+        </p>
       </div>
 
-      {/* FORM */}
+      {/* =====================================================
+          FORM
+      ===================================================== */}
 
-      <form onSubmit={handleSubmit} className="mt-6">
-        {/* NAME + PHONE */}
+      <form onSubmit={handleSubmit} className="mt-5 sm:mt-6">
+        {/* =================================================
+            NAME + PHONE
+        ================================================= */}
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
+        <div className="grid min-w-0 gap-4 md:grid-cols-2">
+          {/* NAME */}
+
+          <div className="min-w-0">
             <label className="mb-1.5 block text-sm font-medium text-black">
               Full Name
             </label>
@@ -117,11 +123,14 @@ export default function AddressForm({
               onChange={(e) => handleChange("name", e.target.value)}
               placeholder="Shivdeep Raina"
               required
-              className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-black outline-none transition focus:border-black"
+              autoComplete="name"
+              className="h-12 w-full min-w-0 rounded-lg border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-black sm:px-4"
             />
           </div>
 
-          <div>
+          {/* PHONE */}
+
+          <div className="min-w-0">
             <label className="mb-1.5 block text-sm font-medium text-black">
               Phone
             </label>
@@ -134,14 +143,17 @@ export default function AddressForm({
               onChange={(e) => handleChange("phone", e.target.value)}
               placeholder="9876543210"
               required
-              className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-black outline-none transition focus:border-black"
+              autoComplete="tel"
+              className="h-12 w-full min-w-0 rounded-lg border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-black sm:px-4"
             />
           </div>
         </div>
 
-        {/* ADDRESS */}
+        {/* =================================================
+            ADDRESS
+        ================================================= */}
 
-        <div className="mt-4">
+        <div className="mt-4 min-w-0">
           <label className="mb-1.5 block text-sm font-medium text-black">
             Address
           </label>
@@ -151,14 +163,19 @@ export default function AddressForm({
             onChange={(e) => handleChange("address", e.target.value)}
             placeholder="House No, Street, Area, Landmark"
             required
-            className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-black outline-none transition focus:border-black"
+            autoComplete="street-address"
+            className="h-12 w-full min-w-0 rounded-lg border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-black sm:px-4"
           />
         </div>
 
-        {/* CITY + STATE + PINCODE */}
+        {/* =================================================
+            CITY + STATE + PINCODE
+        ================================================= */}
 
-        <div className="mt-4 grid gap-4 md:grid-cols-3">
-          <div>
+        <div className="mt-4 grid min-w-0 gap-4 md:grid-cols-3">
+          {/* CITY */}
+
+          <div className="min-w-0">
             <label className="mb-1.5 block text-sm font-medium text-black">
               City
             </label>
@@ -168,11 +185,14 @@ export default function AddressForm({
               onChange={(e) => handleChange("city", e.target.value)}
               placeholder="Jammu"
               required
-              className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-black outline-none transition focus:border-black"
+              autoComplete="address-level2"
+              className="h-12 w-full min-w-0 rounded-lg border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-black sm:px-4"
             />
           </div>
 
-          <div>
+          {/* STATE */}
+
+          <div className="min-w-0">
             <label className="mb-1.5 block text-sm font-medium text-black">
               State
             </label>
@@ -183,24 +203,33 @@ export default function AddressForm({
             />
           </div>
 
-          <div>
+          {/* PINCODE */}
+
+          <div className="min-w-0">
             <label className="mb-1.5 block text-sm font-medium text-black">
               Pincode
             </label>
 
             <input
               value={form.pincode}
-              onChange={(e) => handleChange("pincode", e.target.value)}
+              inputMode="numeric"
+              maxLength={6}
+              onChange={(e) =>
+                handleChange("pincode", e.target.value.replace(/\D/g, ""))
+              }
               placeholder="180001"
               required
-              className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-black outline-none transition focus:border-black"
+              autoComplete="postal-code"
+              className="h-12 w-full min-w-0 rounded-lg border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-black sm:px-4"
             />
           </div>
         </div>
 
-        {/* COUNTRY */}
+        {/* =================================================
+            COUNTRY
+        ================================================= */}
 
-        <div className="mt-4">
+        <div className="mt-4 min-w-0">
           <label className="mb-1.5 block text-sm font-medium text-black">
             Country
           </label>
@@ -210,29 +239,36 @@ export default function AddressForm({
             onChange={(e) => handleChange("country", e.target.value)}
             placeholder="India"
             required
-            className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-black outline-none transition focus:border-black"
+            autoComplete="country-name"
+            className="h-12 w-full min-w-0 rounded-lg border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-black sm:px-4"
           />
         </div>
 
-        {/* DEFAULT */}
+        {/* =================================================
+            DEFAULT ADDRESS
+        ================================================= */}
 
-        <label className="mt-5 flex cursor-pointer items-center gap-3 text-sm text-gray-700">
+        <label className="mt-5 flex cursor-pointer items-start gap-3 text-sm text-gray-700">
           <input
             type="checkbox"
             checked={form.isDefault}
             onChange={(e) => handleChange("isDefault", e.target.checked)}
-            className="h-4 w-4 accent-black"
+            className="mt-0.5 h-4 w-4 shrink-0 accent-black"
           />
-          Make this my default address
+
+          <span className="leading-5">Make this my default address</span>
         </label>
 
-        {/* BUTTONS */}
+        {/* =================================================
+            BUTTONS
+        ================================================= */}
 
-        <div className="mt-6 flex justify-end gap-3">
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:flex sm:justify-end">
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-lg border border-gray-200 px-5 py-3 text-sm font-medium text-black transition hover:bg-gray-50"
+            disabled={saving}
+            className="inline-flex min-h-11 items-center justify-center rounded-lg border border-gray-200 px-4 py-3 text-sm font-medium text-black transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 sm:px-5"
           >
             Cancel
           </button>
@@ -240,7 +276,7 @@ export default function AddressForm({
           <button
             type="submit"
             disabled={saving}
-            className="rounded-lg bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex min-h-11 items-center justify-center rounded-lg bg-black px-4 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60 sm:px-5"
           >
             {saving ? "Saving..." : isEditing ? "Save Changes" : "Save Address"}
           </button>

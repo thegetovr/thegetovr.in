@@ -53,37 +53,39 @@ const wishlistItems: WishlistItem[] = [
 
 export default function Wishlist() {
   return (
-    <section className="min-w-0 flex-1 bg-white px-8 py-7">
+    <section className="min-w-0 flex-1 overflow-hidden rounded-xl border border-[#e6e0d8] bg-white p-4 sm:p-5 md:p-7">
       {/* =====================================================
           HEADER
       ===================================================== */}
 
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-serif tracking-tight text-black">
+      <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="font-serif text-2xl tracking-tight text-black">
             My Wishlist
           </h1>
 
-          <p className="mt-1.5 text-sm text-gray-500">
+          <div className="mt-2 h-[2px] w-8 bg-[#b7965d]" />
+
+          <p className="mt-3 text-sm leading-6 text-zinc-500">
             Your saved products you love
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:items-center sm:gap-3">
           <button
             type="button"
-            className="flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-3 text-sm font-medium text-black transition hover:bg-gray-50"
+            className="inline-flex min-w-0 items-center justify-center gap-1.5 rounded-lg border border-[#ddd5ca] bg-white px-3 py-2.5 text-xs font-medium text-zinc-800 transition hover:bg-[#fcfaf7] sm:gap-2 sm:px-4 sm:text-sm"
           >
-            <Share2 size={17} strokeWidth={1.8} />
-            Share Wishlist
+            <Share2 size={16} strokeWidth={1.7} className="shrink-0" />
+            <span className="truncate">Share Wishlist</span>
           </button>
 
           <button
             type="button"
-            className="flex items-center gap-2 rounded-lg bg-black px-4 py-3 text-sm font-medium text-white transition hover:bg-gray-800"
+            className="inline-flex min-w-0 items-center justify-center gap-1.5 rounded-lg bg-black px-3 py-2.5 text-xs font-medium text-white transition hover:bg-gray-800 sm:gap-2 sm:px-4 sm:text-sm"
           >
-            <ShoppingBag size={17} strokeWidth={1.8} />
-            Move All to Cart
+            <ShoppingBag size={16} strokeWidth={1.7} className="shrink-0" />
+            <span className="truncate">Move All to Cart</span>
           </button>
         </div>
       </div>
@@ -92,141 +94,243 @@ export default function Wishlist() {
           TOOLBAR
       ===================================================== */}
 
-      <div className="mt-7 flex items-center justify-between rounded-xl border border-gray-200 bg-white px-6 py-4">
+      <div className="mt-5 flex min-w-0 items-center justify-between rounded-xl border border-[#ddd5ca] bg-white px-4 py-3.5 sm:mt-6 sm:px-5 sm:py-4 md:px-6">
         <p className="text-sm font-medium text-black">
           {wishlistItems.length} Items
         </p>
 
         <button
           type="button"
-          className="flex items-center gap-3 text-sm text-gray-600"
+          className="flex items-center gap-2 text-xs text-zinc-600 sm:text-sm"
         >
-          Sort By:
-          <span className="flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-black">
+          <span className="hidden xs:inline">Sort By:</span>
+
+          <span className="inline-flex items-center gap-2 rounded-lg border border-[#ddd5ca] px-3 py-2 text-black sm:px-4">
             Latest
-            <ChevronDown size={16} />
+            <ChevronDown size={15} strokeWidth={1.7} />
           </span>
         </button>
       </div>
 
       {/* =====================================================
-          PRODUCT GRID
+          WISHLIST LIST
       ===================================================== */}
 
-      <div className="mt-5 grid grid-cols-4 gap-4">
-        {wishlistItems.map((item) => (
-          <WishlistCard key={item.id} item={item} />
-        ))}
+      <div className="mt-5 min-w-0 overflow-hidden rounded-xl border border-[#ddd5ca] bg-white">
+        {wishlistItems.length > 0 ? (
+          wishlistItems.map((item) => <WishlistRow key={item.id} item={item} />)
+        ) : (
+          <EmptyWishlist />
+        )}
       </div>
-
-      {/* =====================================================
-          EMPTY WISHLIST
-      ===================================================== */}
-
-      {wishlistItems.length === 0 && (
-        <div className="mt-5 flex min-h-[400px] flex-col items-center justify-center rounded-xl border border-gray-200 bg-white text-center">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-50">
-            <Heart size={38} strokeWidth={1.5} className="text-gray-500" />
-          </div>
-
-          <h2 className="mt-5 text-xl font-semibold text-black">
-            Your Wishlist is Empty
-          </h2>
-
-          <p className="mt-2 text-sm text-gray-500">
-            Save products you love and come back to them anytime.
-          </p>
-
-          <button
-            type="button"
-            className="mt-6 rounded-lg bg-black px-6 py-3 text-sm font-medium text-white transition hover:bg-gray-800"
-          >
-            Start Shopping
-          </button>
-        </div>
-      )}
     </section>
   );
 }
 
 /* =========================================================
-   WISHLIST CARD
+   WISHLIST ROW
 ========================================================= */
 
-function WishlistCard({ item }: { item: WishlistItem }) {
+function WishlistRow({ item }: { item: WishlistItem }) {
   const discount =
     item.originalPrice &&
     Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100);
 
   return (
-    <div className="group rounded-xl border border-gray-200 bg-white p-3 transition hover:border-gray-300">
-      {/* Product Image */}
-      <div className="relative flex h-56 items-center justify-center overflow-hidden rounded-lg bg-gray-50">
-        <img
-          src={item.image}
-          alt={item.name}
-          className="h-full w-full object-contain transition duration-300 group-hover:scale-105"
-        />
+    <div className="border-b border-[#e8e2da] p-3.5 last:border-b-0 sm:p-4 md:px-5 md:py-4">
+      {/* =================================================
+          MOBILE
+      ================================================= */}
 
-        {/* Remove Wishlist */}
-        <button
-          type="button"
-          aria-label={`Remove ${item.name} from wishlist`}
-          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm transition hover:bg-red-50"
-        >
-          <Trash2 size={17} strokeWidth={1.8} className="text-red-500" />
-        </button>
+      <div className="block md:hidden">
+        {/* PRODUCT */}
+
+        <div className="flex min-w-0 items-start gap-3">
+          <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#f8f6f2]">
+            <img
+              src={item.image}
+              alt={item.name}
+              className="h-full w-full object-contain"
+            />
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <h2 className="line-clamp-2 text-sm font-semibold leading-5 text-black">
+              {item.name}
+            </h2>
+
+            {item.variant && (
+              <p className="mt-1 truncate text-xs text-zinc-500">
+                {item.variant}
+              </p>
+            )}
+
+            <p
+              className={`mt-2 text-xs font-medium ${
+                item.stock ? "text-green-600" : "text-red-500"
+              }`}
+            >
+              {item.stock ? "In Stock" : "Out of Stock"}
+            </p>
+          </div>
+
+          {/* REMOVE */}
+
+          <button
+            type="button"
+            aria-label={`Remove ${item.name} from wishlist`}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-red-500 transition hover:bg-red-50"
+          >
+            <Trash2 size={17} strokeWidth={1.8} />
+          </button>
+        </div>
+
+        {/* PRICE + ACTION */}
+
+        <div className="mt-4 flex min-w-0 items-center justify-between gap-3 border-t border-[#eee9e2] pt-3.5">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span className="text-sm font-semibold text-black">
+                ₹{item.price.toLocaleString("en-IN")}
+              </span>
+
+              {item.originalPrice && (
+                <>
+                  <span className="text-xs text-zinc-400 line-through">
+                    ₹{item.originalPrice.toLocaleString("en-IN")}
+                  </span>
+
+                  <span className="text-xs font-medium text-red-500">
+                    {discount}% OFF
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            disabled={!item.stock}
+            className="inline-flex min-w-0 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-[#eee3d5] px-3 py-2.5 text-xs font-medium text-zinc-900 transition hover:bg-[#e6d8c6] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
+          >
+            <ShoppingBag size={15} strokeWidth={1.8} />
+
+            <span>{item.stock ? "Add to Cart" : "Out of Stock"}</span>
+          </button>
+        </div>
       </div>
 
-      {/* Product Information */}
-      <div className="px-1 pt-4">
-        <h3 className="truncate text-sm font-semibold text-black">
-          {item.name}
-        </h3>
+      {/* =================================================
+          DESKTOP
+      ================================================= */}
 
-        {item.variant && (
-          <p className="mt-1 text-xs text-gray-500">{item.variant}</p>
-        )}
+      <div className="hidden md:grid md:grid-cols-[92px_minmax(0,1fr)_145px_130px] md:items-center md:gap-4">
+        {/* IMAGE */}
 
-        {/* Price */}
-        <div className="mt-4 flex items-center gap-2">
-          <span className="text-base font-semibold text-black">
-            ₹{item.price.toLocaleString("en-IN")}
-          </span>
+        <div className="flex h-[88px] w-[88px] items-center justify-center overflow-hidden rounded-lg bg-[#f8f6f2]">
+          <img
+            src={item.image}
+            alt={item.name}
+            className="h-full w-full object-contain transition duration-300 hover:scale-105"
+          />
+        </div>
 
-          {item.originalPrice && (
-            <>
-              <span className="text-xs text-gray-400 line-through">
+        {/* INFO */}
+
+        <div className="min-w-0">
+          <h2 className="truncate text-sm font-semibold text-black">
+            {item.name}
+          </h2>
+
+          {item.variant && (
+            <p className="mt-1 text-xs text-zinc-500">{item.variant}</p>
+          )}
+
+          <div className="mt-2 flex items-center gap-2">
+            <span
+              className={`text-xs font-medium ${
+                item.stock ? "text-green-600" : "text-red-500"
+              }`}
+            >
+              {item.stock ? "In Stock" : "Out of Stock"}
+            </span>
+          </div>
+        </div>
+
+        {/* PRICE */}
+
+        <div>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span className="text-sm font-semibold text-black">
+              ₹{item.price.toLocaleString("en-IN")}
+            </span>
+
+            {item.originalPrice && (
+              <span className="text-xs text-zinc-400 line-through">
                 ₹{item.originalPrice.toLocaleString("en-IN")}
               </span>
+            )}
+          </div>
 
-              <span className="text-xs font-medium text-red-500">
-                {discount}% OFF
-              </span>
-            </>
+          {item.originalPrice && (
+            <p className="mt-1 text-xs font-medium text-red-500">
+              {discount}% OFF
+            </p>
           )}
         </div>
 
-        {/* Stock */}
-        <p
-          className={`mt-3 text-xs font-medium ${
-            item.stock ? "text-green-600" : "text-red-500"
-          }`}
-        >
-          {item.stock ? "In Stock" : "Out of Stock"}
-        </p>
+        {/* ACTIONS */}
 
-        {/* Add To Cart */}
-        <button
-          type="button"
-          disabled={!item.stock}
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-black px-4 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500"
-        >
-          <ShoppingBag size={16} strokeWidth={1.8} />
+        <div className="flex flex-col items-end gap-2">
+          <button
+            type="button"
+            aria-label={`Remove ${item.name} from wishlist`}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-red-500 transition hover:text-red-600"
+          >
+            <Trash2 size={15} strokeWidth={1.8} />
+            Remove
+          </button>
 
-          {item.stock ? "Add to Cart" : "Out of Stock"}
-        </button>
+          <button
+            type="button"
+            disabled={!item.stock}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-[#eee3d5] px-3 py-2 text-xs font-medium text-zinc-900 transition hover:bg-[#e6d8c6] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
+          >
+            <ShoppingBag size={15} strokeWidth={1.8} />
+
+            {item.stock ? "Add to Cart" : "Out of Stock"}
+          </button>
+        </div>
       </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   EMPTY WISHLIST
+========================================================= */
+
+function EmptyWishlist() {
+  return (
+    <div className="flex min-h-[320px] flex-col items-center justify-center px-5 text-center sm:min-h-[360px]">
+      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#f5f1eb]">
+        <Heart size={28} strokeWidth={1.4} className="text-zinc-400" />
+      </div>
+
+      <h2 className="mt-4 text-base font-semibold text-black">
+        Your Wishlist is Empty
+      </h2>
+
+      <p className="mt-1 max-w-sm text-sm leading-5 text-zinc-500">
+        Save products you love and come back to them anytime.
+      </p>
+
+      <button
+        type="button"
+        className="mt-5 rounded-lg bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-gray-800"
+      >
+        Start Shopping
+      </button>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft, Save, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Save, CheckCircle2, ChevronDown } from "lucide-react";
 
 interface ProfileUser {
   firstName: string;
@@ -24,22 +24,38 @@ export default function ProfileEdit({
   onSaved,
 }: ProfileEditProps) {
   const [firstName, setFirstName] = useState(user?.firstName ?? "");
+
   const [lastName, setLastName] = useState(user?.lastName ?? "");
+
   const [phone, setPhone] = useState(user?.phone ?? "");
+
   const [dateOfBirth, setDateOfBirth] = useState(user?.dateOfBirth ?? "");
+
   const [gender, setGender] = useState(user?.gender ?? "");
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
- const handleSubmit = async (
-  event: React.FormEvent<HTMLFormElement>,
-) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     setError("");
     setSuccess("");
+
+    // =====================================================
+    // BASIC VALIDATION
+    // =====================================================
+
+    if (!firstName.trim()) {
+      setError("First name is required.");
+      return;
+    }
+
+    if (!lastName.trim()) {
+      setError("Last name is required.");
+      return;
+    }
 
     // =====================================================
     // PHONE VALIDATION
@@ -59,8 +75,8 @@ export default function ProfileEdit({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          firstName,
-          lastName,
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
           phone,
           dateOfBirth,
           gender,
@@ -85,6 +101,7 @@ export default function ProfileEdit({
 
       if (!response.ok || !data.success) {
         setError(data.message || "Unable to update profile.");
+
         return;
       }
 
@@ -107,16 +124,18 @@ export default function ProfileEdit({
   };
 
   return (
-    <section className="rounded-xl border border-zinc-200 bg-white p-6 md:p-7">
-      {/* HEADER */}
+    <section className="min-w-0 overflow-hidden rounded-xl border border-zinc-200 bg-white p-4 sm:p-5 md:p-7">
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
+      <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
           <h2 className="font-serif text-2xl text-black">Edit Profile</h2>
 
           <div className="mt-2 h-[2px] w-8 bg-[#b7965d]" />
 
-          <p className="mt-3 text-sm text-zinc-500">
+          <p className="mt-3 text-sm leading-6 text-zinc-500">
             Update your personal information.
           </p>
         </div>
@@ -125,17 +144,19 @@ export default function ProfileEdit({
           type="button"
           onClick={onCancel}
           disabled={saving}
-          className="inline-flex w-fit items-center gap-2 rounded-lg border border-zinc-200 px-4 py-2.5 text-sm font-medium text-black transition hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-lg border border-zinc-200 px-4 py-3 text-sm font-medium text-black transition hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit sm:py-2.5"
         >
-          <ArrowLeft size={15} />
+          <ArrowLeft size={15} strokeWidth={1.8} />
           Back
         </button>
       </div>
 
-      {/* FORM */}
+      {/* =====================================================
+          FORM
+      ===================================================== */}
 
-      <form onSubmit={handleSubmit} className="mt-8">
-        <div className="grid gap-5 md:grid-cols-2">
+      <form onSubmit={handleSubmit} className="mt-6 sm:mt-8">
+        <div className="grid min-w-0 gap-4 sm:gap-5 md:grid-cols-2">
           {/* FIRST NAME */}
 
           <FormField
@@ -143,6 +164,7 @@ export default function ProfileEdit({
             value={firstName}
             onChange={setFirstName}
             placeholder="First Name"
+            autoComplete="given-name"
           />
 
           {/* LAST NAME */}
@@ -152,11 +174,12 @@ export default function ProfileEdit({
             value={lastName}
             onChange={setLastName}
             placeholder="Last Name"
+            autoComplete="family-name"
           />
 
           {/* EMAIL */}
 
-          <div>
+          <div className="min-w-0">
             <label className="mb-2 block text-xs font-medium text-zinc-700">
               Email Address
             </label>
@@ -165,40 +188,48 @@ export default function ProfileEdit({
               type="email"
               value={user?.email ?? ""}
               disabled
-              className="h-11 w-full rounded-md border border-zinc-200 bg-zinc-50 px-4 text-sm text-zinc-500 outline-none"
+              autoComplete="email"
+              className="h-12 w-full min-w-0 rounded-md border border-zinc-200 bg-zinc-50 px-3 text-sm text-zinc-500 outline-none sm:px-4"
             />
 
-            <p className="mt-1.5 text-[11px] text-zinc-400">
+            <p className="mt-1.5 text-[11px] leading-4 text-zinc-400">
               Email is linked to your account and cannot be changed here.
             </p>
           </div>
 
           {/* PHONE */}
 
-          <div>
+          <div className="min-w-0">
             <label className="mb-2 block text-xs font-medium text-zinc-700">
               Phone Number
             </label>
 
-            <input
-              type="tel"
-              value={phone}
-              onChange={(event) => {
-                const value = event.target.value
-                  .replace(/\D/g, "")
-                  .slice(0, 10);
+            <div className="flex min-w-0">
+              <div className="flex h-12 shrink-0 items-center rounded-l-md border border-r-0 border-zinc-200 bg-zinc-50 px-3 text-sm text-zinc-500 sm:px-4">
+                +91
+              </div>
 
-                setPhone(value);
+              <input
+                type="tel"
+                value={phone}
+                onChange={(event) => {
+                  const value = event.target.value
+                    .replace(/\D/g, "")
+                    .slice(0, 10);
 
-                if (value.length === 10) {
-                  setError("");
-                }
-              }}
-              placeholder="10-digit mobile number"
-              maxLength={10}
-              inputMode="numeric"
-              className="h-11 w-full rounded-md border border-zinc-200 bg-white px-4 text-sm text-zinc-800 outline-none transition placeholder:text-zinc-400 focus:border-black"
-            />
+                  setPhone(value);
+
+                  if (value.length === 10) {
+                    setError("");
+                  }
+                }}
+                placeholder="10-digit mobile number"
+                maxLength={10}
+                inputMode="numeric"
+                autoComplete="tel-national"
+                className="h-12 min-w-0 flex-1 rounded-r-md border border-zinc-200 bg-white px-3 text-sm text-zinc-800 outline-none transition placeholder:text-zinc-400 focus:border-black sm:px-4"
+              />
+            </div>
 
             {phone.length > 0 && phone.length < 10 && (
               <p className="mt-1.5 text-xs text-red-500">
@@ -209,7 +240,7 @@ export default function ProfileEdit({
 
           {/* DATE OF BIRTH */}
 
-          <div>
+          <div className="min-w-0">
             <label className="mb-2 block text-xs font-medium text-zinc-700">
               Date of Birth
             </label>
@@ -218,57 +249,75 @@ export default function ProfileEdit({
               type="date"
               value={dateOfBirth}
               onChange={(event) => setDateOfBirth(event.target.value)}
-              className="h-11 w-full rounded-md border border-zinc-200
-               bg-white px-4 text-sm text-zinc-800 outline-none transition focus:border-black"
+              className="h-12 w-full min-w-0 rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-800 outline-none transition focus:border-black sm:px-4"
             />
           </div>
 
           {/* GENDER */}
 
-          <div>
+          <div className="min-w-0">
             <label className="mb-2 block text-xs font-medium text-zinc-700">
               Gender
             </label>
 
-            <select
-              value={gender}
-              onChange={(event) => setGender(event.target.value)}
-              className="h-11 w-full rounded-md border border-zinc-200 bg-white px-4 text-sm text-zinc-800 outline-none transition focus:border-black"
-            >
-              <option value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-              <option value="Prefer not to say">Prefer not to say</option>
-            </select>
+            <div className="relative">
+              <select
+                value={gender}
+                onChange={(event) => setGender(event.target.value)}
+                className="h-12 w-full min-w-0 appearance-none rounded-md border border-zinc-200 bg-white px-3 pr-10 text-sm text-zinc-800 outline-none transition focus:border-black sm:px-4 sm:pr-10"
+              >
+                <option value="">Select Gender</option>
+
+                <option value="Male">Male</option>
+
+                <option value="Female">Female</option>
+
+                <option value="Other">Other</option>
+
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+
+              <ChevronDown
+                size={16}
+                strokeWidth={1.7}
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 sm:right-4"
+              />
+            </div>
           </div>
         </div>
 
-        {/* SUCCESS MESSAGE */}
+        {/* =====================================================
+            SUCCESS MESSAGE
+        ===================================================== */}
 
         {success && (
-          <div className="mt-5 flex items-center gap-3 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-            <CheckCircle2 size={18} className="shrink-0" />
-            <span>{success}</span>
+          <div className="mt-5 flex min-w-0 items-start gap-3 rounded-lg border border-green-200 bg-green-50 px-3 py-3 text-sm text-green-700 sm:px-4">
+            <CheckCircle2 size={18} className="mt-0.5 shrink-0" />
+
+            <span className="min-w-0 break-words">{success}</span>
           </div>
         )}
 
-        {/* ERROR MESSAGE */}
+        {/* =====================================================
+            ERROR MESSAGE
+        ===================================================== */}
 
         {error && (
-          <div className="mt-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+          <div className="mt-5 min-w-0 rounded-lg border border-red-200 bg-red-50 px-3 py-3 text-sm leading-5 text-red-600 sm:px-4">
             {error}
           </div>
         )}
 
-        {/* ACTIONS */}
+        {/* =====================================================
+            ACTIONS
+        ===================================================== */}
 
-        <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <div className="mt-7 grid grid-cols-2 gap-3 sm:mt-8 sm:flex sm:justify-end">
           <button
             type="button"
             onClick={onCancel}
             disabled={saving}
-            className="rounded-lg border border-zinc-200 px-5 py-3 text-sm font-medium text-black transition hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center justify-center rounded-lg border border-zinc-200 px-4 py-3 text-sm font-medium text-black transition hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50 sm:px-5"
           >
             Cancel
           </button>
@@ -276,11 +325,11 @@ export default function ProfileEdit({
           <button
             type="submit"
             disabled={saving}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-black px-4 py-3 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 sm:px-5"
           >
-            <Save size={16} />
+            <Save size={16} strokeWidth={1.8} />
 
-            {saving ? "Saving..." : "Save Changes"}
+            <span>{saving ? "Saving..." : "Save Changes"}</span>
           </button>
         </div>
       </form>
@@ -298,15 +347,17 @@ function FormField({
   onChange,
   placeholder,
   type = "text",
+  autoComplete,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
   type?: string;
+  autoComplete?: string;
 }) {
   return (
-    <div>
+    <div className="min-w-0">
       <label className="mb-2 block text-xs font-medium text-zinc-700">
         {label}
       </label>
@@ -316,7 +367,8 @@ function FormField({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className="h-11 w-full rounded-md border border-zinc-200 bg-white px-4 text-sm text-zinc-800 outline-none transition placeholder:text-zinc-400 focus:border-black"
+        autoComplete={autoComplete}
+        className="h-12 w-full min-w-0 rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-800 outline-none transition placeholder:text-zinc-400 focus:border-black sm:px-4"
       />
     </div>
   );
