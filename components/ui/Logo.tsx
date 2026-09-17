@@ -5,10 +5,11 @@ export default function Logo() {
     <Link
       href="/"
       className="cursor-pointer select-none transition-opacity duration-300 hover:opacity-80"
+      aria-label="THE GETOVR home"
     >
-      <h1 className="text-xl font-black tracking-[0.25em] text-(--color-text-primary)">
+      <span className="text-[22px] font-black tracking-[-0.045em] text-(--color-text-primary)">
         THE GETOVR
-      </h1>
+      </span>
     </Link>
   );
 }

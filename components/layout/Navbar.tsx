@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
+  Heart,
   Menu,
   Search,
   ShoppingCart,
@@ -16,9 +17,11 @@ import Logo from "@/components/ui/Logo";
 import { useCartStore } from "@/stores/cartStore";
 
 const navLinks = [
+  { name: "Home", href: "/" },
   { name: "Shop", href: "/shop" },
   { name: "Studio", href: "/studio" },
   { name: "About", href: "/about" },
+  { name: "Reviews", href: "/reviews" },
 ];
 
 export default function Navbar() {
@@ -92,13 +95,13 @@ export default function Navbar() {
     <>
       {notification && (
         <div
-          className={`fixed right-6 top-24 z-50 flex items-center gap-3 rounded-[var(--radius-sm)] border px-5 py-4 shadow-[var(--shadow-soft)] ${
+          className={`fixed right-4 top-20 z-[60] flex items-center gap-3 rounded-[var(--radius-sm)] border px-4 py-3 shadow-[var(--shadow-soft)] sm:right-6 sm:top-24 sm:px-5 sm:py-4 ${
             notificationType === "success"
               ? "border-(--color-success) bg-(--color-success-background) text-(--color-success)"
               : "border-(--color-error) bg-(--color-error-background) text-(--color-error)"
           }`}
         >
-          <span className="text-xl">
+          <span className="text-base">
             {notificationType === "success" ? "✓" : "!"}
           </span>
 
@@ -106,74 +109,78 @@ export default function Navbar() {
         </div>
       )}
 
-      <header className="sticky top-0 z-50 border-b border-(--color-border) bg-(--color-page)/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 sm:px-8">
-          <Logo />
+      <header className="sticky top-0 z-50 border-b border-(--color-border) bg-(--color-page)/95 backdrop-blur-md">
+        <div className="flex h-[74px] w-full items-center gap-8 px-6 sm:px-8 lg:px-10 xl:px-14">
+          <div className="shrink-0">
+            <Logo />
+          </div>
 
-          {/* Desktop Navigation */}
+          <nav className="hidden flex-1 items-center justify-center gap-8 lg:flex xl:gap-10">
+            {navLinks.map((link) => {
+              const isActive =
+                link.href === "/"
+                  ? pathname === "/"
+                  : pathname === link.href ||
+                    pathname.startsWith(`${link.href}/`);
 
-          <nav className="hidden h-full items-center gap-8 text-md text-(--color-text-primary) md:flex">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="group relative flex h-full items-center transition-colors duration-200 hover:text-(--color-text-secondary)"
-              >
-                {link.name}
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`relative flex h-[74px] items-center text-sm font-medium transition-colors ${
+                    isActive
+                      ? "text-(--color-text-primary)"
+                      : "text-(--color-text-secondary) hover:text-(--color-text-primary)"
+                  }`}
+                >
+                  {link.name}
 
-                <span className="absolute bottom-0 left-1/2 h-0.5 w-0 -translate-x-1/2 bg-(--color-text-primary) transition-all duration-300 ease-out group-hover:w-full" />
-              </Link>
-            ))}
+                  <span
+                    className={`absolute bottom-0 left-1/2 h-[2px] -translate-x-1/2 bg-(--color-text-primary) transition-all duration-300 ${
+                      isActive ? "w-full" : "w-0"
+                    }`}
+                  />
+                </Link>
+              );
+            })}
           </nav>
 
-          {/* Right Side */}
-
-          <div className="flex h-full items-center gap-3 sm:gap-6">
-            {/* Search */}
-
-            <div className="group relative hidden lg:block">
+          <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
+            <div className="relative hidden xl:block">
               <Search
-                size={21}
+                size={18}
                 aria-hidden="true"
-                className="absolute left-3 top-1/2 z-10 -translate-y-1/2 text-(--color-text-secondary) transition-colors duration-300 group-focus-within:text-(--color-text-primary)"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-(--color-text-muted)"
               />
 
               <input
                 type="text"
-                placeholder="Search products..."
+                placeholder="Search for products..."
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 onKeyDown={(event) => {
                   if (event.key === "Enter") {
                     const value = event.currentTarget.value.trim();
 
-                    setMobileMenuOpen(false);
-
                     if (value) {
-                      router.push(
-                        `/shop?search=${encodeURIComponent(value)}`,
-                      );
+                      router.push(`/shop?search=${encodeURIComponent(value)}`);
                     } else {
                       router.push("/shop");
                     }
                   }
                 }}
-                className="w-100 rounded-full border border-(--color-input-border) bg-(--color-input-background) py-2.5 pl-11 pr-5 text-sm text-(--color-text-primary) placeholder:text-(--color-input-placeholder) outline-none transition-all duration-300 focus:border-(--color-input-focus) focus:placeholder:opacity-0"
+                className="w-56 rounded-full border border-(--color-border) bg-(--color-page) py-2.5 pl-11 pr-4 text-sm text-(--color-text-primary) placeholder:text-(--color-text-muted) outline-none transition-all duration-300 focus:w-64 focus:border-(--color-text-primary)"
               />
             </div>
 
-            {/* Profile */}
-
-            <div className="group relative flex h-full">
+            <div className="group relative flex h-[74px]">
               <button
                 type="button"
                 aria-label="Account"
-                className="flex h-full items-center justify-center px-2 text-(--color-text-secondary) transition-colors hover:text-(--color-text-primary)"
+                className="flex h-full w-10 items-center justify-center text-(--color-text-primary) transition-colors hover:text-(--color-text-secondary)"
               >
-                <User size={24} strokeWidth={1.8} />
+                <User size={21} strokeWidth={1.8} />
               </button>
-
-              <span className="absolute bottom-0 left-1/2 h-0.5 w-0 -translate-x-1/2 bg-(--color-text-primary) transition-all duration-300 ease-out group-hover:w-full" />
 
               <UserDropdown
                 onNotification={(message, type) => {
@@ -187,69 +194,105 @@ export default function Navbar() {
               />
             </div>
 
-            {/* Cart */}
+            <Link
+              href="/wishlist"
+              aria-label="Wishlist"
+              className="hidden h-10 w-10 items-center justify-center text-(--color-text-primary) transition-colors hover:text-(--color-text-secondary) sm:flex"
+            >
+              <Heart size={21} strokeWidth={1.8} />
+            </Link>
 
-            <div className="group relative">
-              <Link
-                href="/cart"
-                aria-label="Shopping cart"
-                className="flex items-center justify-center text-(--color-text-secondary) transition-colors hover:text-(--color-text-primary)"
-              >
-                <ShoppingCart size={24} strokeWidth={1.8} />
+            <Link
+              href="/cart"
+              aria-label="Shopping cart"
+              className="relative flex h-10 w-10 items-center justify-center text-(--color-text-primary) transition-colors hover:text-(--color-text-secondary)"
+            >
+              <ShoppingCart size={21} strokeWidth={1.8} />
 
-                {totalQuantity > 0 && (
-                  <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-(--color-text-primary) px-1 text-[10px] font-bold text-(--color-white)">
-                    {totalQuantity}
-                  </span>
-                )}
-              </Link>
-            </div>
-
-            {/* Mobile Menu */}
+              {totalQuantity > 0 && (
+                <span className="absolute right-0 top-0 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-(--color-text-primary) px-1 text-[9px] font-bold text-(--color-white)">
+                  {totalQuantity}
+                </span>
+              )}
+            </Link>
 
             <button
               type="button"
-              aria-label={mobileMenuOpen ? "Close navigation" : "Open navigation"}
+              aria-label={
+                mobileMenuOpen ? "Close navigation" : "Open navigation"
+              }
               aria-expanded={mobileMenuOpen}
               onClick={() => setMobileMenuOpen((open) => !open)}
-              className="flex items-center justify-center px-2 text-(--color-text-secondary) transition-colors hover:text-(--color-text-primary) md:hidden"
+              className="flex h-10 w-10 items-center justify-center text-(--color-text-primary) lg:hidden"
             >
               {mobileMenuOpen ? (
-                <X size={24} strokeWidth={1.8} />
+                <X size={22} strokeWidth={1.8} />
               ) : (
-                <Menu size={24} strokeWidth={1.8} />
+                <Menu size={22} strokeWidth={1.8} />
               )}
             </button>
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-
         {mobileMenuOpen && (
-          <nav className="border-t border-(--color-border) bg-(--color-page) md:hidden">
-            <div className="mx-auto max-w-7xl px-6 py-4">
+          <nav className="border-t border-(--color-border) bg-(--color-page) lg:hidden">
+            <div className="px-6 py-4 sm:px-8">
+              <div className="mb-4">
+                <div className="relative">
+                  <Search
+                    size={18}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-(--color-text-muted)"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Search for products..."
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        const value = event.currentTarget.value.trim();
+
+                        closeMobileMenu();
+
+                        if (value) {
+                          router.push(
+                            `/shop?search=${encodeURIComponent(value)}`,
+                          );
+                        } else {
+                          router.push("/shop");
+                        }
+                      }
+                    }}
+                    className="w-full rounded-full border border-(--color-border) py-3 pl-11 pr-4 text-sm outline-none focus:border-(--color-text-primary)"
+                  />
+                </div>
+              </div>
+
               <div className="flex flex-col">
                 {navLinks.map((link) => {
                   const isActive =
-                    pathname === link.href ||
-                    pathname.startsWith(`${link.href}/`);
+                    link.href === "/"
+                      ? pathname === "/"
+                      : pathname === link.href ||
+                        pathname.startsWith(`${link.href}/`);
 
                   return (
                     <Link
                       key={link.href}
                       href={link.href}
                       onClick={closeMobileMenu}
-                      className={`border-b border-(--color-border) py-4 text-sm font-medium uppercase tracking-[0.2em] transition-colors last:border-b-0 ${
+                      className={`border-b border-(--color-border) py-4 text-sm font-semibold uppercase tracking-[0.15em] last:border-b-0 ${
                         isActive
                           ? "text-(--color-text-primary)"
-                          : "text-(--color-text-secondary) hover:text-(--color-text-primary)"
+                          : "text-(--color-text-secondary)"
                       }`}
                     >
                       <span className="flex items-center justify-between">
                         {link.name}
 
                         {isActive && (
-                          <span className="h-1.5 w-1.5 rounded-full bg-(--color-accent)" />
+                          <span className="h-1.5 w-1.5 rounded-full bg-(--color-text-primary)" />
                         )}
                       </span>
                     </Link>

@@ -1,16 +1,14 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 type Props = {
-  number: string;
   title: string;
   subtitle: string;
   image: string;
 };
 
 export default function CategoryCard({
-  number,
   title,
   subtitle,
   image,
@@ -18,56 +16,32 @@ export default function CategoryCard({
   return (
     <Link
       href="/shop"
-      className="group block"
+      className="group block overflow-hidden border border-(--color-border) bg-(--color-surface)"
     >
-      {/* Product Image */}
-     <div className="relative aspect-[4/5] overflow-hidden border-y border-(--color-border) bg-(--color-page)">
-  <div className="absolute inset-0 bg-(--color-accent)/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+      <div className="relative aspect-[1.18/1] overflow-hidden bg-(--color-surface-muted)">
+        <Image
+          src={image}
+          alt={title}
+          fill
+          sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, 25vw"
+          className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
+        />
+      </div>
 
-  <Image
-    src={image}
-    alt={title}
-    fill
-    sizes="(max-width: 768px) 100vw, 33vw"
-    className="object-contain mix-blend-multiply p-4 transition-transform duration-700 group-hover:scale-105 sm:p-6 lg:p-8"
-  />
+      <div className="flex min-h-[68px] items-center justify-between gap-3 bg-(--color-surface-muted) px-3.5 py-3 sm:min-h-[72px] sm:px-4">
+        <div className="min-w-0">
+          <h3 className="text-[15px] font-black uppercase leading-none tracking-[-0.025em] text-(--color-text-primary) sm:text-[17px]">
+            {title}
+          </h3>
 
-  <div className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-(--color-border) bg-(--color-surface) opacity-0 transition-all duration-300 group-hover:opacity-100">
-    <ArrowUpRight size={17} />
-  </div>
-</div>
-
-      {/* Information */}
-      <div className="pt-5">
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] font-medium tracking-[0.3em] text-(--color-text-muted)">
-            {number}
-          </span>
-
-          <span className="h-px w-8 bg-(--color-border)" />
-
-          <span className="text-[10px] font-medium uppercase tracking-[0.3em] text-(--color-text-muted)">
-            Category
-          </span>
+          <p className="mt-2 text-[9px] leading-3 text-(--color-text-muted) sm:text-[10px]">
+            {subtitle}
+          </p>
         </div>
 
-        <div className="mt-4 flex items-start justify-between gap-5">
-          <div>
-            <h3 className="font-(--font-editorial) text-3xl font-normal leading-tight text-(--color-text-primary)">
-              {title}
-            </h3>
-
-            <p className="mt-3 max-w-sm text-sm leading-6 text-(--color-text-secondary)">
-              {subtitle}
-            </p>
-          </div>
-
-          <span className="mt-1 shrink-0 text-sm font-medium text-(--color-text-primary)">
-            Explore
-          </span>
-        </div>
-
-        <div className="mt-6 h-px w-0 bg-(--color-text-primary) transition-all duration-500 group-hover:w-full" />
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-(--color-text-primary) text-(--color-white) transition-transform duration-300 group-hover:translate-x-0.5">
+          <ArrowRight size={14} strokeWidth={2} />
+        </span>
       </div>
     </Link>
   );
