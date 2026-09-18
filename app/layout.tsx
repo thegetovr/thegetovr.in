@@ -3,6 +3,8 @@ import { Inter, Playfair_Display } from "next/font/google";
 
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+import Reveal from "@/components/animations/Reveal";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -30,6 +32,9 @@ export default function RootLayout({
       <body className={`${inter.variable} ${playfair.variable}`}>
         <Navbar />
         {children}
+        <Reveal delay={0.05}>
+          <Footer />
+        </Reveal>
       </body>
     </html>
   );
