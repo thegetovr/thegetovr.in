@@ -79,7 +79,7 @@ export default function SavedAddresses({
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 text-sm text-zinc-400">
+      <div className="rounded-lg border border-(--color-border) bg-(--color-surface) p-5 text-sm text-(--color-text-muted)">
         Loading saved addresses...
       </div>
     );
@@ -91,13 +91,30 @@ export default function SavedAddresses({
 
   if (addresses.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-zinc-700 bg-zinc-900 p-8 text-center">
-        <p className="text-sm text-zinc-400">No saved addresses found.</p>
+      <div className="rounded-lg border border-dashed border-(--color-border) bg-(--color-surface) p-8 text-center">
+        <p className="text-sm text-(--color-text-muted)">
+          No saved addresses found.
+        </p>
 
         <button
           type="button"
           onClick={onAddNew}
-          className="mt-4 inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-black transition hover:bg-zinc-200"
+          className="
+            mt-4
+            inline-flex
+            items-center
+            gap-2
+            rounded-(--radius-sm)
+            bg-(--color-text-primary)
+            px-4
+            py-2.5
+            text-sm
+            font-medium
+            text-(--color-white)
+            transition-colors
+            duration-200
+            hover:bg-(--color-text-secondary)
+          "
         >
           <Plus size={16} />
           Add New Address
@@ -116,9 +133,11 @@ export default function SavedAddresses({
 
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-white">Saved Addresses</h3>
+          <h3 className="text-lg font-semibold text-(--color-text-primary)">
+            Saved Addresses
+          </h3>
 
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="mt-1 text-sm text-(--color-text-muted)">
             Select an address for delivery.
           </p>
         </div>
@@ -126,7 +145,23 @@ export default function SavedAddresses({
         <button
           type="button"
           onClick={onAddNew}
-          className="flex items-center gap-2 rounded-lg border border-zinc-700 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-zinc-900"
+          className="
+            flex
+            items-center
+            gap-2
+            rounded-(--radius-sm)
+            border
+            border-(--color-border)
+            bg-(--color-surface)
+            px-4
+            py-2.5
+            text-sm
+            font-medium
+            text-(--color-text-primary)
+            transition-colors
+            duration-200
+            hover:bg-(--color-surface-muted)
+          "
         >
           <Plus size={16} />
           Add New Address

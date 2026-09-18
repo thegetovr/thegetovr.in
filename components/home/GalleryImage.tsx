@@ -1,8 +1,14 @@
+import Image from "next/image";
+
 type GalleryImageProps = {
+  src: string;
+  alt: string;
   large?: boolean;
 };
 
 export default function GalleryImage({
+  src,
+  alt,
   large = false,
 }: GalleryImageProps) {
   return (
@@ -13,18 +19,20 @@ export default function GalleryImage({
         transition-all duration-500
         hover:-translate-y-1
         hover:shadow-(--shadow-elevated)
-        ${
-          large
-            ? "min-h-[520px]"
-            : "min-h-[260px]"
-        }`}
+        ${large ? "min-h-[520px]" : "min-h-[260px]"}`}
     >
-      {/* Editorial Image Placeholder */}
-      <div className="absolute inset-6 flex items-center justify-center rounded-(--radius-md) border border-(--color-border) bg-(--color-surface-muted)">
-        <div className="h-20 w-20 rounded-full border border-(--color-border) bg-(--color-surface)" />
-      </div>
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        className="object-cover transition-transform duration-700 group-hover:scale-105"
+        sizes={
+          large
+            ? "(max-width: 768px) 100vw, 66vw"
+            : "(max-width: 768px) 100vw, 33vw"
+        }
+      />
 
-      {/* Hover Overlay */}
       <div className="absolute inset-0 bg-(--color-accent)/0 transition-colors duration-500 group-hover:bg-(--color-accent)/5" />
     </div>
   );

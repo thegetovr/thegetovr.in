@@ -15,23 +15,39 @@ export default function CommunityGallery() {
 
         <div className="grid grid-cols-12 gap-6">
           <div className="col-span-12 md:col-span-4">
-            <GalleryImage />
+            <GalleryImage
+              src="/images/home/community/community-1.png"
+              alt="The Getovr community wearing custom apparel"
+            />
           </div>
 
           <div className="col-span-12 md:col-span-4">
-            <GalleryImage />
+            <GalleryImage
+              src="/images/home/community/community-2.png"
+              alt="The Getovr community streetwear"
+            />
           </div>
 
           <div className="col-span-12 md:col-span-4">
-            <GalleryImage />
+            <GalleryImage
+              src="/images/home/community/community-3.png"
+              alt="The Getovr custom apparel"
+            />
           </div>
 
           <div className="col-span-12 md:col-span-8">
-            <GalleryImage large />
+            <GalleryImage
+              large
+              src="/images/home/community/community-4.png"
+              alt="The Getovr community wearing custom apparel together"
+            />
           </div>
 
           <div className="col-span-12 md:col-span-4">
-            <GalleryImage />
+            <GalleryImage
+              src="/images/home/community/community-5.png"
+              alt="The Getovr streetwear community"
+            />
           </div>
         </div>
       </Container>

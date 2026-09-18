@@ -7,6 +7,7 @@ import ProfileDetails from "@/components/profile/ProfileDetails";
 import Wishlist from "@/components/profile/Wishlist";
 import ProfileEdit from "@/components/profile/ProfileEdit";
 import GetOvrCollection from "@/components/profile/GetOvrCollection";
+import Security from "@/components/profile/Security";
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -292,15 +293,7 @@ export default function ProfilePageContent() {
 
             {/* SECURITY */}
 
-            {activeSection === "security" && (
-              <div className="rounded-xl border border-zinc-200 bg-white p-7">
-                <h2 className="font-serif text-2xl text-black">Security</h2>
-
-                <p className="mt-3 text-sm text-zinc-500">
-                  Manage your account security here.
-                </p>
-              </div>
-            )}
+            {activeSection === "security" && <Security user={user} />}
           </section>
         </div>
       </div>

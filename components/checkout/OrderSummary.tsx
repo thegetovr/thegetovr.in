@@ -72,8 +72,6 @@ export default function OrderSummary() {
 
       const data = await response.json();
 
-      console.log("ORDER RESPONSE:", data);
-
       if (data.success) {
         clearCart();
 
@@ -107,7 +105,7 @@ export default function OrderSummary() {
   };
 
   return (
-    <Card className="sticky top-6 h-fit">
+    <Card className="h-fit lg:sticky lg:top-6">
       <h2 className="text-2xl font-semibold">Order Summary</h2>
 
       {/* =================================================
@@ -163,11 +161,13 @@ export default function OrderSummary() {
 
                 <div className="text-right">
                   <p className="text-lg font-bold">
-                    ₹{item.totalPrice.toLocaleString("en-IN")}
+                    {"\u20B9"}
+                    {item.totalPrice.toLocaleString("en-IN")}
                   </p>
 
                   <p className="mt-1 text-sm text-(--color-text-muted)">
-                    ₹{item.unitPrice.toLocaleString("en-IN")} each
+                    {"\u20B9"}
+                    {item.unitPrice.toLocaleString("en-IN")} each
                   </p>
                 </div>
               </div>
@@ -239,7 +239,10 @@ export default function OrderSummary() {
       <div className="space-y-3">
         <div className="flex justify-between text-(--color-text-secondary)">
           <span>Subtotal</span>
-          <span>₹{subtotal.toLocaleString("en-IN")}</span>
+          <span>
+            {"\u20B9"}
+            {subtotal.toLocaleString("en-IN")}
+          </span>
         </div>
 
         <div className="flex justify-between text-(--color-text-secondary)">
@@ -252,7 +255,10 @@ export default function OrderSummary() {
             <span>Coupon ({coupon})</span>
 
             <div className="flex items-center gap-3">
-              <span>-₹{discount.toLocaleString("en-IN")}</span>
+              <span>
+                -{"\u20B9"}
+                {discount.toLocaleString("en-IN")}
+              </span>
 
               <button
                 type="button"
@@ -272,7 +278,10 @@ export default function OrderSummary() {
         <div className="border-t border-(--color-border) pt-4">
           <div className="flex justify-between text-xl font-semibold">
             <span>Total</span>
-            <span>₹{finalTotal.toLocaleString("en-IN")}</span>
+            <span>
+              {"\u20B9"}
+              {finalTotal.toLocaleString("en-IN")}
+            </span>
           </div>
         </div>
       </div>
@@ -289,7 +298,7 @@ export default function OrderSummary() {
 
         <div className="mt-2 flex items-center justify-between text-sm text-(--color-text-secondary)">
           <span>Estimated Delivery</span>
-          <span>3–5 Days</span>
+          <span>3{"\u2013"}5 Days</span>
         </div>
       </div>
 

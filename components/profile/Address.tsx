@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Plus, ShieldCheck } from "lucide-react";
 
 import AddressForm, { type AddressFormData } from "./addresses/AddressForm";
-
 import AddressCard from "./addresses/AddressCard";
 
 interface Address {
@@ -43,7 +42,6 @@ export default function Addresses() {
 
   const [form, setForm] = useState<AddressFormData>(emptyForm);
 
-  // ID of address currently being edited
   const [editingId, setEditingId] = useState<string | null>(null);
 
   // =====================================================
@@ -77,7 +75,7 @@ export default function Addresses() {
   }, []);
 
   // =====================================================
-  // ADD  ADDRESS
+  // ADD / EDIT ADDRESS
   // =====================================================
 
   const handleSaveAddress = async (formData: AddressFormData) => {
@@ -108,8 +106,6 @@ export default function Addresses() {
       });
 
       const data = await response.json();
-
-      console.log("ADDRESS API RESPONSE:", data);
 
       if (!response.ok || !data.success) {
         setNotification({
@@ -205,6 +201,7 @@ export default function Addresses() {
       setSaving(false);
     }
   };
+
   // =====================================================
   // EDIT ADDRESS
   // =====================================================
@@ -361,31 +358,39 @@ export default function Addresses() {
   };
 
   return (
-    <section className="min-w-0 flex-1 bg-white px-8 py-7">
+    <section className="min-w-0 flex-1 overflow-hidden bg-white px-4 py-5 sm:px-6 sm:py-6 md:px-8 md:py-7">
+      {/* =====================================================
+          NOTIFICATION
+      ===================================================== */}
+
       {notification && (
         <div
-          className={`fixed right-6 top-24 z-50 flex items-center gap-3 rounded-xl border px-5 py-4 shadow-2xl ${
+          className={`fixed left-4 right-4 top-24 z-50 flex items-center gap-3 rounded-xl border px-4 py-3.5 shadow-2xl sm:left-auto sm:right-6 sm:max-w-md sm:px-5 sm:py-4 ${
             notification.type === "success"
               ? "border-green-500/30 bg-green-50 text-green-700"
               : "border-red-500/30 bg-red-50 text-red-700"
           }`}
         >
-          <span className="text-lg">
+          <span className="shrink-0 text-lg">
             {notification.type === "success" ? "✓" : "!"}
           </span>
 
-          <p className="text-sm font-medium">{notification.message}</p>
+          <p className="min-w-0 text-sm font-medium break-words">
+            {notification.message}
+          </p>
         </div>
       )}
+
       {/* =====================================================
           HEADER
       ===================================================== */}
 
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-serif  text-black">My Addresses</h1>
+      <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="font-serif text-2xl text-black">My Addresses</h1>
+          <div className="mt-2 h-[2px] w-8 bg-[#b7965d]" />
 
-          <p className="mt-1.5 text-sm text-gray-500">
+          <p className="mt-1.5 text-sm leading-5 text-gray-500">
             Manage your saved delivery addresses
           </p>
         </div>
@@ -393,8 +398,7 @@ export default function Addresses() {
         <button
           type="button"
           onClick={openAddForm}
-          className="flex items-center gap-2 rounded-lg 
-          px-5 py-3 text-sm font-medium text-zinc-900 transition bg-[#eee3d5] hover:bg-[#e6d8c6]"
+          className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-lg bg-[#eee3d5] px-5 py-3 text-sm font-medium text-zinc-900 transition hover:bg-[#e6d8c6] sm:w-fit"
         >
           <Plus size={18} strokeWidth={1.8} />
           Add New Address
@@ -406,7 +410,7 @@ export default function Addresses() {
       ===================================================== */}
 
       {showForm && (
-        <div className="mt-7">
+        <div className="mt-5 min-w-0 sm:mt-7">
           <AddressForm
             initialData={form}
             isEditing={Boolean(editingId)}
@@ -421,13 +425,13 @@ export default function Addresses() {
           ADDRESS LIST
       ===================================================== */}
 
-      <div className="mt-7 space-y-4">
+      <div className="mt-5 min-w-0 space-y-4 sm:mt-7">
         {loading ? (
-          <div className="rounded-xl border border-gray-200 p-8 text-center text-sm text-gray-500">
+          <div className="rounded-xl border border-gray-200 px-4 py-8 text-center text-sm text-gray-500">
             Loading your addresses...
           </div>
         ) : !showForm && addresses.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-gray-300 p-10 text-center">
+          <div className="rounded-xl border border-dashed border-gray-300 px-5 py-10 text-center sm:px-8">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
               <Plus size={20} className="text-gray-500" />
             </div>
@@ -436,7 +440,7 @@ export default function Addresses() {
               No saved addresses
             </h2>
 
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mx-auto mt-1 max-w-md text-sm leading-5 text-gray-500">
               Add your first delivery address to make checkout faster.
             </p>
 
@@ -452,13 +456,14 @@ export default function Addresses() {
           addresses
             .filter((address) => address._id !== editingId)
             .map((address) => (
-              <AddressCard
-                key={address._id}
-                address={address}
-                onEdit={handleEditAddress}
-                onDelete={handleDeleteAddress}
-                onMakeDefault={handleMakeDefault}
-              />
+              <div key={address._id} className="min-w-0">
+                <AddressCard
+                  address={address}
+                  onEdit={handleEditAddress}
+                  onDelete={handleDeleteAddress}
+                  onMakeDefault={handleMakeDefault}
+                />
+              </div>
             ))
         )}
       </div>
@@ -467,15 +472,15 @@ export default function Addresses() {
           SECURE & SAFE
       ===================================================== */}
 
-      <div className="mt-5 flex items-center gap-4 rounded-xl bg-gray-50 px-5 py-4">
+      <div className="mt-5 flex min-w-0 items-start gap-3 rounded-xl bg-gray-50 px-4 py-4 sm:items-center sm:gap-4 sm:px-5">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white">
           <ShieldCheck size={21} strokeWidth={1.8} className="text-black" />
         </div>
 
-        <div>
+        <div className="min-w-0">
           <h3 className="text-sm font-semibold text-black">Secure & Safe</h3>
 
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs leading-5 text-gray-500">
             Your addresses are securely saved and will be used only for delivery
             purposes.
           </p>

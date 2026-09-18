@@ -56,7 +56,6 @@ export default function LoginForm() {
 
       const result = await response.json();
 
-      console.log(result);
 
       if (result.success) {
         const message = "Login Successful";
@@ -112,26 +111,26 @@ export default function LoginForm() {
       {notification && notificationType === "error" && (
         <div
           className="
-            fixed
-            right-6
-            top-24
-            z-[100]
-            flex
-            items-center
-            gap-3
-            rounded-xl
-            border
-            border-red-200
-            bg-white
-            px-5
-            py-4
-            text-red-600
-            shadow-2xl
+          fixed
+          right-6
+          top-24
+          z-[100]
+          flex
+          items-center
+          gap-3
+          rounded-xl
+          border
+          border-red-200
+          bg-white
+          px-5
+          py-4
+          text-red-600
+          shadow-2xl
           "
         >
           <span className="text-xl">!</span>
 
-          <p className="text-sm font-medium">{notification}</p>
+          <p className="min-w-0 flex-1 text-sm font-medium">{notification}</p>
         </div>
       )}
 
@@ -140,30 +139,56 @@ export default function LoginForm() {
       ================================================= */}
 
       <main
-        className="flex h-[calc(100vh-80px)] 
-      items-center justify-center bg-[#fcfbf9] 
-      px-8 py-8 "
+        className="
+            flex
+            min-h-[calc(100dvh-80px)]
+            items-start
+            justify-center
+            bg-[#fcfbf9]
+            px-6
+            py-8
+            sm:px-6
+            sm:py-8
+            lg:items-center
+            lg:px-8
+"
       >
         <div className="mx-auto w-full max-w-5xl">
           <section
             className="
-              w-full
-              max-w-5xl
-              max-h-[calc(100vh-140px)]
-              overflow-hidden
-              rounded-[32px]
-              border
-              border-[#ddd5ca]
-              bg-white
-              shadow-2xl
-            "
+            w-full
+            max-w-5xl
+            overflow-hidden
+            rounded-[24px]
+            border
+            border-[#ddd5ca]
+            bg-white
+            shadow-2xl
+            sm:rounded-[28px]
+            lg:max-h-[calc(100dvh-140px)]
+            lg:rounded-[32px]
+  "
           >
             <div className="flex flex-col lg:flex-row">
               {/* =================================================
                   LEFT SIDE - IMAGE
               ================================================= */}
 
-              <div className="relative h-52 w-full overflow-hidden border-r border-[#ddd5ca] lg:h-auto lg:w-[45%]">
+              <div
+                className="
+                relative
+                h-40
+                w-full
+                overflow-hidden
+                border-b
+                border-[#ddd5ca]
+                sm:h-52
+                lg:h-auto
+                lg:w-[45%]
+                lg:border-b-0
+                lg:border-r
+              "
+              >
                 <Image
                   src="/images/user/LoginBanner2.png"
                   alt="The GetOvr Login"
@@ -180,17 +205,32 @@ export default function LoginForm() {
               ================================================= */}
 
               <div
-                className="flex min-h-full items-center
-               justify-center bg-[#fcfaf7] p-4
-                text-zinc-900 lg:w-[55%] lg:p-6"
+                className="
+                flex
+                w-full
+                items-center
+                justify-center
+                bg-[#fcfaf7]
+                p-5
+                text-zinc-900
+                sm:p-6
+                lg:w-[55%]
+                lg:p-8
+              "
               >
                 <div className="w-full max-w-lg">
                   {/* Welcome Text */}
 
                   <p
-                    className="text-xs 
-                  font-semibold uppercase tracking-[0.3em]
-                   text-[#a67c35]"
+                    className="
+                    text-[11px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.25em]
+                    text-[#a67c35]
+                    sm:text-xs
+                    sm:tracking-[0.3em]
+                  "
                   >
                     Welcome Back
                   </p>
@@ -198,8 +238,15 @@ export default function LoginForm() {
                   {/* Heading */}
 
                   <h1
-                    className="mt-3 text-4xl font-bold
-                   leading-[1.1] text-zinc-900"
+                    className="
+                    mt-2
+                    text-3xl
+                    font-bold
+                    leading-[1.1]
+                    text-zinc-900
+                    sm:mt-3
+                    sm:text-4xl
+                  "
                   >
                     Log in to <br />
                     <span className="text-[#a67c35]">The GetOvr</span>
@@ -208,8 +255,13 @@ export default function LoginForm() {
                   {/* Description */}
 
                   <p
-                    className="mt-3 text-sm leading-7
-                   text-[#77736d]"
+                    className="
+                    mt-3
+                    text-sm
+                    leading-6
+                    text-[#77736d]
+                    sm:leading-7
+                  "
                   >
                     Access your account and continue
                     <br />
@@ -225,7 +277,7 @@ export default function LoginForm() {
                         EMAIL / PHONE
                     ================================================= */}
 
-                    <div className="group relative mt-6">
+                    <div className="group relative mt-5 sm:mt-6">
                       <Mail
                         size={20}
                         className="
@@ -249,23 +301,24 @@ export default function LoginForm() {
                         value={formData.email}
                         onChange={handleChange}
                         className="
-                          peer
-                          h-14
-                          w-full
-                          rounded-xl
-                          border
-                          border-[#d5cec3]
-                          bg-[#fcfaf7]
-                          pl-12
-                          pr-14
-                          text-zinc-900
-                          outline-none
-                          transition-all
-                          duration-300
-                          focus:border-[#a67c35]
-                          focus:ring-1
-                          focus:ring-[#a67c35]/20
-                        "
+                        peer
+                        h-13
+                        w-full
+                        rounded-xl
+                        border
+                        border-[#d5cec3]
+                        bg-[#fcfaf7]
+                        pl-12
+                        pr-14
+                        text-zinc-900
+                        outline-none
+                        transition-all
+                        duration-300
+                        focus:border-[#a67c35]
+                        focus:ring-1
+                        focus:ring-[#a67c35]/20
+                        sm:h-14
+"
                       />
 
                       <label
@@ -299,7 +352,7 @@ export default function LoginForm() {
                         PASSWORD
                     ================================================= */}
 
-                    <div className="group relative mt-6">
+                    <div className="group relative mt-5 sm:mt-6">
                       <Lock
                         size={20}
                         className="
@@ -414,35 +467,35 @@ export default function LoginForm() {
                         FORGOT PASSWORD
                     ================================================= */}
 
-                    <div className="mt-4 flex justify-end">
-                      <button
-                        type="button"
+                    <div className="mt-3 flex justify-end sm:mt-4">
+                      <Link
+                        href="/forgot-password"
                         className="
-                          text-sm
-                          font-medium
-                          text-[#756d60]
-                          underline-offset-4
-                          transition-all
-                          duration-300
-                          hover:text-[#a67c35]
-                          hover:underline
-                        "
+                      text-sm
+                      font-medium
+                      text-[#756d60]
+                      underline-offset-4
+                      transition-all
+                      duration-300
+                      hover:text-[#a67c35]
+                      hover:underline
+                    "
                       >
                         Forgot Password?
-                      </button>
+                      </Link>
                     </div>
 
                     {/* =================================================
                         LOGIN BUTTON
                     ================================================= */}
 
-                    <div className="mt-6">
+                    <div className="mt-5 sm:mt-6">
                       <button
                         type="submit"
                         className="
                           group
                           grid
-                          h-14
+                          h-13
                           w-full
                           grid-cols-[1fr_auto_1fr]
                           items-center
@@ -450,13 +503,15 @@ export default function LoginForm() {
                           border
                           border-[#d5c7b4]
                           bg-[#eee3d5]
-                          px-6
+                          px-4
                           text-zinc-900
                           transition-all
                           duration-300
                           hover:bg-[#e6d8c6]
                           hover:border-[#cdbb9f]
                           active:scale-[0.98]
+                          sm:h-14
+                          sm:px-6
                         "
                       >
                         <div />
@@ -492,14 +547,14 @@ export default function LoginForm() {
                       REGISTER
                   ================================================= */}
 
-                  <div className="mt-8 text-center">
-                    <p className="text-sm text-[#77736d]">
+                  <div className="mt-4 text-center sm:mt-5">
+                    <p className="text-sm leading-6 text-[#77736d]">
                       Don&apos;t have an account?{" "}
                       <Link
                         href="/register"
                         className="
                           font-semibold
-                          text-[#a67c35]
+                         text-[#a67c35]
                           transition-colors
                           duration-300
                           hover:text-[#8f6a2e]

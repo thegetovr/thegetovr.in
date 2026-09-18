@@ -23,20 +23,24 @@ export default function OrderTrackingCard({
     ORDER_STATUS[status as keyof typeof ORDER_STATUS] ?? ORDER_STATUS.pending;
 
   return (
-    <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
+    <section className="overflow-hidden border border-(--color-border) bg-(--color-surface) shadow-(--shadow-subtle)">
       <div className="p-6">
         <div className="mb-8">
-          <OrderHeader orderNumber={orderNumber} createdAt={createdAt} />
+          <OrderHeader
+            orderNumber={orderNumber}
+            createdAt={createdAt}
+            status={status}
+          />
 
-          <h2 className="mt-6 text-2xl font-semibold text-black">
+          <h2 className="mt-6 text-2xl font-semibold tracking-tight text-(--color-text-primary)">
             {statusInfo.label}
           </h2>
 
-          <p className="mt-2 max-w-xl text-sm text-gray-500">
+          <p className="mt-2 max-w-xl text-sm text-(--color-text-secondary)">
             {statusInfo.description}
           </p>
 
-          <p className="mt-2 max-w-xl text-sm text-gray-500">
+          <p className="mt-2 max-w-xl text-sm text-(--color-text-secondary)">
             Expected Delivery in 3-5 business days.
           </p>
         </div>

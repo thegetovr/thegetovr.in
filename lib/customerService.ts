@@ -117,8 +117,5 @@ export async function getCustomerOrders(email: string) {
     })
     .lean();
 
-  console.log("Customer Email:", email);
-  console.log("Orders Found:", orders.length);
-
   return orders;
 }

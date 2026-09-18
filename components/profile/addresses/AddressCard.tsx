@@ -28,75 +28,121 @@ export default function AddressCard({
   onMakeDefault,
 }: AddressCardProps) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-6">
-      {/* TOP ROW */}
+    <div className="min-w-0 overflow-hidden rounded-xl border border-gray-200 bg-white p-4 sm:p-5 md:p-6">
+      {/* =====================================================
+          TOP ROW
+      ===================================================== */}
 
-      <div className="flex items-start justify-between">
-        <div>
+      <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        {/* ADDRESS TYPE */}
+
+        <div className="min-w-0">
           {address.isDefault ? (
             <span
-              className="inline-flex items-center gap-1.5 rounded-md 
-            bg-[#e6d8c6]  px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-zinc-900"
+              className="
+                inline-flex
+                max-w-full
+                items-center
+                gap-1.5
+                rounded-md
+                bg-[#e6d8c6]
+                px-3
+                py-1.5
+                text-[10px]
+                font-semibold
+                uppercase
+                tracking-wide
+                text-zinc-900
+              "
             >
-              <Star size={12} fill="currentColor" />
-              Default Address
+              <Star size={12} fill="currentColor" className="shrink-0" />
+
+              <span className="truncate">Default Address</span>
             </span>
           ) : (
-            <h2 className="text-lg font-semibold text-black">Saved Address</h2>
+            <h2 className="text-base font-semibold text-black sm:text-lg">
+              Saved Address
+            </h2>
           )}
         </div>
 
-        {/* ACTIONS */}
+        {/* =================================================
+            ACTIONS
+        ================================================= */}
 
-        <div className="flex items-center gap-4">
+        <div className="flex shrink-0 items-center gap-4">
           <button
             type="button"
             onClick={() => onEdit(address)}
-            className="flex items-center gap-1.5 text-sm font-medium text-black transition hover:text-gray-500"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-black transition hover:text-gray-500"
           >
-            <Pencil size={16} strokeWidth={1.8} />
+            <Pencil size={16} strokeWidth={1.8} className="shrink-0" />
             Edit
           </button>
 
-          <div className="h-4 w-px bg-gray-200" />
+          <div className="h-4 w-px shrink-0 bg-gray-200" />
 
           <button
             type="button"
             onClick={() => onDelete(address._id)}
-            className="flex items-center gap-1.5 text-sm font-medium text-black transition hover:text-red-600"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-black transition hover:text-red-600"
           >
-            <Trash2 size={16} strokeWidth={1.8} />
+            <Trash2 size={16} strokeWidth={1.8} className="shrink-0" />
             Delete
           </button>
         </div>
       </div>
 
-      {/* ADDRESS INFORMATION */}
+      {/* =====================================================
+          ADDRESS INFORMATION
+      ===================================================== */}
 
-      <div className="mt-4">
-        <h3 className="text-base font-semibold text-black">{address.name}</h3>
+      <div className="mt-4 min-w-0">
+        <h3 className="break-words text-base font-semibold text-black">
+          {address.name}
+        </h3>
 
-        <p className="mt-1 text-sm text-gray-600">{address.phone}</p>
+        <p className="mt-1 break-words text-sm text-gray-600">
+          {address.phone}
+        </p>
 
-        <div className="mt-3 text-sm leading-6 text-gray-600">
-          <p>{address.address}</p>
+        <div className="mt-3 min-w-0 text-sm leading-6 text-gray-600">
+          <p className="break-words">{address.address}</p>
 
-          <p>
+          <p className="break-words">
             {address.city}, {address.state} - {address.pincode}
           </p>
 
-          <p>{address.country}</p>
+          <p className="break-words">{address.country}</p>
         </div>
       </div>
 
-      {/* MAKE DEFAULT */}
+      {/* =====================================================
+          MAKE DEFAULT
+      ===================================================== */}
 
       {!address.isDefault && (
-        <div className="mt-5 flex justify-end">
+        <div className="mt-5 flex justify-start sm:justify-end">
           <button
             type="button"
             onClick={() => onMakeDefault(address._id)}
-            className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-black transition hover:bg-gray-50"
+            className="
+              inline-flex
+              min-h-11
+              items-center
+              justify-center
+              rounded-lg
+              border
+              border-gray-200
+              px-4
+              py-2.5
+              text-sm
+              font-medium
+              text-black
+              transition
+              hover:bg-gray-50
+              sm:px-5
+            "
           >
             Make Default
           </button>

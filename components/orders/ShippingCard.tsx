@@ -6,10 +6,12 @@ interface ShippingCardProps {
 
 export default function ShippingCard({ customer }: ShippingCardProps) {
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
-      <h2 className="text-base font-semibold text-black">Delivery Address</h2>
+    <section className="border border-(--color-border) bg-(--color-surface) p-6 shadow-(--shadow-subtle)">
+      <h2 className="text-base font-semibold text-(--color-text-primary)">
+        Delivery Address
+      </h2>
 
-      <div className="mt-5 space-y-1 text-sm leading-6 text-gray-500">
+      <div className="mt-5 space-y-1 text-sm leading-6 text-(--color-text-secondary)">
         <p className="mt-2">{customer.address}</p>
 
         <p>

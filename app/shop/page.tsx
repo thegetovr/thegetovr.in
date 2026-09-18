@@ -39,8 +39,8 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           </h1>
 
           <p className="mt-5 max-w-xl text-base leading-7 text-(--color-text-secondary) sm:text-lg">
-            Explore our latest collection of ready-made and customizable
-            pieces designed for your everyday style.
+            Explore our latest collection of ready-made and customizable pieces
+            designed for your everyday style.
           </p>
         </div>
 
@@ -55,8 +55,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
         <div className="mb-6 mt-8 flex items-center justify-between">
           <p className="text-sm text-(--color-text-secondary)">
-            {products.length}{" "}
-            {products.length === 1 ? "piece" : "pieces"}
+            {products.length} {products.length === 1 ? "piece" : "pieces"}
           </p>
 
           {params.category && (

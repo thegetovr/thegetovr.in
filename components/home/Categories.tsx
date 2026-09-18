@@ -1,41 +1,56 @@
+﻿import Link from "next/link";
 import CategoryCard from "./CategoryCard";
+
+const categories = [
+  {
+    title: "T-SHIRTS",
+    subtitle: "Everyday essentials",
+    image: "/images/home/categories/tshirts.webp",
+  },
+  {
+    title: "HOODIES",
+    subtitle: "Built for expression",
+    image: "/images/home/categories/hoodies.webp",
+  },
+  {
+    title: "OVERSIZED",
+    subtitle: "Bigger statements",
+    image: "/images/home/categories/oversized.webp",
+  },
+  {
+    title: "COLLECTIONS",
+    subtitle: "Curated drops",
+    image: "/images/home/category-collections.jpg",
+  },
+];
 
 export default function Categories() {
   return (
-    <section className="bg-(--color-surface-muted) py-24 lg:py-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mb-16 max-w-2xl">
-          <p className="text-xs font-medium uppercase tracking-[0.3em] text-(--color-text-muted)">
+    <section className="bg-(--color-surface) px-5 py-10 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
+      <div className="mx-auto max-w-[1440px]">
+        <div className="mb-6 flex items-end justify-between sm:mb-7">
+          <h2 className="text-2xl font-black uppercase leading-none tracking-[-0.04em] text-(--color-text-primary) sm:text-3xl lg:text-[36px]">
             Shop By Category
-          </p>
-
-          <h2 className="mt-5 font-(--font-editorial) text-4xl font-normal leading-tight text-(--color-text-primary) sm:text-5xl lg:text-6xl">
-            Find Your Perfect Fit
           </h2>
 
-          <p className="mt-6 text-lg leading-8 text-(--color-text-secondary)">
-            Premium apparel crafted for creators, brands and everyday wear.
+          <p className="hidden pb-0.5 text-[10px] font-medium uppercase tracking-[0.3em] text-(--color-text-muted) sm:block">
+            Curated Essentials
           </p>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-2">
-          <CategoryCard
-            large
-            title="Hoodies"
-            subtitle="Heavyweight hoodies built for comfort, warmth and customization."
-          />
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          {categories.map((category) => (
+            <CategoryCard key={category.title} {...category} />
+          ))}
+        </div>
 
-          <div className="grid gap-8">
-            <CategoryCard
-              title="Oversized"
-              subtitle="Relaxed streetwear silhouettes made to stand out."
-            />
-
-            <CategoryCard
-              title="Regular Tees"
-              subtitle="Timeless everyday essentials ready for your designs."
-            />
-          </div>
+        <div className="mt-5 flex justify-end sm:hidden">
+          <Link
+            href="/shop"
+            className="text-[10px] font-bold uppercase tracking-[0.08em] text-(--color-text-primary)"
+          >
+            View All →
+          </Link>
         </div>
       </div>
     </section>

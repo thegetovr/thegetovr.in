@@ -23,7 +23,7 @@ export default function ProductCard({
   return (
     <article className="group">
       <Link href={productHref} className="block">
-        <div className="relative aspect-4/5 overflow-hidden rounded-(--radius-md) bg-(--color-surface-muted)">
+        <div className="relative aspect-4/5 overflow-hidden rounded-md bg-(--color-surface-muted)">
           {coverImage ? (
             <Image
               src={coverImage.url}
@@ -42,8 +42,8 @@ export default function ProductCard({
             <span
               className={`rounded-sm px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider ${
                 product.type === "customizable"
-                  ? "border border-(--color-accent) bg-(--color-white) text-(--color-text-primary)"
-                  : "bg-(--color-text-primary) text-(--color-white)"
+                  ? "border border-(--color-accent) bg-white text-(--color-text-primary)"
+                  : "bg-(--color-text-primary) text-white"
               }`}
             >
               {product.type === "customizable" ? "Custom" : "Ready"}

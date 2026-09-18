@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingBag, User, Heart, Headphones, LogOut } from "lucide-react";
+import {
+  ShoppingBag,
+  User,
+  Heart,
+  Headphones,
+  LogOut,
+  MapPin,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -92,7 +99,7 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
   if (loadingUser) {
     return (
       <div className="absolute left-1/2 top-full z-50 hidden w-72 -translate-x-1/2 group-hover:block">
-        <div className="rounded-(--radius-md) border border-(--color-border) bg-(--color-surface) px-5 py-4 shadow-(--shadow-elevated)">
+        <div className="rounded-md border border-(--color-border) bg-(--color-surface) px-5 py-4 shadow-(--shadow-elevated)">
           <p className="text-sm text-(--color-text-muted)">
             Checking account...
           </p>
@@ -107,14 +114,14 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
 
   return (
     <div className="absolute left-1/2 top-full z-50 hidden -translate-x-1/2 group-hover:block">
-      <div className="w-80 overflow-hidden rounded-(--radius-md) border border-(--color-border) bg-(--color-surface) shadow-(--shadow-elevated)">
+      <div className="w-80 overflow-hidden rounded-md border border-(--color-border) bg-(--color-surface) shadow-(--shadow-elevated)">
         {user ? (
           <div>
             {/* User Info */}
 
             <div className="px-5 py-5">
               <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-(--color-text-primary) text-(--color-white)">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-(--color-text-primary) text-white">
                   <User size={20} strokeWidth={1.8} />
                 </div>
 
@@ -135,7 +142,7 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
             <div className="border-t border-(--color-border) px-2 py-2">
               <Link
                 href="/profile"
-                className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+                className="flex items-center gap-3 rounded-sm px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
                 <User
                   size={18}
@@ -147,7 +154,7 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
 
               <Link
                 href="/profile?tab=orders"
-                className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+                className="flex items-center gap-3 rounded-sm px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
                 <ShoppingBag
                   size={18}
@@ -159,7 +166,7 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
 
               <Link
                 href="/profile?tab=wishlist"
-                className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+                className="flex items-center gap-3 rounded-sm px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
                 <Heart
                   size={18}
@@ -171,7 +178,7 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
 
               <Link
                 href="/contact"
-                className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+                className="flex items-center gap-3 rounded-sm px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
                 <Headphones
                   size={18}
@@ -188,7 +195,7 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="flex w-full items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-error) transition-colors hover:bg-(--color-error-background)"
+                className="flex w-full items-center gap-3 rounded-sm px-3 py-2.5 text-sm text-(--color-error) transition-colors hover:bg-(--color-error-background)"
               >
                 <LogOut
                   size={18}
@@ -214,7 +221,7 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
 
               <Link
                 href="/login"
-                className="mt-5 inline-flex items-center justify-center rounded-(--radius-sm) border border-(--color-accent) px-7 py-2.5 text-sm font-semibold text-(--color-accent) transition-colors hover:bg-(--color-accent) hover:text-(--color-white)"
+                className="mt-5 inline-flex items-center justify-center rounded-sm border border-(--color-accent) px-7 py-2.5 text-smfont-semibold text-(--color-accent) transition-colors hover:bg-(--color-accent) hover:text-white"
               >
                 LOGIN / SIGNUP
               </Link>
@@ -225,7 +232,7 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
             <div className="border-t border-(--color-border) px-2 py-2">
               <Link
                 href="/login?redirect=/profile%3Ftab%3Dorders"
-                className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+                className="flex items-center gap-3 rounded-sm px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
                 <ShoppingBag
                   size={18}
@@ -236,8 +243,20 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
               </Link>
 
               <Link
+                href="/track-order"
+                className="flex items-center gap-3 rounded-sm px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+              >
+                <MapPin
+                  size={18}
+                  strokeWidth={1.8}
+                  className="text-(--color-text-muted)"
+                />
+                Track Order
+              </Link>
+
+              <Link
                 href="/login?redirect=%2Fprofile%3Ftab%3Dwishlist"
-                className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+                className="flex items-center gap-3 rounded-sm px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
                 <Heart
                   size={18}
@@ -249,7 +268,7 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
 
               <Link
                 href="/contact"
-                className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
+                className="flex items-center gap-3 rounded-sm px-3 py-2.5 text-sm text-(--color-text-secondary) transition-colors hover:bg-(--color-surface-muted) hover:text-(--color-text-primary)"
               >
                 <Headphones
                   size={18}

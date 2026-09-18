@@ -6,6 +6,16 @@ export interface IUser {
   email: string;
   phone: string;
   password: string;
+
+  // Consent
+  consentGiven: boolean;
+  consentAt?: Date;
+
+  // Password Reset
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
+
+  // Profile
   dateOfBirth?: string;
   gender?: string;
 }
@@ -44,6 +54,39 @@ const userSchema = new Schema<IUser>(
       required: true,
       minlength: 8,
     },
+
+    // =====================================================
+    // CONSENT
+    // =====================================================
+
+    consentGiven: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+
+    consentAt: {
+      type: Date,
+      default: undefined,
+    },
+
+    // =====================================================
+    // PASSWORD RESET
+    // =====================================================
+
+    resetPasswordToken: {
+      type: String,
+      default: undefined,
+    },
+
+    resetPasswordExpires: {
+      type: Date,
+      default: undefined,
+    },
+
+    // =====================================================
+    // PROFILE
+    // =====================================================
 
     dateOfBirth: {
       type: String,

@@ -18,47 +18,57 @@ export default function PaymentSummary({
   tax = 0,
 }: PaymentSummaryProps) {
   return (
-    <section className="rounded-2xl border border-gray-200 bg-white p-6 pb-4 shadow-lg">
-      <h2 className="mb-6 text-xl font-semibold text-black">Payment Summary</h2>
+    <section className="border border-(--color-border) bg-(--color-surface) p-6 pb-4 shadow-(--shadow-subtle)">
+      <h2 className="mb-6 text-xl font-semibold tracking-tight text-(--color-text-primary)">
+        Payment Summary
+      </h2>
 
       <div className="space-y-4 text-sm">
         <div className="flex justify-between">
-          <span className="text-gray-500">Subtotal</span>
-          <span className="text-black">{formatCurrency(subtotal)}</span>
+          <span className="text-(--color-text-secondary)">Subtotal</span>
+          <span className="text-(--color-text-primary)">
+            {formatCurrency(subtotal)}
+          </span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-500">Discount</span>
-          <span className="text-green-600">-{formatCurrency(discount)}</span>
+          <span className="text-(--color-text-secondary)">Discount</span>
+          <span className="text-(--color-accent)">
+            -{formatCurrency(discount)}
+          </span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-500">Shipping</span>
-          <span className="text-black">
+          <span className="text-(--color-text-secondary)">Shipping</span>
+          <span className="text-(--color-text-primary)">
             {shipping === 0 ? "Free" : formatCurrency(shipping)}
           </span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-500">Tax</span>
-          <span className="text-black">{formatCurrency(tax)}</span>
+          <span className="text-(--color-text-secondary)">Tax</span>
+          <span className="text-(--color-text-primary)">
+            {formatCurrency(tax)}
+          </span>
         </div>
 
         {coupon && (
           <div className="flex justify-between">
-            <span className="text-gray-500">Coupon</span>
+            <span className="text-(--color-text-secondary)">Coupon</span>
 
-            <span className="rounded bg-green-50 px-2 py-1 text-xs text-green-600">
+            <span className="border border-(--color-border) bg-(--color-surface-muted) px-2 py-1 text-xs text-(--color-accent)">
               {coupon}
             </span>
           </div>
         )}
 
-        <div className="border-t border-gray-200 pt-4">
+        <div className="border-t border-(--color-border) pt-4">
           <div className="flex justify-between text-lg font-semibold">
-            <span className="text-black">Total</span>
+            <span className="text-(--color-text-primary)">Total</span>
 
-            <span className="text-black">{formatCurrency(total)}</span>
+            <span className="text-(--color-text-primary)">
+              {formatCurrency(total)}
+            </span>
           </div>
         </div>
       </div>
