@@ -13,11 +13,12 @@ interface RevealProps {
 }
 
 const variants: Variants = {
-  hidden: {
+  hidden: (custom: { y: number }) => ({
     opacity: 0,
-    y: 35,
-  },
-  visible: (custom: { delay: number; duration: number; y: number }) => ({
+    y: custom.y,
+  }),
+
+  visible: (custom: { delay: number; duration: number }) => ({
     opacity: 1,
     y: 0,
     transition: {
@@ -44,7 +45,7 @@ export default function Reveal({
       whileInView="visible"
       viewport={{
         once,
-        amount: 0.15,
+        amount: 0.08,
       }}
       custom={{
         delay,
