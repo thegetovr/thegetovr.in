@@ -3,7 +3,11 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import {
+  motion,
+  AnimatePresence,
+  type Variants,
+} from "framer-motion";
 import {
   Heart,
   Menu,
@@ -36,7 +40,7 @@ interface UserData {
   phone: string;
 }
 
-const navContainerVariants = {
+const navContainerVariants: Variants = {
   hidden: {},
   visible: {
     transition: {
@@ -46,7 +50,7 @@ const navContainerVariants = {
   },
 };
 
-const navItemVariants = {
+const navItemVariants: Variants = {
   hidden: {
     opacity: 0,
     y: -10,
@@ -61,7 +65,7 @@ const navItemVariants = {
   },
 };
 
-const rightItemVariants = {
+const rightItemVariants: Variants = {
   hidden: {
     opacity: 0,
     y: -8,

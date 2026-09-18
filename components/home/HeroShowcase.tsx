@@ -2,10 +2,17 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import type { HomeMedia } from "@/types/home";
 
 const words = ["Ideas", "Designs", "People", "Stories"];
 
-export default function HeroShowcase() {
+interface HeroShowcaseProps {
+  heroImage: HomeMedia | null;
+}
+
+export default function HeroShowcase({
+  heroImage,
+}: HeroShowcaseProps) {
   return (
     <motion.div
       className="group relative h-full min-h-[390px] overflow-hidden bg-(--color-charcoal-900) sm:min-h-[450px] lg:min-h-full"
@@ -26,14 +33,20 @@ export default function HeroShowcase() {
           ease: [0.22, 1, 0.36, 1],
         }}
       >
-        <Image
-          src="/images/home/hero-main.webp"
-          alt="GETOVR Good Things Take Time collection"
-          fill
-          priority
-          sizes="(max-width: 1023px) 100vw, 59vw"
-          className="object-cover object-center transition-transform duration-1000 ease-out group-hover:scale-[1.015]"
-        />
+        {heroImage?.url ? (
+          <Image
+            src={heroImage.url}
+            alt={heroImage.alt}
+            fill
+            priority
+            sizes="(max-width: 1023px) 100vw, 59vw"
+            className="object-cover object-center transition-transform duration-1000 ease-out group-hover:scale-[1.015]"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-(--color-charcoal-900) text-sm uppercase tracking-[0.2em] text-white/50">
+            Hero Image
+          </div>
+        )}
       </motion.div>
 
       {/* Overlay */}
