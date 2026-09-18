@@ -18,6 +18,11 @@ export const adminNavigation: AdminNavigationItem[] = [
     icon: DashboardIcon,
   },
   {
+    name: "Home",
+    href: "/admin/home",
+    icon: DashboardIcon,
+  },
+  {
     name: "Orders",
     href: "/admin/orders",
     icon: OrdersIcon,

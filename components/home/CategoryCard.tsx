@@ -6,16 +6,18 @@ type Props = {
   title: string;
   subtitle: string;
   image: string;
+  link: string;
 };
 
 export default function CategoryCard({
   title,
   subtitle,
   image,
+  link,
 }: Props) {
   return (
     <Link
-      href="/shop"
+      href={link}
       className="group block overflow-hidden border border-(--color-border) bg-(--color-surface)"
     >
       <div className="relative aspect-[1.18/1] overflow-hidden bg-(--color-surface-muted)">
