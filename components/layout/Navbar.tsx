@@ -11,7 +11,6 @@ import {
   User,
   X,
   ShoppingBag,
-  Heart,
   Headphones,
   LogOut,
   MapPin,
@@ -242,17 +241,31 @@ export default function Navbar() {
 
       <header className="sticky top-0 z-50 border-b border-(--color-border) bg-(--color-page)/80 backdrop-blur-xl">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 md:px-8">
-          <Logo />
+          {/* =================================================
+              LOGO
+          ================================================= */}
+
+          <div className="shrink-0">
+            <Logo />
+          </div>
 
           {/* =================================================
               DESKTOP NAVIGATION
           ================================================= */}
 
+          <nav className="hidden flex-1 items-center justify-center gap-8 lg:flex xl:gap-10">
+            {navLinks.map((link) => {
+              const isActive =
+                link.href === "/"
+                  ? pathname === "/"
+                  : pathname === link.href ||
+                    pathname.startsWith(`${link.href}/`);
+
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`relative flex h-[74px] items-center text-sm font-medium transition-colors ${
+                  className={`relative flex h-20 items-center text-sm font-medium transition-colors ${
                     isActive
                       ? "text-(--color-text-primary)"
                       : "text-(--color-text-secondary) hover:text-(--color-text-primary)"
@@ -275,7 +288,9 @@ export default function Navbar() {
           ================================================= */}
 
           <div className="flex h-full items-center gap-2 sm:gap-4 md:gap-6">
-            {/* SEARCH */}
+            {/* =================================================
+                SEARCH
+            ================================================= */}
 
             <div className="group relative hidden lg:block">
               <Search
@@ -328,6 +343,18 @@ export default function Navbar() {
                 }}
               />
             </div>
+
+            {/* =================================================
+                WISHLIST
+            ================================================= */}
+
+            <Link
+              href="/wishlist"
+              aria-label="Wishlist"
+              className="hidden h-10 w-10 items-center justify-center text-(--color-text-primary) transition-colors hover:text-(--color-text-secondary) md:flex"
+            >
+              <Heart size={21} strokeWidth={1.8} />
+            </Link>
 
             {/* =================================================
                 CART
