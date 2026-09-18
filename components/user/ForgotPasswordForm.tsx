@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Mail, ArrowRight, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
@@ -13,6 +14,10 @@ export default function ForgotPasswordForm() {
   const [notificationType, setNotificationType] = useState<"success" | "error">(
     "success",
   );
+
+  // =====================================================
+  // SUBMIT
+  // =====================================================
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -74,47 +79,92 @@ export default function ForgotPasswordForm() {
 
   return (
     <>
-      {/* Notification */}
-      {notification && (
-        <div
-          className={`
-            fixed
-            left-4
-            right-4
-            top-20
-            z-[100]
-            flex
-            items-start
-            gap-3
-            rounded-xl
-            border
-            bg-white
-            px-4
-            py-3
-            shadow-2xl
-            sm:left-auto
-            sm:right-6
-            sm:top-24
-            sm:max-w-md
-            sm:items-center
-            sm:px-5
-            sm:py-4
-            ${
-              notificationType === "success"
-                ? "border-green-200 text-green-600"
-                : "border-red-200 text-red-600"
-            }
-          `}
-        >
-          <span className="shrink-0 text-xl">
-            {notificationType === "success" ? "✓" : "!"}
-          </span>
+      {/* =================================================
+          NOTIFICATION
+      ================================================= */}
 
-          <p className="min-w-0 flex-1 text-sm font-medium leading-5">
-            {notification}
-          </p>
-        </div>
-      )}
+      <AnimatePresence>
+        {notification && (
+          <motion.div
+            initial={{
+              opacity: 0,
+              y: -60,
+              scale: 0.85,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              scale: 1,
+            }}
+            exit={{
+              opacity: 0,
+              y: -40,
+              scale: 0.9,
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 350,
+              damping: 22,
+            }}
+            className={`
+              fixed
+              left-4
+              right-4
+              top-20
+              z-[100]
+              flex
+              items-start
+              gap-3
+              rounded-xl
+              border
+              bg-white
+              px-4
+              py-3
+              shadow-2xl
+              sm:left-auto
+              sm:right-6
+              sm:top-24
+              sm:max-w-md
+              sm:items-center
+              sm:px-5
+              sm:py-4
+              ${
+                notificationType === "success"
+                  ? "border-green-200 text-green-600"
+                  : "border-red-200 text-red-600"
+              }
+            `}
+          >
+            <motion.span
+              initial={{
+                scale: 0,
+                rotate: -90,
+              }}
+              animate={{
+                scale: 1,
+                rotate: 0,
+              }}
+              transition={{
+                delay: 0.12,
+                type: "spring",
+                stiffness: 500,
+                damping: 18,
+              }}
+              className="shrink-0 text-xl"
+            >
+              {notificationType === "success" ? "✓" : "!"}
+            </motion.span>
+
+            <p className="min-w-0 flex-1 text-sm font-medium leading-5">
+              {notification}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* =================================================
+          MAIN
+      ================================================= */}
 
       <main
         className="
@@ -132,7 +182,25 @@ export default function ForgotPasswordForm() {
         "
       >
         <div className="mx-auto w-full max-w-5xl">
-          <section
+          {/* =================================================
+              MAIN CARD
+          ================================================= */}
+
+          <motion.section
+            initial={{
+              opacity: 0,
+              y: 100,
+              scale: 0.92,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              scale: 1,
+            }}
+            transition={{
+              duration: 0.8,
+              ease: [0.16, 1, 0.3, 1],
+            }}
             className="
               w-full
               overflow-hidden
@@ -146,8 +214,24 @@ export default function ForgotPasswordForm() {
             "
           >
             <div className="flex flex-col lg:flex-row">
-              {/* Banner */}
-              <div
+              {/* =================================================
+                  BANNER
+              ================================================= */}
+
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  x: -100,
+                }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.25,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
                 className="
                   relative
                   h-40
@@ -162,19 +246,50 @@ export default function ForgotPasswordForm() {
                   lg:border-r
                 "
               >
-                <Image
-                  src="/images/user/LoginBanner2.png"
-                  alt="The GetOvr Forgot Password"
-                  sizes="(max-width: 1024px) 100vw, 45vw"
-                  quality={70}
-                  fill
-                  priority
-                  className="object-cover object-center"
-                />
-              </div>
+                <motion.div
+                  initial={{
+                    scale: 1.2,
+                  }}
+                  animate={{
+                    scale: 1,
+                  }}
+                  transition={{
+                    duration: 1.2,
+                    delay: 0.25,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
+                  className="absolute inset-0"
+                >
+                  <Image
+                    src="/images/user/LoginBanner2.png"
+                    alt="The GetOvr Forgot Password"
+                    sizes="(max-width: 1024px) 100vw, 45vw"
+                    quality={70}
+                    fill
+                    priority
+                    className="object-cover object-center"
+                  />
+                </motion.div>
+              </motion.div>
 
-              {/* Form Section */}
-              <div
+              {/* =================================================
+                  FORM SECTION
+              ================================================= */}
+
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  x: 100,
+                }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.35,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
                 className="
                   flex
                   w-full
@@ -189,8 +304,23 @@ export default function ForgotPasswordForm() {
                 "
               >
                 <div className="w-full max-w-lg">
-                  {/* Recovery Label */}
-                  <p
+                  {/* =================================================
+                      RECOVERY LABEL
+                  ================================================= */}
+
+                  <motion.p
+                    initial={{
+                      opacity: 0,
+                      y: 30,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    transition={{
+                      duration: 0.5,
+                      delay: 0.65,
+                    }}
                     className="
                       text-xs
                       font-semibold
@@ -201,10 +331,26 @@ export default function ForgotPasswordForm() {
                     "
                   >
                     ACCOUNT RECOVERY
-                  </p>
+                  </motion.p>
 
-                  {/* Heading */}
-                  <h1
+                  {/* =================================================
+                      HEADING
+                  ================================================= */}
+
+                  <motion.h1
+                    initial={{
+                      opacity: 0,
+                      y: 40,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    transition={{
+                      duration: 0.6,
+                      delay: 0.75,
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
                     className="
                       mt-3
                       text-3xl
@@ -217,10 +363,25 @@ export default function ForgotPasswordForm() {
                     Forgot Your
                     <br />
                     <span className="text-[#a67c35]">Password?</span>
-                  </h1>
+                  </motion.h1>
 
-                  {/* Description */}
-                  <p
+                  {/* =================================================
+                      DESCRIPTION
+                  ================================================= */}
+
+                  <motion.p
+                    initial={{
+                      opacity: 0,
+                      y: 30,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    transition={{
+                      duration: 0.5,
+                      delay: 0.85,
+                    }}
                     className="
                       mt-4
                       max-w-md
@@ -232,11 +393,32 @@ export default function ForgotPasswordForm() {
                   >
                     Enter your registered email address and we&apos;ll send you
                     a link to reset your password.
-                  </p>
+                  </motion.p>
+
+                  {/* =================================================
+                      FORM
+                  ================================================= */}
 
                   <form onSubmit={handleSubmit}>
-                    {/* Email Input */}
-                    <div className="group relative mt-5 sm:mt-6">
+                    {/* =================================================
+                        EMAIL INPUT
+                    ================================================= */}
+
+                    <motion.div
+                      initial={{
+                        opacity: 0,
+                        y: 40,
+                      }}
+                      animate={{
+                        opacity: 1,
+                        y: 0,
+                      }}
+                      transition={{
+                        duration: 0.55,
+                        delay: 1,
+                      }}
+                      className="group relative mt-5 sm:mt-6"
+                    >
                       <Mail
                         size={20}
                         className="
@@ -306,13 +488,45 @@ export default function ForgotPasswordForm() {
                       >
                         Email Address
                       </label>
-                    </div>
+                    </motion.div>
 
-                    {/* Send Reset Link Button */}
-                    <div className="mt-5 sm:mt-6">
-                      <button
+                    {/* =================================================
+                        SEND RESET LINK
+                    ================================================= */}
+
+                    <motion.div
+                      initial={{
+                        opacity: 0,
+                        y: 40,
+                      }}
+                      animate={{
+                        opacity: 1,
+                        y: 0,
+                      }}
+                      transition={{
+                        duration: 0.55,
+                        delay: 1.15,
+                      }}
+                      className="mt-5 sm:mt-6"
+                    >
+                      <motion.button
                         type="submit"
                         disabled={loading}
+                        whileHover={
+                          !loading
+                            ? {
+                                scale: 1.02,
+                                y: -2,
+                              }
+                            : undefined
+                        }
+                        whileTap={
+                          !loading
+                            ? {
+                                scale: 0.97,
+                              }
+                            : undefined
+                        }
                         className="
                           group
                           grid
@@ -330,7 +544,6 @@ export default function ForgotPasswordForm() {
                           duration-300
                           hover:border-[#cdbb9f]
                           hover:bg-[#e6d8c6]
-                          active:scale-[0.98]
                           disabled:cursor-not-allowed
                           disabled:opacity-60
                           sm:h-14
@@ -354,22 +567,70 @@ export default function ForgotPasswordForm() {
                           {loading ? "SENDING..." : "SEND RESET LINK"}
                         </span>
 
-                        <ArrowRight
-                          size={20}
-                          className="
-                            justify-self-end
-                            text-[#8f6a2e]
-                            transition-transform
-                            duration-300
-                            group-hover:translate-x-1
-                          "
-                        />
-                      </button>
-                    </div>
+                        <span className="justify-self-end">
+                          {loading ? (
+                            <motion.span
+                              className="
+                                block
+                                h-5
+                                w-5
+                                rounded-full
+                                border-2
+                                border-[#8f6a2e]/30
+                                border-t-[#8f6a2e]
+                              "
+                              animate={{
+                                rotate: 360,
+                              }}
+                              transition={{
+                                duration: 0.7,
+                                repeat: Infinity,
+                                ease: "linear",
+                              }}
+                            />
+                          ) : (
+                            <motion.span
+                              animate={{
+                                x: [0, 4, 0],
+                              }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                repeatDelay: 1,
+                                ease: "easeInOut",
+                              }}
+                              className="block"
+                            >
+                              <ArrowRight
+                                size={20}
+                                className="text-[#8f6a2e]"
+                              />
+                            </motion.span>
+                          )}
+                        </span>
+                      </motion.button>
+                    </motion.div>
                   </form>
 
-                  {/* Back to Login */}
-                  <div className="mt-6 text-center sm:mt-8">
+                  {/* =================================================
+                      BACK TO LOGIN
+                  ================================================= */}
+
+                  <motion.div
+                    initial={{
+                      opacity: 0,
+                      y: 30,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    transition={{
+                      duration: 0.5,
+                      delay: 1.3,
+                    }}
+                    className="mt-6 text-center sm:mt-8"
+                  >
                     <Link
                       href="/login"
                       className="
@@ -381,17 +642,18 @@ export default function ForgotPasswordForm() {
                         text-[#a67c35]
                         transition-all
                         duration-300
+                        hover:gap-3
                         hover:text-[#8f6a2e]
                       "
                     >
                       <ArrowLeft size={16} />
                       Back to Login
                     </Link>
-                  </div>
+                  </motion.div>
                 </div>
-              </div>
+              </motion.div>
             </div>
-          </section>
+          </motion.section>
         </div>
       </main>
     </>

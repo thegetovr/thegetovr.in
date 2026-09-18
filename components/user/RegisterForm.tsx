@@ -5,6 +5,7 @@ import { Mail, Lock, Eye, EyeOff, ArrowRight, User, Phone } from "lucide-react";
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -24,10 +25,6 @@ export default function RegisterForm() {
     phone: "",
     password: "",
   });
-
-  // =====================================================
-  // CONSENT
-  // =====================================================
 
   const [consentGiven, setConsentGiven] = useState(false);
 
@@ -66,10 +63,6 @@ export default function RegisterForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // =====================================================
-    // CONSENT CHECK
-    // =====================================================
-
     if (!consentGiven) {
       showError("Please accept the Terms & Conditions and Privacy Policy.");
       return;
@@ -94,10 +87,8 @@ export default function RegisterForm() {
       if (result.success) {
         const message = "Registration Successful";
 
-        // Store as fallback
         sessionStorage.setItem("auth_notification", message);
 
-        // Show immediately
         window.dispatchEvent(
           new CustomEvent("auth-notification", {
             detail: {
@@ -126,42 +117,81 @@ export default function RegisterForm() {
           ERROR NOTIFICATION
       ================================================= */}
 
-      {notification && notificationType === "error" && (
-        <div
-          className="
-            fixed
-            left-5
-            right-5
-            top-[105px]
-            z-[100]
-            flex
-            items-start
-            gap-3
-            rounded-2xl
-            border
-            border-red-200
-            bg-white
-            px-4
-            py-3.5
-            text-red-600
-            shadow-2xl
-            sm:left-auto
-            sm:right-6
-            sm:top-24
-            sm:max-w-md
-            sm:items-center
-            sm:rounded-xl
-            sm:px-5
-            sm:py-4
-          "
-        >
-          <span className="mt-0.5 shrink-0 text-lg sm:mt-0 sm:text-xl">!</span>
+      <AnimatePresence>
+        {notification && notificationType === "error" && (
+          <motion.div
+            initial={{
+              opacity: 0,
+              y: -30,
+              scale: 0.95,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              scale: 1,
+            }}
+            exit={{
+              opacity: 0,
+              y: -20,
+              scale: 0.97,
+            }}
+            transition={{
+              duration: 0.35,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="
+              fixed
+              left-5
+              right-5
+              top-[105px]
+              z-[100]
+              flex
+              items-start
+              gap-3
+              rounded-2xl
+              border
+              border-red-200
+              bg-white
+              px-4
+              py-3.5
+              text-red-600
+              shadow-2xl
+              sm:left-auto
+              sm:right-6
+              sm:top-24
+              sm:max-w-md
+              sm:items-center
+              sm:rounded-xl
+              sm:px-5
+              sm:py-4
+            "
+          >
+            <motion.span
+              initial={{
+                scale: 0,
+                rotate: -45,
+              }}
+              animate={{
+                scale: 1,
+                rotate: 0,
+              }}
+              transition={{
+                delay: 0.1,
+                type: "spring",
+                stiffness: 400,
+                damping: 20,
+              }}
+              className="mt-0.5 shrink-0 text-lg sm:mt-0 sm:text-xl"
+            >
+              !
+            </motion.span>
 
-          <p className="min-w-0 flex-1 break-words text-sm font-medium leading-5">
-            {notification}
-          </p>
-        </div>
-      )}
+            <p className="min-w-0 flex-1 break-words text-sm font-medium leading-5">
+              {notification}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* =================================================
           MAIN
@@ -188,7 +218,21 @@ export default function RegisterForm() {
               MAIN CARD
           ================================================= */}
 
-          <section
+          <motion.section
+            initial={{
+              opacity: 0,
+              y: 35,
+              scale: 0.96,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              scale: 1,
+            }}
+            transition={{
+              duration: 0.65,
+              ease: [0.22, 1, 0.36, 1],
+            }}
             className="
               w-full
               max-w-5xl
@@ -208,7 +252,20 @@ export default function RegisterForm() {
                   LEFT SIDE - IMAGE
               ================================================= */}
 
-              <div
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  x: -35,
+                }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                }}
+                transition={{
+                  duration: 0.6,
+                  delay: 0.12,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
                 className="
                   relative
                   h-40
@@ -223,22 +280,50 @@ export default function RegisterForm() {
                   lg:border-r
                 "
               >
-                <Image
-                  src="/images/user/RegisterBanner2.png"
-                  alt="The GetOvr Register"
-                  sizes="(max-width: 1024px) 100vw, 45vw"
-                  quality={70}
-                  fill
-                  priority
-                  className="object-cover object-center"
-                />
-              </div>
+                <motion.div
+                  initial={{
+                    scale: 1.08,
+                  }}
+                  animate={{
+                    scale: 1,
+                  }}
+                  transition={{
+                    duration: 0.9,
+                    delay: 0.12,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  className="absolute inset-0"
+                >
+                  <Image
+                    src="/images/user/RegisterBanner2.png"
+                    alt="The GetOvr Register"
+                    sizes="(max-width: 1024px) 100vw, 45vw"
+                    quality={70}
+                    fill
+                    priority
+                    className="object-cover object-center"
+                  />
+                </motion.div>
+              </motion.div>
 
               {/* =================================================
                   RIGHT SIDE - FORM
               ================================================= */}
 
-              <div
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  x: 35,
+                }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                }}
+                transition={{
+                  duration: 0.6,
+                  delay: 0.18,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
                 className="
                   flex
                   w-full
@@ -254,10 +339,22 @@ export default function RegisterForm() {
               >
                 <div className="w-full max-w-lg">
                   {/* =================================================
-                      WELCOME TEXT
+                      WELCOME
                   ================================================= */}
 
-                  <p
+                  <motion.p
+                    initial={{
+                      opacity: 0,
+                      y: 18,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    transition={{
+                      duration: 0.4,
+                      delay: 0.35,
+                    }}
                     className="
                       text-[11px]
                       font-semibold
@@ -269,13 +366,26 @@ export default function RegisterForm() {
                     "
                   >
                     CREATE ACCOUNT
-                  </p>
+                  </motion.p>
 
                   {/* =================================================
                       HEADING
                   ================================================= */}
 
-                  <h1
+                  <motion.h1
+                    initial={{
+                      opacity: 0,
+                      y: 22,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    transition={{
+                      duration: 0.45,
+                      delay: 0.42,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
                     className="
                       mt-2
                       text-3xl
@@ -286,13 +396,25 @@ export default function RegisterForm() {
                     "
                   >
                     Join <span className="text-[#a67c35]">The GetOvr</span>
-                  </h1>
+                  </motion.h1>
 
                   {/* =================================================
                       DESCRIPTION
                   ================================================= */}
 
-                  <p
+                  <motion.p
+                    initial={{
+                      opacity: 0,
+                      y: 18,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    transition={{
+                      duration: 0.4,
+                      delay: 0.5,
+                    }}
                     className="
                       mt-3
                       text-sm
@@ -305,18 +427,28 @@ export default function RegisterForm() {
                     <br className="hidden sm:block" />
                     <span className="sm:hidden"> </span>
                     journey with The GetOvr.
-                  </p>
+                  </motion.p>
 
                   {/* =================================================
                       FORM
                   ================================================= */}
 
                   <form onSubmit={handleSubmit}>
-                    {/* =================================================
-                        NAME FIELDS
-                    ================================================= */}
+                    {/* NAME ROW */}
 
-                    <div
+                    <motion.div
+                      initial={{
+                        opacity: 0,
+                        y: 20,
+                      }}
+                      animate={{
+                        opacity: 1,
+                        y: 0,
+                      }}
+                      transition={{
+                        duration: 0.45,
+                        delay: 0.58,
+                      }}
                       className="
                         mt-5
                         grid
@@ -473,7 +605,21 @@ export default function RegisterForm() {
 
                       {/* EMAIL */}
 
-                      <div className="group relative sm:col-span-2">
+                      <motion.div
+                        initial={{
+                          opacity: 0,
+                          y: 18,
+                        }}
+                        animate={{
+                          opacity: 1,
+                          y: 0,
+                        }}
+                        transition={{
+                          duration: 0.4,
+                          delay: 0.66,
+                        }}
+                        className="group relative sm:col-span-2"
+                      >
                         <Mail
                           size={20}
                           className="
@@ -543,11 +689,25 @@ export default function RegisterForm() {
                         >
                           Email
                         </label>
-                      </div>
+                      </motion.div>
 
                       {/* PHONE */}
 
-                      <div className="group relative">
+                      <motion.div
+                        initial={{
+                          opacity: 0,
+                          x: -20,
+                        }}
+                        animate={{
+                          opacity: 1,
+                          x: 0,
+                        }}
+                        transition={{
+                          duration: 0.4,
+                          delay: 0.74,
+                        }}
+                        className="group relative"
+                      >
                         <Phone
                           size={20}
                           className="
@@ -619,11 +779,25 @@ export default function RegisterForm() {
                         >
                           Phone Number
                         </label>
-                      </div>
+                      </motion.div>
 
                       {/* PASSWORD */}
 
-                      <div className="group relative">
+                      <motion.div
+                        initial={{
+                          opacity: 0,
+                          x: 20,
+                        }}
+                        animate={{
+                          opacity: 1,
+                          x: 0,
+                        }}
+                        transition={{
+                          duration: 0.4,
+                          delay: 0.74,
+                        }}
+                        className="group relative"
+                      >
                         <Lock
                           size={20}
                           className="
@@ -732,21 +906,63 @@ export default function RegisterForm() {
                             sm:right-5
                           "
                         >
-                          {showPassword ? (
-                            <EyeOff size={20} />
-                          ) : (
-                            <Eye size={20} />
-                          )}
+                          <AnimatePresence mode="wait" initial={false}>
+                            <motion.span
+                              key={showPassword ? "hide" : "show"}
+                              initial={{
+                                opacity: 0,
+                                scale: 0.5,
+                                rotate: -45,
+                              }}
+                              animate={{
+                                opacity: 1,
+                                scale: 1,
+                                rotate: 0,
+                              }}
+                              exit={{
+                                opacity: 0,
+                                scale: 0.5,
+                                rotate: 45,
+                              }}
+                              transition={{
+                                duration: 0.2,
+                              }}
+                              className="block"
+                            >
+                              {showPassword ? (
+                                <EyeOff size={20} />
+                              ) : (
+                                <Eye size={20} />
+                              )}
+                            </motion.span>
+                          </AnimatePresence>
                         </button>
-                      </div>
-                    </div>
+                      </motion.div>
+                    </motion.div>
 
                     {/* =================================================
                         CONSENT
                     ================================================= */}
 
-                    <div className="mt-5 flex items-start gap-3">
-                      <input
+                    <motion.div
+                      initial={{
+                        opacity: 0,
+                        y: 20,
+                      }}
+                      animate={{
+                        opacity: 1,
+                        y: 0,
+                      }}
+                      transition={{
+                        duration: 0.4,
+                        delay: 0.82,
+                      }}
+                      className="mt-5 flex items-start gap-3"
+                    >
+                      <motion.input
+                        whileTap={{
+                          scale: 0.8,
+                        }}
                         id="terms"
                         type="checkbox"
                         checked={consentGiven}
@@ -779,6 +995,8 @@ export default function RegisterForm() {
                           className="
                             font-medium
                             text-[#a67c35]
+                            transition-colors
+                            duration-300
                             hover:underline
                           "
                         >
@@ -791,22 +1009,53 @@ export default function RegisterForm() {
                           className="
                             font-medium
                             text-[#a67c35]
+                            transition-colors
+                            duration-300
                             hover:underline
                           "
                         >
                           Privacy Policy
                         </Link>
                       </label>
-                    </div>
+                    </motion.div>
 
                     {/* =================================================
                         CREATE ACCOUNT BUTTON
                     ================================================= */}
 
-                    <div className="mt-5 sm:mt-6">
-                      <button
+                    <motion.div
+                      initial={{
+                        opacity: 0,
+                        y: 20,
+                      }}
+                      animate={{
+                        opacity: 1,
+                        y: 0,
+                      }}
+                      transition={{
+                        duration: 0.45,
+                        delay: 0.9,
+                      }}
+                      className="mt-5 sm:mt-6"
+                    >
+                      <motion.button
                         type="submit"
                         disabled={loading}
+                        whileHover={
+                          !loading
+                            ? {
+                                scale: 1.02,
+                                y: -2,
+                              }
+                            : undefined
+                        }
+                        whileTap={
+                          !loading
+                            ? {
+                                scale: 0.97,
+                              }
+                            : undefined
+                        }
                         className="
                           group
                           grid
@@ -824,7 +1073,6 @@ export default function RegisterForm() {
                           duration-300
                           hover:border-[#cdbb9f]
                           hover:bg-[#e6d8c6]
-                          active:scale-[0.98]
                           disabled:cursor-not-allowed
                           disabled:opacity-60
                           sm:h-14
@@ -847,32 +1095,71 @@ export default function RegisterForm() {
                           {loading ? "CREATING..." : "CREATE ACCOUNT"}
                         </span>
 
-                        <ArrowRight
-                          size={20}
-                          className="
-                            justify-self-end
-                            text-[#8f6a2e]
-                            transition-transform
-                            duration-300
-                            group-hover:translate-x-1
-                          "
-                        />
-                      </button>
-                    </div>
+                        <span className="justify-self-end">
+                          {loading ? (
+                            <motion.span
+                              className="
+                                block
+                                h-5
+                                w-5
+                                rounded-full
+                                border-2
+                                border-[#8f6a2e]/30
+                                border-t-[#8f6a2e]
+                              "
+                              animate={{
+                                rotate: 360,
+                              }}
+                              transition={{
+                                duration: 0.7,
+                                repeat: Infinity,
+                                ease: "linear",
+                              }}
+                            />
+                          ) : (
+                            <motion.span
+                              animate={{
+                                x: [0, 4, 0],
+                              }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                repeatDelay: 1,
+                                ease: "easeInOut",
+                              }}
+                              className="block"
+                            >
+                              <ArrowRight
+                                size={20}
+                                className="text-[#8f6a2e]"
+                              />
+                            </motion.span>
+                          )}
+                        </span>
+                      </motion.button>
+                    </motion.div>
                   </form>
 
                   {/* =================================================
                       LOGIN LINK
                   ================================================= */}
 
-                  <div className="mt-5 text-center sm:mt-6">
-                    <p
-                      className="
-                        text-sm
-                        leading-6
-                        text-[#77736d]
-                      "
-                    >
+                  <motion.div
+                    initial={{
+                      opacity: 0,
+                      y: 18,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    transition={{
+                      duration: 0.4,
+                      delay: 0.98,
+                    }}
+                    className="mt-5 text-center sm:mt-6"
+                  >
+                    <p className="text-sm leading-6 text-[#77736d]">
                       Already have an account?{" "}
                       <Link
                         href="/login"
@@ -887,11 +1174,11 @@ export default function RegisterForm() {
                         Login Here
                       </Link>
                     </p>
-                  </div>
+                  </motion.div>
                 </div>
-              </div>
+              </motion.div>
             </div>
-          </section>
+          </motion.section>
         </div>
       </main>
     </>

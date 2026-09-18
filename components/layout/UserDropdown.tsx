@@ -12,6 +12,8 @@ import {
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
+import { useCartStore } from "@/stores/cartStore";
+
 interface UserData {
   firstName: string;
   lastName: string;
@@ -27,6 +29,8 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
   const router = useRouter();
   const pathname = usePathname();
 
+  const deactivateAccount = useCartStore((state) => state.deactivateAccount);
+
   const [user, setUser] = useState<UserData | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
@@ -37,24 +41,29 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const response = await fetch("/api/auth/session");
+        const response = await fetch("/api/auth/session", {
+          cache: "no-store",
+        });
+
         const result = await response.json();
 
         if (result.success) {
           setUser(result.user);
         } else {
           setUser(null);
+          deactivateAccount();
         }
       } catch (error) {
         console.error("Session Check Error:", error);
-        setUser(null);
+
+        // Don't clear cart on temporary network error.
       } finally {
         setLoadingUser(false);
       }
     };
 
     checkSession();
-  }, [pathname]);
+  }, [pathname, deactivateAccount]);
 
   // =====================================================
   // LOGOUT
@@ -69,6 +78,10 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
       const result = await response.json();
 
       if (result.success) {
+        // Clear only the active cart.
+        // Saved account cart remains stored by user ID.
+        deactivateAccount();
+
         setUser(null);
 
         const message = result.message || "Logout Successful";
@@ -117,8 +130,6 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
       <div className="w-80 overflow-hidden rounded-md border border-(--color-border) bg-(--color-surface) shadow-(--shadow-elevated)">
         {user ? (
           <div>
-            {/* User Info */}
-
             <div className="px-5 py-5">
               <div className="flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-full bg-(--color-text-primary) text-white">
@@ -136,8 +147,6 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
                 </div>
               </div>
             </div>
-
-            {/* Logged In Menu */}
 
             <div className="border-t border-(--color-border) px-2 py-2">
               <Link
@@ -189,8 +198,6 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
               </Link>
             </div>
 
-            {/* Logout */}
-
             <div className="border-t border-(--color-border) px-2 py-2">
               <button
                 type="button"
@@ -208,8 +215,6 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
           </div>
         ) : (
           <div>
-            {/* Welcome */}
-
             <div className="px-5 py-5">
               <h3 className="text-lg font-semibold text-(--color-text-primary)">
                 Welcome
@@ -221,13 +226,11 @@ export default function UserDropdown({ onNotification }: UserDropdownProps) {
 
               <Link
                 href="/login"
-                className="mt-5 inline-flex items-center justify-center rounded-sm border border-(--color-accent) px-7 py-2.5 text-smfont-semibold text-(--color-accent) transition-colors hover:bg-(--color-accent) hover:text-white"
+                className="mt-5 inline-flex items-center justify-center rounded-sm border border-(--color-accent) px-7 py-2.5 text-sm font-semibold text-(--color-accent) transition-colors hover:bg-(--color-accent) hover:text-white"
               >
                 LOGIN / SIGNUP
               </Link>
             </div>
-
-            {/* Logged Out Menu */}
 
             <div className="border-t border-(--color-border) px-2 py-2">
               <Link

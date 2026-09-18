@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
+
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
 
@@ -23,7 +24,12 @@ export async function GET() {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-    if (typeof decoded === "string" || !decoded.userId) {
+
+    if (
+      typeof decoded === "string" ||
+      !decoded.userId ||
+      typeof decoded.userId !== "string"
+    ) {
       return NextResponse.json(
         {
           success: false,
@@ -36,6 +42,7 @@ export async function GET() {
     }
 
     await connectToDatabase();
+
     const user = await User.findById(decoded.userId).select("-password");
 
     if (!user) {
@@ -50,11 +57,21 @@ export async function GET() {
       );
     }
 
-
     return NextResponse.json({
       success: true,
       message: "User is authenticated",
-      user,
+
+      user: {
+        id: user._id.toString(),
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone,
+        consentGiven: user.consentGiven,
+        consentAt: user.consentAt,
+        dateOfBirth: user.dateOfBirth,
+        gender: user.gender,
+      },
     });
   } catch {
     return NextResponse.json(
