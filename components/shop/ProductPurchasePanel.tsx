@@ -69,7 +69,6 @@ export default function ProductPurchasePanel({
       });
 
       // Existing behavior remains unchanged.
-      router.push("/cart");
     } catch (error) {
       console.error("Add to cart login check failed:", error);
 
