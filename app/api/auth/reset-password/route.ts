@@ -4,6 +4,11 @@ import bcrypt from "bcryptjs";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
 
+import { sendEmail } from "@/lib/email/sendEmail";
+import { PasswordChangedEmail } from "@/lib/email/templates/PasswordChangedEmail";
+
+import { rateLimit, rateLimitResponse } from "@/lib/security/rateLimiter";
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -47,6 +52,16 @@ export async function POST(request: Request) {
     // =====================================================
 
     await connectToDatabase();
+
+    // =====================================================
+    // RATE LIMIT
+    // =====================================================
+
+    const limit = await rateLimit(request, "resetPassword");
+
+    if (!limit.allowed) {
+      return rateLimitResponse(limit.retryAfterSeconds);
+    }
 
     // =====================================================
     // FIND USER BY RESET TOKEN
@@ -110,6 +125,35 @@ export async function POST(request: Request) {
     await user.save();
 
     // =====================================================
+    // SEND PASSWORD CHANGED EMAIL
+    // =====================================================
+
+    try {
+      const changedAt = new Date().toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        dateStyle: "medium",
+        timeStyle: "short",
+      });
+
+      const emailHtml = PasswordChangedEmail({
+        firstName: user.firstName,
+        changedAt: `${changedAt} IST`,
+      });
+
+      await sendEmail({
+        type: "PASSWORD_CHANGED",
+        to: user.email,
+        subject: "Your The GetOvr Password Was Changed",
+        html: emailHtml,
+      });
+    } catch (emailError) {
+      console.error("❌ RESET PASSWORD EMAIL ERROR:", emailError);
+
+      // Password has already been reset.
+      // Email failure should not undo the password reset.
+    }
+
+    // =====================================================
     // SUCCESS
     // =====================================================
 
@@ -123,7 +167,7 @@ export async function POST(request: Request) {
       },
     );
   } catch (error) {
-    console.error("❌ RESET PASSWORD API ERROR", error);
+    console.error("❌ RESET PASSWORD API ERROR:", error);
 
     return NextResponse.json(
       {

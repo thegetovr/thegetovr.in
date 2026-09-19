@@ -2,17 +2,19 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { Resend } from "resend";
 
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
+
+import { sendEmail } from "@/lib/email/sendEmail";
+import { PasswordChangedEmail } from "@/lib/email/templates/PasswordChangedEmail";
+
+import { rateLimit, rateLimitResponse } from "@/lib/security/rateLimiter";
 
 interface JWTPayload {
   userId?: string;
   email?: string;
 }
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function PUT(request: Request) {
   try {
@@ -141,6 +143,20 @@ export async function PUT(request: Request) {
 
     await connectToDatabase();
 
+    // =====================================================
+    // RATE LIMIT
+    // =====================================================
+
+    const limit = await rateLimit(request, "changePassword", decoded.userId);
+
+    if (!limit.allowed) {
+      return rateLimitResponse(limit.retryAfterSeconds);
+    }
+
+    // =====================================================
+    // FIND USER
+    // =====================================================
+
     const user = await User.findById(decoded.userId);
 
     if (!user) {
@@ -209,258 +225,22 @@ export async function PUT(request: Request) {
         timeStyle: "short",
       });
 
-      const { error } = await resend.emails.send({
-        from: "The GetOvr <customer@thegetovr.in>",
-        to: user.email,
-        subject: "Your The GetOvr Password Was Changed",
-
-        html: `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  />
-
-  <title>Password Changed</title>
-</head>
-
-<body
-  style="
-    margin:0;
-    padding:0;
-    background:#f7f5f1;
-    font-family:Arial,Helvetica,sans-serif;
-    color:#181818;
-  "
->
-  <table
-    width="100%"
-    cellpadding="0"
-    cellspacing="0"
-    border="0"
-    style="background:#f7f5f1;padding:24px 12px;"
-  >
-    <tr>
-      <td align="center">
-
-        <table
-          width="100%"
-          cellpadding="0"
-          cellspacing="0"
-          border="0"
-          style="
-            max-width:600px;
-            background:#ffffff;
-            border:1px solid #e8e3db;
-          "
-        >
-
-          <!-- HEADER -->
-          <tr>
-            <td
-              style="
-                padding:28px 22px;
-                text-align:center;
-                border-bottom:1px solid #eee9e1;
-              "
-            >
-              <div
-                style="
-                  font-size:25px;
-                  font-weight:700;
-                  letter-spacing:2px;
-                "
-              >
-                THE GETOVR
-              </div>
-
-              <div
-                style="
-                  margin-top:7px;
-                  font-size:12px;
-                  color:#777;
-                  letter-spacing:1px;
-                "
-              >
-                ACCOUNT SECURITY
-              </div>
-            </td>
-          </tr>
-
-          <!-- CONTENT -->
-          <tr>
-            <td
-              style="
-                padding:32px 22px;
-              "
-            >
-
-              <h1
-                style="
-                  margin:0;
-                  font-size:24px;
-                  line-height:1.3;
-                  font-weight:600;
-                "
-              >
-                Password Changed Successfully
-              </h1>
-
-              <p
-                style="
-                  margin:16px 0 0;
-                  font-size:15px;
-                  line-height:1.7;
-                  color:#555;
-                "
-              >
-                Hi ${user.firstName},
-              </p>
-
-              <p
-                style="
-                  margin:10px 0 0;
-                  font-size:15px;
-                  line-height:1.7;
-                  color:#555;
-                "
-              >
-                Your The GetOvr account password was
-                successfully changed.
-              </p>
-
-              <!-- INFO BOX -->
-              <table
-                width="100%"
-                cellpadding="0"
-                cellspacing="0"
-                border="0"
-                style="
-                  margin-top:24px;
-                  background:#faf9f6;
-                  border:1px solid #e8e3db;
-                "
-              >
-                <tr>
-                  <td style="padding:18px;">
-
-                    <div
-                      style="
-                        font-size:13px;
-                        color:#777;
-                        margin-bottom:7px;
-                      "
-                    >
-                      Password changed on
-                    </div>
-
-                    <div
-                      style="
-                        font-size:15px;
-                        font-weight:600;
-                      "
-                    >
-                      ${changedAt} IST
-                    </div>
-
-                  </td>
-                </tr>
-              </table>
-
-              <p
-                style="
-                  margin:24px 0 0;
-                  font-size:14px;
-                  line-height:1.7;
-                  color:#555;
-                "
-              >
-                If you made this change, no further action
-                is required.
-              </p>
-
-              <p
-                style="
-                  margin:12px 0 0;
-                  font-size:14px;
-                  line-height:1.7;
-                  color:#555;
-                "
-              >
-                If you did not change your password, please
-                contact The GetOvr support team immediately
-                and secure your account.
-              </p>
-
-              <div
-                style="
-                  margin-top:28px;
-                  padding-top:20px;
-                  border-top:1px solid #eee9e1;
-                  font-size:13px;
-                  line-height:1.7;
-                  color:#777;
-                "
-              >
-                For your security, never share your password
-                or verification codes with anyone.
-              </div>
-
-            </td>
-          </tr>
-
-          <!-- FOOTER -->
-          <tr>
-            <td
-              style="
-                padding:20px 22px;
-                background:#181818;
-                text-align:center;
-              "
-            >
-              <div
-                style="
-                  font-size:12px;
-                  color:#ffffff;
-                  letter-spacing:.5px;
-                "
-              >
-                © ${new Date().getFullYear()} The GetOvr
-              </div>
-
-              <div
-                style="
-                  margin-top:6px;
-                  font-size:11px;
-                  color:#aaa;
-                "
-              >
-                This is an automated security notification.
-              </div>
-            </td>
-          </tr>
-
-        </table>
-
-      </td>
-    </tr>
-  </table>
-</body>
-</html>
-        `,
+      const emailHtml = PasswordChangedEmail({
+        firstName: user.firstName,
+        changedAt: `${changedAt} IST`,
       });
 
-      if (error) {
-        console.error("❌ PASSWORD CHANGE EMAIL ERROR:", error);
-
-        // Password has already changed.
-        // Email failure should not undo the password change.
-      }
+      await sendEmail({
+        type: "PASSWORD_CHANGED",
+        to: user.email,
+        subject: "Your The GetOvr Password Was Changed",
+        html: emailHtml,
+      });
     } catch (emailError) {
-      console.error("❌ PASSWORD CHANGE EMAIL EXCEPTION:", emailError);
+      console.error("❌ PASSWORD CHANGE EMAIL ERROR:", emailError);
+
+      // Password has already changed.
+      // Email failure should not undo the password change.
     }
 
     // =====================================================

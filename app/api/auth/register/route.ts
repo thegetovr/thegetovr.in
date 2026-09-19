@@ -6,6 +6,11 @@ import User from "@/models/User";
 import bcrypt from "bcryptjs";
 import validator from "validator";
 
+import { sendEmail } from "@/lib/email/sendEmail";
+import { RegistrationWelcomeEmail } from "@/lib/email/templates/RegistrationWelcomeEmail";
+
+import { rateLimit, rateLimitResponse } from "@/lib/security/rateLimiter";
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -48,7 +53,9 @@ export async function POST(request: Request) {
     // EMAIL VALIDATION
     // =====================================================
 
-    if (!validator.isEmail(email)) {
+    const normalizedEmail = String(email).trim().toLowerCase();
+
+    if (!validator.isEmail(normalizedEmail)) {
       return NextResponse.json(
         {
           success: false,
@@ -64,7 +71,9 @@ export async function POST(request: Request) {
     // PHONE VALIDATION
     // =====================================================
 
-    if (phone.length !== 10) {
+    const normalizedPhone = String(phone).trim();
+
+    if (normalizedPhone.length !== 10 || !/^\d{10}$/.test(normalizedPhone)) {
       return NextResponse.json(
         {
           success: false,
@@ -99,16 +108,26 @@ export async function POST(request: Request) {
     await connectToDatabase();
 
     // =====================================================
+    // RATE LIMIT
+    // =====================================================
+
+    const limit = await rateLimit(request, "register");
+
+    if (!limit.allowed) {
+      return rateLimitResponse(limit.retryAfterSeconds);
+    }
+
+    // =====================================================
     // CHECK EXISTING USER
     // =====================================================
 
     const existingUser = await User.findOne({
       $or: [
         {
-          email: email.trim().toLowerCase(),
+          email: normalizedEmail,
         },
         {
-          phone: phone.trim(),
+          phone: normalizedPhone,
         },
       ],
     });
@@ -144,13 +163,37 @@ export async function POST(request: Request) {
     const newUser = await User.create({
       firstName: firstName.trim(),
       lastName: lastName.trim(),
-      email: email.trim().toLowerCase(),
-      phone: phone.trim(),
+      email: normalizedEmail,
+      phone: normalizedPhone,
       password: hashedPassword,
 
       consentGiven: true,
       consentAt,
     });
+
+    // =====================================================
+    // SEND WELCOME EMAIL
+    // =====================================================
+
+    try {
+      const emailHtml = RegistrationWelcomeEmail({
+        firstName: newUser.firstName,
+      });
+
+      await sendEmail({
+        type: "REGISTRATION_WELCOME",
+        to: newUser.email,
+        subject: "Welcome to The GetOvr",
+        html: emailHtml,
+      });
+    } catch (emailError) {
+      console.error("❌ REGISTRATION WELCOME EMAIL ERROR:", emailError);
+
+      /*
+       * Account has already been created.
+       * Email failure should not undo registration.
+       */
+    }
 
     // =====================================================
     // SUCCESS RESPONSE

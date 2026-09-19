@@ -1,17 +1,21 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
-import { Resend } from "resend";
 
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { sendEmail } from "@/lib/email/sendEmail";
+import { ForgotPasswordEmail } from "@/lib/email/templates/ForgotPasswordEmail";
+
+import { rateLimit, rateLimitResponse } from "@/lib/security/rateLimiter";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const { email } = body;
+    const email = String(body?.email ?? "")
+      .trim()
+      .toLowerCase();
 
     // =====================================================
     // EMAIL VALIDATION
@@ -36,11 +40,21 @@ export async function POST(request: Request) {
     await connectToDatabase();
 
     // =====================================================
+    // RATE LIMIT
+    // =====================================================
+
+    const limit = await rateLimit(request, "forgotPassword", email);
+
+    if (!limit.allowed) {
+      return rateLimitResponse(limit.retryAfterSeconds);
+    }
+
+    // =====================================================
     // FIND USER
     // =====================================================
 
     const user = await User.findOne({
-      email: email.trim().toLowerCase(),
+      email,
     });
 
     // =====================================================
@@ -83,101 +97,36 @@ export async function POST(request: Request) {
     // CREATE RESET URL
     // =====================================================
 
-    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${resetToken}`;
+    const resetUrl =
+      `${process.env.NEXT_PUBLIC_APP_URL}` +
+      `/reset-password?token=${resetToken}`;
+
+    // =====================================================
+    // CREATE EMAIL TEMPLATE
+    // =====================================================
+
+    const emailHtml = ForgotPasswordEmail({
+      firstName: user.firstName,
+      resetUrl,
+    });
 
     // =====================================================
     // SEND RESET EMAIL
     // =====================================================
 
-    const { error } = await resend.emails.send({
-      from: "The GetOvr <customer@thegetovr.in>",
+    const emailResult = await sendEmail({
+      type: "FORGOT_PASSWORD",
       to: user.email,
       subject: "Reset Your The GetOvr Password",
-
-      html: `
-        <div
-          style="
-            margin: 0;
-            padding: 40px 20px;
-            background-color: #fcfbf9;
-            font-family: Arial, sans-serif;
-            color: #181715;
-          "
-        >
-          <div
-            style="
-              max-width: 600px;
-              margin: 0 auto;
-              padding: 40px;
-              background-color: #ffffff;
-              border: 1px solid #ddd5ca;
-              border-radius: 20px;
-            "
-          >
-            <h2
-              style="
-                margin: 0 0 20px;
-                color: #a67c35;
-              "
-            >
-              Reset Your Password
-            </h2>
-
-            <p>
-              Hello ${user.firstName},
-            </p>
-
-            <p>
-              We received a request to reset the password
-              for your The GetOvr account.
-            </p>
-
-            <p>
-              Click the button below to create a new password:
-            </p>
-
-            <div style="margin: 30px 0;">
-              <a
-                href="${resetUrl}"
-                style="
-                  display: inline-block;
-                  padding: 14px 24px;
-                  background-color: #eee3d5;
-                  color: #181715;
-                  text-decoration: none;
-                  border-radius: 10px;
-                  font-weight: 600;
-                "
-              >
-                RESET PASSWORD
-              </a>
-            </div>
-
-            <p>
-              This password reset link will expire in
-              <strong>15 minutes</strong>.
-            </p>
-
-            <p>
-              If you did not request a password reset,
-              you can safely ignore this email.
-            </p>
-
-            <p style="margin-top: 30px;">
-              Regards,<br />
-              <strong>The GetOvr Team</strong>
-            </p>
-          </div>
-        </div>
-      `,
+      html: emailHtml,
     });
 
     // =====================================================
-    // RESEND ERROR
+    // EMAIL ERROR
     // =====================================================
 
-    if (error) {
-      console.error("❌ RESEND ERROR:", error);
+    if (!emailResult.success) {
+      console.error("❌ FORGOT PASSWORD EMAIL ERROR:", emailResult.error);
 
       return NextResponse.json(
         {
@@ -205,7 +154,7 @@ export async function POST(request: Request) {
       },
     );
   } catch (error) {
-    console.error("❌ FORGOT PASSWORD API ERROR", error);
+    console.error("❌ FORGOT PASSWORD API ERROR:", error);
 
     return NextResponse.json(
       {

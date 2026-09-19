@@ -203,13 +203,7 @@ export default function ProfilePageContent() {
   // =====================================================
 
   if (loadingUser) {
-    return (
-      <main className="min-h-screen bg-[#fcfbf9]">
-        <div className="flex min-h-screen items-center justify-center">
-          <p className="text-sm text-zinc-500">Loading profile...</p>
-        </div>
-      </main>
-    );
+    return <PageLoader />;
   }
 
   // =====================================================
