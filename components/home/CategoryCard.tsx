@@ -160,7 +160,6 @@ export default function CategoryCard({
           "
         >
           Explore
-
           <ArrowRight
             size={11}
             strokeWidth={1.4}

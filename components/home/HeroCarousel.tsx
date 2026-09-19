@@ -2,11 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowDown,
-  ArrowLeft,
-  ArrowRight,
-} from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowRight } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { HomeHero } from "@/types/home";
@@ -56,10 +52,9 @@ function createSlides(hero: HomeHero): HeroSlide[] {
   ];
 }
 
-export default function HeroCarousel({
-  hero,
-}: HeroCarouselProps) {
+export default function HeroCarousel({ hero }: HeroCarouselProps) {
   const slides = createSlides(hero);
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState(1);
 
@@ -81,14 +76,14 @@ export default function HeroCarousel({
 
   const previousSlide = useCallback(() => {
     setDirection(-1);
-    setActiveIndex(
-      (current) => (current - 1 + slides.length) % slides.length,
-    );
+
+    setActiveIndex((current) => (current - 1 + slides.length) % slides.length);
   }, [slides.length]);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
       setDirection(1);
+
       setActiveIndex((current) => (current + 1) % slides.length);
     }, 7000);
 
@@ -116,56 +111,96 @@ export default function HeroCarousel({
   const slide = slides[activeIndex];
 
   return (
-    <div className="relative">
+    <div className="relative w-full overflow-hidden">
       {/* =========================================================
           MOBILE
           ========================================================= */}
       <div className="lg:hidden">
         <div className="relative h-[52svh] min-h-[390px] max-h-[540px] overflow-hidden">
-          <AnimatePresence initial={false} custom={direction}>
+          <AnimatePresence initial={false} mode="sync">
             <motion.div
               key={`mobile-image-${activeIndex}`}
-              custom={direction}
               initial={{
                 opacity: 0,
-                x: direction * 18,
-                scale: 1.025,
               }}
               animate={{
                 opacity: 1,
-                x: 0,
-                scale: 1,
               }}
               exit={{
                 opacity: 0,
-                x: direction * -18,
               }}
               transition={{
-                duration: 0.65,
-                ease: [0.22, 1, 0.36, 1],
+                duration: 0.7,
+                ease: "easeInOut",
               }}
-              className="absolute inset-0"
+              className="absolute inset-0 overflow-hidden"
             >
               {slide.image?.url ? (
-                <Image
-                  src={slide.image.url}
-                  alt={slide.image.alt || slide.heading}
-                  fill
-                  priority={activeIndex === 0}
-                  quality={100}
-                  sizes="(max-width: 1023px) 100vw, 0px"
-                  className="object-cover object-[58%_27%]"
-                />
+                <motion.div
+                  initial={{
+                    scale: 1.08,
+                    filter: "blur(4px) brightness(0.82)",
+                  }}
+                  animate={{
+                    scale: 1,
+                    filter: "blur(0px) brightness(1)",
+                  }}
+                  transition={{
+                    duration: 1.15,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  className="absolute inset-0"
+                >
+                  <Image
+                    src={slide.image.url}
+                    alt={slide.image.alt || slide.heading}
+                    fill
+                    priority={activeIndex === 0}
+                    quality={100}
+                    sizes="100vw"
+                    className="object-cover object-[58%_27%]"
+                  />
+                </motion.div>
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center bg-(--color-page) text-[10px] uppercase tracking-[0.25em] text-(--color-text-muted)">
                   Hero Image
                 </div>
               )}
+
+              {/* Cinematic Overlay */}
+              <motion.div
+                initial={{
+                  opacity: 0.16,
+                }}
+                animate={{
+                  opacity: 0.04,
+                }}
+                transition={{
+                  duration: 1.2,
+                  ease: "easeOut",
+                }}
+                className="pointer-events-none absolute inset-0 bg-black"
+              />
             </motion.div>
           </AnimatePresence>
 
           {/* Mobile Scroll Indicator */}
-          <div className="absolute bottom-5 right-5 z-20">
+          <motion.div
+            initial={{
+              opacity: 0,
+              scale: 0.9,
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+            }}
+            transition={{
+              delay: 0.7,
+              duration: 0.6,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="absolute bottom-5 right-5 z-20"
+          >
             <div className="flex h-[78px] w-[78px] flex-col items-center justify-center rounded-full border border-white/70 bg-black/10 text-white backdrop-blur-[3px]">
               <span className="text-center text-[7px] font-medium uppercase leading-[1.55] tracking-[0.15em]">
                 Scroll
@@ -173,13 +208,9 @@ export default function HeroCarousel({
                 to explore
               </span>
 
-              <ArrowDown
-                size={12}
-                strokeWidth={1}
-                className="mt-1.5"
-              />
+              <ArrowDown size={12} strokeWidth={1} className="mt-1.5" />
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Mobile Editorial Content */}
@@ -189,7 +220,7 @@ export default function HeroCarousel({
               key={`mobile-content-${activeIndex}`}
               initial={{
                 opacity: 0,
-                y: 12,
+                y: 18,
               }}
               animate={{
                 opacity: 1,
@@ -197,53 +228,126 @@ export default function HeroCarousel({
               }}
               exit={{
                 opacity: 0,
-                y: -8,
+                y: -12,
               }}
               transition={{
-                duration: 0.45,
+                duration: 0.55,
                 ease: [0.22, 1, 0.36, 1],
               }}
             >
-              <div className="flex items-center gap-3">
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  y: 8,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                transition={{
+                  delay: 0.08,
+                  duration: 0.5,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="flex items-center gap-3"
+              >
                 <span className="h-px w-9 bg-(--color-text-primary)" />
 
                 <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-(--color-text-secondary)">
                   {slide.eyebrow}
                 </p>
-              </div>
+              </motion.div>
 
-              <h1 className="mt-6 whitespace-pre-line text-[clamp(4rem,15vw,5.8rem)] font-light leading-[0.78] tracking-[-0.075em] text-(--color-text-primary)">
-                {slide.heading}
-              </h1>
-
-              <p className="mt-7 max-w-[350px] text-[10px] font-medium uppercase leading-[1.75] tracking-[0.16em] text-(--color-text-secondary)">
-                {slide.description}
-              </p>
-
-              <Link
-                href={slide.ctaLink}
-                className="group mt-8 inline-flex h-[50px] items-center gap-7 bg-(--color-text-primary) px-7 text-[10px] font-semibold uppercase tracking-[0.08em] text-white transition-transform duration-300 active:scale-[0.98]"
+              <motion.h1
+                initial={{
+                  opacity: 0,
+                  y: 24,
+                  scale: 0.98,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                  scale: 1,
+                }}
+                transition={{
+                  delay: 0.12,
+                  duration: 0.65,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="mt-6 whitespace-pre-line text-[clamp(4rem,15vw,5.8rem)] font-light leading-[0.78] tracking-[-0.075em] text-(--color-text-primary)"
               >
-                {slide.ctaLabel}
+                {slide.heading}
+              </motion.h1>
 
-                <ArrowRight
-                  size={15}
-                  strokeWidth={1.4}
-                  className="transition-transform duration-300 group-hover:translate-x-1"
-                />
-              </Link>
+              <motion.p
+                initial={{
+                  opacity: 0,
+                  y: 12,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                transition={{
+                  delay: 0.22,
+                  duration: 0.5,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="mt-7 max-w-[350px] text-[10px] font-medium uppercase leading-[1.75] tracking-[0.16em] text-(--color-text-secondary)"
+              >
+                {slide.description}
+              </motion.p>
+
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  y: 14,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                transition={{
+                  delay: 0.3,
+                  duration: 0.5,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                <Link
+                  href={slide.ctaLink}
+                  className="group mt-8 inline-flex h-[50px] items-center gap-7 bg-(--color-text-primary) px-7 text-[10px] font-semibold uppercase tracking-[0.08em] text-white transition-transform duration-300 active:scale-[0.98]"
+                >
+                  {slide.ctaLabel}
+
+                  <ArrowRight
+                    size={15}
+                    strokeWidth={1.4}
+                    className="transition-transform duration-300 group-hover:translate-x-1"
+                  />
+                </Link>
+              </motion.div>
 
               {/* Mobile Controls */}
-              <div className="mt-9 flex items-center gap-4">
+              <motion.div
+                initial={{
+                  opacity: 0,
+                }}
+                animate={{
+                  opacity: 1,
+                }}
+                transition={{
+                  delay: 0.4,
+                  duration: 0.5,
+                }}
+                className="mt-9 flex items-center gap-4"
+              >
                 {slides.map((_, index) => (
                   <button
                     key={index}
                     type="button"
                     onClick={() => goToSlide(index)}
                     aria-label={`Go to hero slide ${index + 1}`}
-                    aria-current={
-                      activeIndex === index ? "true" : undefined
-                    }
+                    aria-current={activeIndex === index ? "true" : undefined}
                     className={`flex h-9 min-w-6 items-center justify-center text-[10px] tracking-[0.08em] transition-all duration-300 ${
                       activeIndex === index
                         ? "font-semibold text-(--color-text-primary)"
@@ -273,7 +377,7 @@ export default function HeroCarousel({
                 >
                   <ArrowRight size={15} strokeWidth={1.4} />
                 </button>
-              </div>
+              </motion.div>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -282,46 +386,71 @@ export default function HeroCarousel({
       {/* =========================================================
           DESKTOP
           ========================================================= */}
-      <div className="relative hidden h-[min(760px,calc(100svh-68px))] min-h-[620px] lg:block">
-        <AnimatePresence initial={false} custom={direction}>
+      <div className="relative hidden h-[min(760px,calc(100svh-68px))] min-h-[620px] overflow-hidden lg:block">
+        <AnimatePresence initial={false} mode="sync">
           <motion.div
             key={`desktop-image-${activeIndex}`}
-            custom={direction}
             initial={{
               opacity: 0,
-              x: direction * 20,
-              scale: 1.025,
             }}
             animate={{
               opacity: 1,
-              x: 0,
-              scale: 1,
             }}
             exit={{
               opacity: 0,
-              x: direction * -20,
             }}
             transition={{
-              duration: 0.7,
-              ease: [0.22, 1, 0.36, 1],
+              duration: 0.75,
+              ease: "easeInOut",
             }}
             className="absolute inset-0 overflow-hidden"
           >
             {slide.image?.url ? (
-              <Image
-                src={slide.image.url}
-                alt={slide.image.alt || slide.heading}
-                fill
-                priority={activeIndex === 0}
-                quality={100}
-                sizes="100vw"
-                className="object-cover object-[58%_27%]"
-              />
+              <motion.div
+                initial={{
+                  scale: 1.075,
+                  filter: "blur(5px) brightness(0.78)",
+                }}
+                animate={{
+                  scale: 1,
+                  filter: "blur(0px) brightness(1)",
+                }}
+                transition={{
+                  duration: 1.25,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="absolute inset-0"
+              >
+                <Image
+                  src={slide.image.url}
+                  alt={slide.image.alt || slide.heading}
+                  fill
+                  priority={activeIndex === 0}
+                  quality={100}
+                  sizes="100vw"
+                  className="object-cover object-[58%_27%]"
+                />
+              </motion.div>
             ) : (
               <div className="absolute inset-0 flex items-center justify-center bg-(--color-page) text-[10px] uppercase tracking-[0.25em] text-(--color-text-muted)">
                 Hero Image
               </div>
             )}
+
+            {/* Cinematic Overlay */}
+            <motion.div
+              initial={{
+                opacity: 0.15,
+              }}
+              animate={{
+                opacity: 0.035,
+              }}
+              transition={{
+                duration: 1.3,
+                ease: "easeOut",
+              }}
+              className="pointer-events-none absolute inset-0 bg-black"
+            />
           </motion.div>
         </AnimatePresence>
 
@@ -332,7 +461,7 @@ export default function HeroCarousel({
               key={`desktop-content-${activeIndex}`}
               initial={{
                 opacity: 0,
-                y: 14,
+                y: 20,
               }}
               animate={{
                 opacity: 1,
@@ -340,58 +469,131 @@ export default function HeroCarousel({
               }}
               exit={{
                 opacity: 0,
-                y: -10,
+                y: -14,
               }}
               transition={{
-                duration: 0.5,
+                duration: 0.6,
                 ease: [0.22, 1, 0.36, 1],
               }}
               className="w-full max-w-[650px] pb-10"
             >
               {/* Eyebrow */}
-              <div className="flex items-center gap-3">
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  y: 8,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                transition={{
+                  delay: 0.08,
+                  duration: 0.5,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="flex items-center gap-3"
+              >
                 <span className="h-px w-9 bg-(--color-text-primary)" />
 
                 <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-(--color-text-secondary)">
                   {slide.eyebrow}
                 </p>
-              </div>
+              </motion.div>
 
               {/* Heading */}
-              <h1 className="mt-8 max-w-[580px] whitespace-pre-line text-[clamp(5.8rem,7vw,7.2rem)] font-light leading-[0.79] tracking-[-0.075em] text-(--color-text-primary)">
+              <motion.h1
+                initial={{
+                  opacity: 0,
+                  y: 28,
+                  scale: 0.98,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                  scale: 1,
+                }}
+                transition={{
+                  delay: 0.12,
+                  duration: 0.7,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="mt-8 max-w-[580px] whitespace-pre-line text-[clamp(5.8rem,7vw,7.2rem)] font-light leading-[0.79] tracking-[-0.075em] text-(--color-text-primary)"
+              >
                 {slide.heading}
-              </h1>
+              </motion.h1>
 
               {/* Description */}
-              <p className="mt-8 max-w-[440px] text-[11px] font-medium uppercase leading-[1.75] tracking-[0.17em] text-(--color-text-secondary)">
+              <motion.p
+                initial={{
+                  opacity: 0,
+                  y: 14,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                transition={{
+                  delay: 0.23,
+                  duration: 0.5,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="mt-8 max-w-[440px] text-[11px] font-medium uppercase leading-[1.75] tracking-[0.17em] text-(--color-text-secondary)"
+              >
                 {slide.description}
-              </p>
+              </motion.p>
 
               {/* CTA */}
-              <Link
-                href={slide.ctaLink}
-                className="group mt-8 inline-flex h-[50px] items-center gap-6 bg-(--color-text-primary) px-8 text-[11px] font-semibold uppercase tracking-[0.08em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:opacity-90"
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  y: 14,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                transition={{
+                  delay: 0.32,
+                  duration: 0.5,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
               >
-                {slide.ctaLabel}
+                <Link
+                  href={slide.ctaLink}
+                  className="group mt-8 inline-flex h-[50px] items-center gap-6 bg-(--color-text-primary) px-8 text-[11px] font-semibold uppercase tracking-[0.08em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:opacity-90"
+                >
+                  {slide.ctaLabel}
 
-                <ArrowRight
-                  size={15}
-                  strokeWidth={1.4}
-                  className="transition-transform duration-300 group-hover:translate-x-1"
-                />
-              </Link>
+                  <ArrowRight
+                    size={15}
+                    strokeWidth={1.4}
+                    className="transition-transform duration-300 group-hover:translate-x-1"
+                  />
+                </Link>
+              </motion.div>
 
               {/* Desktop Controls */}
-              <div className="mt-11 flex items-center gap-5">
+              <motion.div
+                initial={{
+                  opacity: 0,
+                }}
+                animate={{
+                  opacity: 1,
+                }}
+                transition={{
+                  delay: 0.42,
+                  duration: 0.5,
+                }}
+                className="mt-11 flex items-center gap-5"
+              >
                 {slides.map((_, index) => (
                   <button
                     key={index}
                     type="button"
                     onClick={() => goToSlide(index)}
                     aria-label={`Go to hero slide ${index + 1}`}
-                    aria-current={
-                      activeIndex === index ? "true" : undefined
-                    }
+                    aria-current={activeIndex === index ? "true" : undefined}
                     className={`flex h-8 min-w-5 items-center justify-center text-[10px] tracking-[0.08em] transition-all duration-300 ${
                       activeIndex === index
                         ? "font-semibold text-(--color-text-primary)"
@@ -421,13 +623,28 @@ export default function HeroCarousel({
                 >
                   <ArrowRight size={15} strokeWidth={1.4} />
                 </button>
-              </div>
+              </motion.div>
             </motion.div>
           </AnimatePresence>
         </div>
 
         {/* Desktop Scroll Indicator */}
-        <div className="absolute bottom-9 right-9 z-20">
+        <motion.div
+          initial={{
+            opacity: 0,
+            scale: 0.9,
+          }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+          }}
+          transition={{
+            delay: 0.7,
+            duration: 0.6,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          className="absolute bottom-9 right-9 z-20"
+        >
           <div className="flex h-[84px] w-[84px] flex-col items-center justify-center rounded-full border border-white/65 bg-black/[0.025] text-white backdrop-blur-[2px]">
             <span className="text-center text-[7px] font-medium uppercase leading-[1.55] tracking-[0.14em]">
               Scroll
@@ -435,13 +652,9 @@ export default function HeroCarousel({
               to explore
             </span>
 
-            <ArrowDown
-              size={13}
-              strokeWidth={1}
-              className="mt-1.5"
-            />
+            <ArrowDown size={13} strokeWidth={1} className="mt-1.5" />
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

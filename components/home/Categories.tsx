@@ -25,6 +25,7 @@ export default async function Categories() {
   return (
     <section className="bg-(--color-surface) px-5 py-9 sm:px-7 sm:py-10 lg:px-[5vw] lg:py-11">
       <div className="mx-auto w-full max-w-[1680px]">
+        {/* Section Heading */}
         <Reveal y={8} duration={0.5}>
           <div className="flex items-end justify-between border-b border-(--color-border) pb-4 sm:pb-5">
             <h2 className="text-[17px] font-medium uppercase leading-none tracking-[0.25em] text-(--color-text-primary) sm:text-[18px] lg:text-[19px]">
@@ -41,24 +42,28 @@ export default async function Categories() {
           </div>
         </Reveal>
 
+        {/* Category Cards */}
         <div className="mt-5 grid grid-cols-1 gap-2.5 sm:mt-6 sm:grid-cols-2 sm:gap-3 lg:grid-cols-4 lg:gap-3">
           {categories.map((category, index) => (
-            <CategoryCard
+            <Reveal
               key={category.id}
-              title={category.title}
-              subtitle={category.subtitle}
-              image={
-                category.image?.url ??
-                fallbackImages[category.id] ??
-                ""
-              }
-              link={category.link}
-              index={index + 1}
-              id={category.id}
-            />
+              y={30}
+              duration={0.65}
+              delay={index * 0.08}
+            >
+              <CategoryCard
+                title={category.title}
+                subtitle={category.subtitle}
+                image={category.image?.url ?? fallbackImages[category.id] ?? ""}
+                link={category.link}
+                index={index + 1}
+                id={category.id}
+              />
+            </Reveal>
           ))}
         </div>
 
+        {/* Mobile View All */}
         <div className="mt-4 flex justify-end sm:hidden">
           <Link
             href="/shop"
