@@ -62,7 +62,7 @@ async function getWishlistResponse(userId: string) {
 
   return NextResponse.json({
     success: true,
-    productIds: (wishlist?.productIds ?? []).map((id) => String(id)),
+    productIds: (wishlist?.productIds ?? []).map((id: unknown) => String(id)),
   });
 }
 

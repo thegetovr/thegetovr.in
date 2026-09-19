@@ -6,6 +6,7 @@ interface TextFieldProps {
   placeholder?: string;
   type?: "text" | "number" | "date";
   min?: number;
+  disabled?: boolean;
 }
 
 export default function TextField({
@@ -16,6 +17,7 @@ export default function TextField({
   placeholder,
   type = "text",
   min,
+  disabled = false,
 }: TextFieldProps) {
   return (
     <div>
@@ -31,6 +33,7 @@ export default function TextField({
         name={name}
         type={type}
         min={min}
+        disabled={disabled}
         defaultValue={defaultValue}
         placeholder={placeholder}
         className="mt-2 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-2.5 text-white outline-none transition focus:border-white"
