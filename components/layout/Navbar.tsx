@@ -320,7 +320,7 @@ export default function Navbar() {
           duration: 0.6,
           ease: [0.22, 1, 0.36, 1],
         }}
-        className="sticky top-0 z-50 border-b border-(--color-border) bg-(--color-page)/80 backdrop-blur-xl"
+        className="sticky top-0 z-50 border-b border-(--color-border)/70 bg-(--color-page)/92 backdrop-blur-md"
       >
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 md:px-8">
           {/* =================================================
@@ -354,7 +354,7 @@ export default function Navbar() {
             variants={navContainerVariants}
             initial="hidden"
             animate="visible"
-            className="hidden flex-1 items-center justify-center gap-8 lg:flex xl:gap-10"
+            className="hidden flex-1 items-center justify-center gap-7 lg:flex xl:gap-9"
           >
             {navLinks.map((link) => {
               const isActive =

@@ -7,57 +7,163 @@ type Props = {
   subtitle: string;
   image: string;
   link: string;
+  index: number;
+  id?: string;
 };
+
+function getObjectPosition(id?: string) {
+  switch (id) {
+    case "tshirts":
+      return "50% 45%";
+    case "hoodies":
+      return "50% 45%";
+    case "oversized":
+      return "50% 50%";
+    case "collections":
+      return "50% 50%";
+    default:
+      return "50% 50%";
+  }
+}
 
 export default function CategoryCard({
   title,
   subtitle,
   image,
   link,
+  id,
 }: Props) {
   return (
     <Link
       href={link}
-      className="group block overflow-hidden border border-(--color-border) bg-(--color-surface) transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-(--shadow-soft)"
+      className="
+        group
+        relative
+        block
+        aspect-[1.28/1]
+        overflow-hidden
+        bg-(--color-surface-muted)
+        sm:aspect-[1.55/1]
+        lg:aspect-[1.86/1]
+      "
     >
-      {/* Image */}
-      <div className="relative aspect-[1.18/1] overflow-hidden bg-(--color-surface-muted)">
-        {image ? (
-          <Image
-            src={image}
-            alt={title}
-            fill
-            sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, 25vw"
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.045]"
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold uppercase tracking-[0.2em] text-(--color-text-muted)">
+      {image ? (
+        <Image
+          src={image}
+          alt={title}
+          fill
+          sizes="
+            (max-width: 639px) 50vw,
+            (max-width: 1023px) 50vw,
+            25vw
+          "
+          className="
+            object-cover
+            transition-transform
+            duration-700
+            ease-[cubic-bezier(0.22,1,0.36,1)]
+            group-hover:scale-[1.035]
+          "
+          style={{
+            objectPosition: getObjectPosition(id),
+          }}
+        />
+      ) : (
+        <div className="absolute inset-0 flex items-center justify-center bg-(--color-surface-muted)">
+          <span
+            className="
+              text-[8px]
+              font-medium
+              uppercase
+              tracking-[0.22em]
+              text-(--color-text-muted)
+              sm:text-[9px]
+            "
+          >
             Category Image
-          </div>
-        )}
+          </span>
+        </div>
+      )}
 
-        {/* Subtle Image Overlay */}
-        <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/2.5" />
-      </div>
+      {/* Image contrast */}
+      <div
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          bg-gradient-to-t
+          from-black/65
+          via-black/10
+          to-transparent
+        "
+      />
 
       {/* Content */}
-      <div className="flex min-h-[68px] items-center justify-between gap-3 bg-(--color-surface-muted) px-3.5 py-3 sm:min-h-[72px] sm:px-4">
-        <div className="min-w-0 transition-transform duration-500 ease-out group-hover:translate-x-0.5">
-          <h3 className="text-[15px] font-black uppercase leading-none tracking-tight text-(--color-text-primary) sm:text-[17px]">
-            {title}
-          </h3>
+      <div
+        className="
+          absolute
+          inset-x-0
+          bottom-0
+          z-10
+          px-3
+          pb-3.5
+          sm:px-4
+          sm:pb-4
+          lg:px-5
+          lg:pb-4.5
+        "
+      >
+        <h3
+          className="
+            text-[16px]
+            font-medium
+            leading-[1.05]
+            tracking-[-0.02em]
+            text-white
+            sm:text-[18px]
+            lg:text-[20px]
+          "
+        >
+          {title}
+        </h3>
 
-          <p className="mt-2 text-[9px] leading-3 text-(--color-text-muted) sm:text-[10px]">
-            {subtitle}
-          </p>
-        </div>
+        <p
+          className="
+            mt-1
+            text-[9px]
+            font-normal
+            leading-[1.35]
+            text-white/90
+            sm:text-[10px]
+            lg:text-[10.5px]
+          "
+        >
+          {subtitle}
+        </p>
 
-        {/* Arrow */}
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-(--color-text-primary) text-(--color-white) transition-all duration-400 ease-out group-hover:translate-x-1 group-hover:scale-105">
+        <span
+          className="
+            mt-2.5
+            inline-flex
+            items-center
+            gap-1
+            border-b
+            border-white/80
+            pb-1
+            text-[8px]
+            font-medium
+            uppercase
+            tracking-[0.08em]
+            text-white
+            sm:mt-3
+            sm:text-[9px]
+          "
+        >
+          Explore
           <ArrowRight
-            size={14}
-            strokeWidth={2}
-            className="transition-transform duration-400 group-hover:translate-x-0.5"
+            size={11}
+            strokeWidth={1.4}
+            className="transition-transform duration-300 group-hover:translate-x-1"
           />
         </span>
       </div>
