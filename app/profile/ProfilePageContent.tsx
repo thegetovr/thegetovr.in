@@ -1,7 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-
+import { AnimatePresence, motion, type Variants } from "framer-motion";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
 import MyOrders from "@/components/profile/MyOrders";
 import Addresses from "@/components/profile/Address";
@@ -27,7 +26,7 @@ interface UserData {
   gender?: string;
 }
 
-const contentVariants = {
+const contentVariants: Variants = {
   initial: {
     opacity: 0,
     y: 20,
