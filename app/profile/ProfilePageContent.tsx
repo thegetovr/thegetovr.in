@@ -1,7 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-
+import { AnimatePresence, motion, type Variants } from "framer-motion";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
 import MyOrders from "@/components/profile/MyOrders";
 import Addresses from "@/components/profile/Address";
@@ -10,6 +9,8 @@ import Wishlist from "@/components/profile/Wishlist";
 import ProfileEdit from "@/components/profile/ProfileEdit";
 import GetOvrCollection from "@/components/profile/GetOvrCollection";
 import Security from "@/components/profile/Security";
+
+import GetOvrLoader from "@/components/animations/GetOvrLoader";
 
 import { useCartStore } from "@/stores/cartStore";
 
@@ -25,7 +26,7 @@ interface UserData {
   gender?: string;
 }
 
-const contentVariants = {
+const contentVariants: Variants = {
   initial: {
     opacity: 0,
     y: 20,
@@ -56,6 +57,7 @@ export default function ProfilePageContent() {
   const deactivateAccount = useCartStore((state) => state.deactivateAccount);
 
   const [user, setUser] = useState<UserData | null>(null);
+
   const [loadingUser, setLoadingUser] = useState(true);
 
   // =====================================================
@@ -95,6 +97,7 @@ export default function ProfilePageContent() {
         }
       } catch (error) {
         console.error("Session Check Error:", error);
+
         setUser(null);
         deactivateAccount();
       } finally {
@@ -203,7 +206,7 @@ export default function ProfilePageContent() {
   // =====================================================
 
   if (loadingUser) {
-    return <PageLoader />;
+    return <GetOvrLoader />;
   }
 
   // =====================================================
@@ -220,8 +223,14 @@ export default function ProfilePageContent() {
         {/* Breadcrumb */}
 
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{
+            opacity: 0,
+            y: 12,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
           transition={{
             duration: 0.45,
             ease: [0.22, 1, 0.36, 1],
@@ -244,9 +253,17 @@ export default function ProfilePageContent() {
 
           <motion.span
             key={activeSection}
-            initial={{ opacity: 0, x: 8 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3 }}
+            initial={{
+              opacity: 0,
+              x: 8,
+            }}
+            animate={{
+              opacity: 1,
+              x: 0,
+            }}
+            transition={{
+              duration: 0.3,
+            }}
             className="text-zinc-900"
           >
             {activeSection === "profile"
@@ -268,9 +285,18 @@ export default function ProfilePageContent() {
         <AnimatePresence mode="wait">
           <motion.div
             key={activeSection}
-            initial={{ opacity: 0, y: 25 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            initial={{
+              opacity: 0,
+              y: 25,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+            exit={{
+              opacity: 0,
+              y: -10,
+            }}
             transition={{
               duration: 0.5,
               ease: [0.22, 1, 0.36, 1],
@@ -299,8 +325,14 @@ export default function ProfilePageContent() {
           ================================================= */}
 
           <motion.aside
-            initial={{ opacity: 0, x: -25 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{
+              opacity: 0,
+              x: -25,
+            }}
+            animate={{
+              opacity: 1,
+              x: 0,
+            }}
             transition={{
               duration: 0.6,
               delay: 0.08,
@@ -316,8 +348,14 @@ export default function ProfilePageContent() {
             />
 
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{
+                opacity: 0,
+                y: 15,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
               transition={{
                 duration: 0.5,
                 delay: 0.25,

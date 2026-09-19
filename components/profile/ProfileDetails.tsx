@@ -12,7 +12,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 
 interface ProfileUser {
   firstName: string;
@@ -43,7 +43,7 @@ interface ProfileDetailsProps {
   user: ProfileUser | null;
 }
 
-const sectionVariants = {
+const sectionVariants: Variants = {
   hidden: {
     opacity: 0,
     y: 24,
@@ -58,7 +58,7 @@ const sectionVariants = {
   },
 };
 
-const fieldContainerVariants = {
+const fieldContainerVariants: Variants = {
   hidden: {},
   visible: {
     transition: {
@@ -68,7 +68,7 @@ const fieldContainerVariants = {
   },
 };
 
-const fieldVariants = {
+const fieldVariants: Variants = {
   hidden: {
     opacity: 0,
     y: 14,
@@ -83,7 +83,7 @@ const fieldVariants = {
   },
 };
 
-const summaryVariants = {
+const summaryVariants: Variants = {
   hidden: {},
   visible: {
     transition: {
@@ -95,9 +95,13 @@ const summaryVariants = {
 
 export default function ProfileDetails({ user }: ProfileDetailsProps) {
   const [addresses, setAddresses] = useState<Address[]>([]);
+
   const [totalOrders, setTotalOrders] = useState(0);
+
   const [deliveredOrders, setDeliveredOrders] = useState(0);
+
   const [wishlistCount, setWishlistCount] = useState(0);
+
   const [loadingAddresses, setLoadingAddresses] = useState(true);
 
   // =====================================================
@@ -223,8 +227,14 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
           </div>
 
           <motion.div
-            initial={{ opacity: 0, x: 15 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{
+              opacity: 0,
+              x: 15,
+            }}
+            animate={{
+              opacity: 1,
+              x: 0,
+            }}
             transition={{
               duration: 0.45,
               delay: 0.2,
@@ -329,17 +339,29 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
 
           {loadingAddresses ? (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.25 }}
+              initial={{
+                opacity: 0,
+              }}
+              animate={{
+                opacity: 1,
+              }}
+              transition={{
+                delay: 0.25,
+              }}
               className="mt-5 rounded-lg border border-zinc-200 p-5 text-sm text-zinc-500 sm:mt-6 sm:p-6"
             >
               Loading saved addresses...
             </motion.div>
           ) : defaultAddress ? (
             <motion.div
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{
+                opacity: 0,
+                y: 18,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
               transition={{
                 duration: 0.5,
                 delay: 0.25,
@@ -351,8 +373,14 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
                 {/* ICON */}
 
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.85 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  initial={{
+                    opacity: 0,
+                    scale: 0.85,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    scale: 1,
+                  }}
                   transition={{
                     duration: 0.4,
                     delay: 0.35,
@@ -424,8 +452,14 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
             </motion.div>
           ) : (
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{
+                opacity: 0,
+                y: 15,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
               transition={{
                 duration: 0.45,
                 delay: 0.2,
@@ -460,8 +494,14 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
 
           {addresses.length > 0 && (
             <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{
+                opacity: 0,
+                x: -10,
+              }}
+              animate={{
+                opacity: 1,
+                x: 0,
+              }}
               transition={{
                 duration: 0.4,
                 delay: 0.45,
