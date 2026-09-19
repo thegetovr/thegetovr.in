@@ -1,33 +1,28 @@
 ﻿import Link from "next/link";
+import { getHomeContent } from "@/lib/homeService";
 import CategoryCard from "./CategoryCard";
 
 import Reveal from "@/components/animations/Reveal";
 import { Stagger, StaggerItem } from "@/components/animations/Stagger";
 
-const categories = [
-  {
-    title: "T-SHIRTS",
-    subtitle: "Everyday essentials",
-    image: "/images/home/categories/tshirts.webp",
-  },
-  {
-    title: "HOODIES",
-    subtitle: "Built for expression",
-    image: "/images/home/categories/hoodies.webp",
-  },
-  {
-    title: "OVERSIZED",
-    subtitle: "Bigger statements",
-    image: "/images/home/categories/oversized.webp",
-  },
-  {
-    title: "COLLECTIONS",
-    subtitle: "Curated drops",
-    image: "/images/home/category-collections.jpg",
-  },
-];
+const fallbackImages: Record<string, string> = {
+  tshirts: "/images/home/categories/tshirts.webp",
+  hoodies: "/images/home/categories/hoodies.webp",
+  oversized: "/images/home/categories/oversized.webp",
+  collections: "/images/home/category-collections.jpg",
+};
 
-export default function Categories() {
+export default async function Categories() {
+  const homeContent = await getHomeContent();
+
+  const categories = (homeContent?.categories ?? [])
+    .filter((category) => category.enabled)
+    .sort((a, b) => a.order - b.order);
+
+  if (categories.length === 0) {
+    return null;
+  }
+
   return (
     <section className="bg-(--color-surface) px-5 py-10 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
       <div className="mx-auto max-w-[1440px]">
@@ -50,8 +45,17 @@ export default function Categories() {
           stagger={0.1}
         >
           {categories.map((category) => (
-            <StaggerItem key={category.title}>
-              <CategoryCard {...category} />
+            <StaggerItem key={category.id}>
+              <CategoryCard
+                title={category.title}
+                subtitle={category.subtitle}
+                image={
+                  category.image?.url ??
+                  fallbackImages[category.id] ??
+                  ""
+                }
+                link={category.link}
+              />
             </StaggerItem>
           ))}
         </Stagger>
