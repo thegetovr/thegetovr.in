@@ -71,13 +71,32 @@ export default function CategoriesForm({
   );
 
   function addCategory() {
-    setItems((current) => [
-      ...current,
-      createCategory(current.length),
-    ]);
+    setItems((current) => {
+      const collectionsIndex = current.findIndex(
+        (category) => category.id === "collections",
+      );
+
+      const newCategory = createCategory(current.length);
+
+      if (collectionsIndex === -1) {
+        return [...current, newCategory];
+      }
+
+      return [
+        ...current.slice(0, collectionsIndex),
+        newCategory,
+        ...current.slice(collectionsIndex),
+      ];
+    });
   }
 
   function removeCategory(index: number) {
+    const category = items[index];
+
+    if (!category || category.id === "collections") {
+      return;
+    }
+
     setItems((current) =>
       current.filter((_, itemIndex) => itemIndex !== index),
     );
@@ -116,96 +135,125 @@ export default function CategoriesForm({
             </p>
           </div>
         ) : (
-          items.map((category, index) => (
-            <section
-              key={category.id}
-              className="rounded-lg border border-zinc-800 bg-zinc-950 p-5"
-            >
-              <input
-                type="hidden"
-                name={`category-${index}-id`}
-                value={category.id}
-              />
+          items.map((category, index) => {
+            const isCollections =
+              category.id === "collections";
 
-              <div className="mb-5 flex items-center justify-between gap-4">
-                <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-300">
-                  Category {index + 1}
-                </h3>
-
-                <button
-                  type="button"
-                  onClick={() => removeCategory(index)}
-                  className="text-xs font-medium text-red-400 transition hover:text-red-300"
-                >
-                  Remove
-                </button>
-              </div>
-
-              <div className="grid gap-6 md:grid-cols-2">
-                <TextField
-                  id={`category-${index}-title`}
-                  name={`category-${index}-title`}
-                  label="Title"
-                  defaultValue={category.title}
-                />
-
-                <TextField
-                  id={`category-${index}-subtitle`}
-                  name={`category-${index}-subtitle`}
-                  label="Subtitle"
-                  defaultValue={category.subtitle}
-                />
-
-                <TextField
-                  id={`category-${index}-link`}
-                  name={`category-${index}-link`}
-                  label="Link"
-                  defaultValue={category.link}
-                />
-
-                <TextField
-                  id={`category-${index}-order`}
-                  name={`category-${index}-order`}
-                  label="Display Order"
-                  type="number"
-                  defaultValue={category.order}
-                  min={1}
-                />
-              </div>
-
-              <div className="mt-6">
-                <FileField
-                  id={`category-${index}-image`}
-                  name={`category-${index}-image`}
-                  label="Category Image"
-                />
-
-                {category.image?.url && (
-                  <p className="mt-2 text-xs text-zinc-500">
-                    An image is currently configured. Uploading a new image
-                    will replace it.
-                  </p>
-                )}
-              </div>
-
-              <div className="mt-6 flex items-center gap-3">
+            return (
+              <section
+                key={category.id}
+                className="rounded-lg border border-zinc-800 bg-zinc-950 p-5"
+              >
                 <input
-                  id={`category-${index}-enabled`}
-                  name={`category-${index}-enabled`}
-                  type="checkbox"
-                  defaultChecked={category.enabled}
-                  className="h-4 w-4 rounded border-zinc-700 bg-zinc-950"
+                  type="hidden"
+                  name={`category-${index}-id`}
+                  value={category.id}
                 />
 
-                <label
-                  htmlFor={`category-${index}-enabled`}
-                  className="text-sm text-zinc-300"
-                >
-                  Show this category on the homepage
-                </label>
-              </div>
-            </section>
-          ))
+                <div className="mb-5 flex items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-300">
+                      Category {index + 1}
+                    </h3>
+
+                    {isCollections && (
+                      <p className="mt-1 text-[11px] text-zinc-500">
+                        Permanent final category
+                      </p>
+                    )}
+                  </div>
+
+                  {!isCollections && (
+                    <button
+                      type="button"
+                      onClick={() => removeCategory(index)}
+                      className="text-xs font-medium text-red-400 transition hover:text-red-300"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-2">
+                  <TextField
+                    id={`category-${index}-title`}
+                    name={`category-${index}-title`}
+                    label="Title"
+                    defaultValue={category.title}
+                  />
+
+                  <TextField
+                    id={`category-${index}-subtitle`}
+                    name={`category-${index}-subtitle`}
+                    label="Subtitle"
+                    defaultValue={category.subtitle}
+                  />
+
+                  <TextField
+                    id={`category-${index}-link`}
+                    name={`category-${index}-link`}
+                    label="Link"
+                    defaultValue={category.link}
+                  />
+
+                  <TextField
+                    id={`category-${index}-order`}
+                    name={`category-${index}-order`}
+                    label="Display Order"
+                    type="number"
+                    defaultValue={category.order}
+                    min={1}
+                    disabled={isCollections}
+                  />
+                </div>
+
+                <div className="mt-6">
+                  <FileField
+                    id={`category-${index}-image`}
+                    name={`category-${index}-image`}
+                    label="Category Image"
+                  />
+
+                  {category.image?.url && (
+                    <p className="mt-2 text-xs text-zinc-500">
+                      An image is currently configured. Uploading a new image
+                      will replace it.
+                    </p>
+                  )}
+                </div>
+
+                <div className="mt-6 flex items-center gap-3">
+                  {isCollections && (
+                    <input
+                      type="hidden"
+                      name={`category-${index}-enabled`}
+                      value="on"
+                    />
+                  )}
+
+                  <input
+                    id={`category-${index}-enabled`}
+                    name={`category-${index}-enabled`}
+                    type="checkbox"
+                    defaultChecked={
+                      isCollections ? true : category.enabled
+                    }
+                    disabled={isCollections}
+                    className="h-4 w-4 rounded border-zinc-700 bg-zinc-950"
+                  />
+
+                  <label
+                    htmlFor={`category-${index}-enabled`}
+                    className="text-sm text-zinc-300"
+                  >
+                    {isCollections
+                      ? "Always shown on the homepage"
+                      : "Show this category on the homepage"}
+                  </label>
+                </div>
+              </section>
+            );
+          })
         )}
       </div>
 

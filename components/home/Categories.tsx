@@ -1,9 +1,8 @@
 ﻿import Link from "next/link";
+
 import { getHomeContent } from "@/lib/homeService";
 import CategoryCard from "./CategoryCard";
-
 import Reveal from "@/components/animations/Reveal";
-import { Stagger, StaggerItem } from "@/components/animations/Stagger";
 
 const fallbackImages: Record<string, string> = {
   tshirts: "/images/home/categories/tshirts.webp",
@@ -24,53 +23,51 @@ export default async function Categories() {
   }
 
   return (
-    <section className="bg-(--color-surface) px-5 py-10 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
-      <div className="mx-auto max-w-[1440px]">
-        {/* Heading */}
-        <Reveal y={20} duration={0.6}>
-          <div className="mb-6 flex items-end justify-between sm:mb-7">
-            <h2 className="text-2xl font-black uppercase leading-none tracking-[-0.04em] text-(--color-text-primary) sm:text-3xl lg:text-[36px]">
+    <section className="bg-(--color-surface) px-5 py-9 sm:px-7 sm:py-10 lg:px-[5vw] lg:py-11">
+      <div className="mx-auto w-full max-w-[1680px]">
+        <Reveal y={8} duration={0.5}>
+          <div className="flex items-end justify-between border-b border-(--color-border) pb-4 sm:pb-5">
+            <h2 className="text-[17px] font-medium uppercase leading-none tracking-[0.25em] text-(--color-text-primary) sm:text-[18px] lg:text-[19px]">
               Shop By Category
             </h2>
 
-            <p className="hidden pb-0.5 text-[10px] font-medium uppercase tracking-[0.3em] text-(--color-text-muted) sm:block">
-              Curated Essentials
-            </p>
-          </div>
-        </Reveal>
-
-        {/* Category Cards */}
-        <Stagger
-          className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4"
-          stagger={0.1}
-        >
-          {categories.map((category) => (
-            <StaggerItem key={category.id}>
-              <CategoryCard
-                title={category.title}
-                subtitle={category.subtitle}
-                image={
-                  category.image?.url ??
-                  fallbackImages[category.id] ??
-                  ""
-                }
-                link={category.link}
-              />
-            </StaggerItem>
-          ))}
-        </Stagger>
-
-        {/* Mobile View All */}
-        <Reveal delay={0.25} y={15} duration={0.5}>
-          <div className="mt-5 flex justify-end sm:hidden">
             <Link
               href="/shop"
-              className="text-[10px] font-bold uppercase tracking-[0.08em] text-(--color-text-primary)"
+              className="hidden items-center gap-2 text-[9px] font-medium uppercase tracking-[0.16em] text-(--color-text-primary) transition-opacity hover:opacity-60 sm:inline-flex lg:text-[10px]"
             >
-              View All →
+              <span>View All</span>
+              <span aria-hidden="true">→</span>
             </Link>
           </div>
         </Reveal>
+
+        <div className="mt-5 grid grid-cols-1 gap-2.5 sm:mt-6 sm:grid-cols-2 sm:gap-3 lg:grid-cols-4 lg:gap-3">
+          {categories.map((category, index) => (
+            <CategoryCard
+              key={category.id}
+              title={category.title}
+              subtitle={category.subtitle}
+              image={
+                category.image?.url ??
+                fallbackImages[category.id] ??
+                ""
+              }
+              link={category.link}
+              index={index + 1}
+              id={category.id}
+            />
+          ))}
+        </div>
+
+        <div className="mt-4 flex justify-end sm:hidden">
+          <Link
+            href="/shop"
+            className="inline-flex items-center gap-2 text-[9px] font-medium uppercase tracking-[0.16em] text-(--color-text-primary)"
+          >
+            <span>View All</span>
+            <span aria-hidden="true">→</span>
+          </Link>
+        </div>
       </div>
     </section>
   );
