@@ -12,6 +12,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 interface ProfileUser {
   firstName: string;
@@ -41,6 +42,56 @@ interface Order {
 interface ProfileDetailsProps {
   user: ProfileUser | null;
 }
+
+const sectionVariants = {
+  hidden: {
+    opacity: 0,
+    y: 24,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.55,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
+const fieldContainerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.06,
+      delayChildren: 0.12,
+    },
+  },
+};
+
+const fieldVariants = {
+  hidden: {
+    opacity: 0,
+    y: 14,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
+const summaryVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
+    },
+  },
+};
 
 export default function ProfileDetails({ user }: ProfileDetailsProps) {
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -147,45 +198,85 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
           PERSONAL INFORMATION
       ===================================================== */}
 
-      <section className="min-w-0 overflow-hidden rounded-xl border border-zinc-200 bg-white p-4 sm:p-5 md:p-7">
+      <motion.section
+        variants={sectionVariants}
+        initial="hidden"
+        animate="visible"
+        className="min-w-0 overflow-hidden rounded-xl border border-zinc-200 bg-white p-4 sm:p-5 md:p-7"
+      >
         <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <h2 className="font-serif text-2xl text-black">
               Personal Information
             </h2>
 
-            <div className="mt-2 h-[2px] w-8 bg-[#b7965d]" />
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: 32 }}
+              transition={{
+                duration: 0.45,
+                delay: 0.25,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="mt-2 h-[2px] bg-[#b7965d]"
+            />
           </div>
 
-          <Link
-            href="/profile?tab=profile&edit=true"
-            className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-lg border border-zinc-200 px-4 py-3 text-sm font-medium text-black transition hover:bg-zinc-50 sm:w-fit sm:py-2.5"
+          <motion.div
+            initial={{ opacity: 0, x: 15 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.45,
+              delay: 0.2,
+            }}
           >
-            <Pencil size={15} strokeWidth={1.8} />
-            Edit Profile
-          </Link>
+            <Link
+              href="/profile?tab=profile&edit=true"
+              className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-lg border border-zinc-200 px-4 py-3 text-sm font-medium text-black transition hover:bg-zinc-50 sm:w-fit sm:py-2.5"
+            >
+              <Pencil size={15} strokeWidth={1.8} />
+              Edit Profile
+            </Link>
+          </motion.div>
         </div>
 
-        <div className="mt-6 grid min-w-0 gap-4 sm:gap-5 md:grid-cols-2">
-          <InfoField label="First Name" value={user?.firstName} />
+        <motion.div
+          variants={fieldContainerVariants}
+          initial="hidden"
+          animate="visible"
+          className="mt-6 grid min-w-0 gap-4 sm:gap-5 md:grid-cols-2"
+        >
+          <motion.div variants={fieldVariants}>
+            <InfoField label="First Name" value={user?.firstName} />
+          </motion.div>
 
-          <InfoField label="Last Name" value={user?.lastName} />
+          <motion.div variants={fieldVariants}>
+            <InfoField label="Last Name" value={user?.lastName} />
+          </motion.div>
 
-          <InfoField label="Email Address" value={user?.email} />
+          <motion.div variants={fieldVariants}>
+            <InfoField label="Email Address" value={user?.email} />
+          </motion.div>
 
-          <InfoField
-            label="Phone Number"
-            value={user?.phone ? `+91 ${user.phone}` : ""}
-          />
+          <motion.div variants={fieldVariants}>
+            <InfoField
+              label="Phone Number"
+              value={user?.phone ? `+91 ${user.phone}` : ""}
+            />
+          </motion.div>
 
-          <InfoField
-            label="Date of Birth"
-            value={formatDateOfBirth(user?.dateOfBirth)}
-          />
+          <motion.div variants={fieldVariants}>
+            <InfoField
+              label="Date of Birth"
+              value={formatDateOfBirth(user?.dateOfBirth)}
+            />
+          </motion.div>
 
-          <InfoField label="Gender" value={user?.gender} />
-        </div>
-      </section>
+          <motion.div variants={fieldVariants}>
+            <InfoField label="Gender" value={user?.gender} />
+          </motion.div>
+        </motion.div>
+      </motion.section>
 
       {/* =====================================================
           SAVED ADDRESS + ACCOUNT SUMMARY
@@ -196,7 +287,15 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
             SAVED ADDRESSES
         =================================================== */}
 
-        <section className="h-fit min-w-0 overflow-hidden rounded-xl border border-zinc-200 bg-white p-4 sm:p-5 md:p-7">
+        <motion.section
+          variants={sectionVariants}
+          initial="hidden"
+          animate="visible"
+          transition={{
+            delay: 0.1,
+          }}
+          className="h-fit min-w-0 overflow-hidden rounded-xl border border-zinc-200 bg-white p-4 sm:p-5 md:p-7"
+        >
           {/* HEADER */}
 
           <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -205,7 +304,16 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
                 Saved Addresses
               </h2>
 
-              <div className="mt-2 h-[2px] w-8 bg-[#b7965d]" />
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: 32 }}
+                transition={{
+                  duration: 0.45,
+                  delay: 0.35,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="mt-2 h-[2px] bg-[#b7965d]"
+              />
             </div>
 
             <Link
@@ -220,17 +328,39 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
           {/* ADDRESS */}
 
           {loadingAddresses ? (
-            <div className="mt-5 rounded-lg border border-zinc-200 p-5 text-sm text-zinc-500 sm:mt-6 sm:p-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.25 }}
+              className="mt-5 rounded-lg border border-zinc-200 p-5 text-sm text-zinc-500 sm:mt-6 sm:p-6"
+            >
               Loading saved addresses...
-            </div>
+            </motion.div>
           ) : defaultAddress ? (
-            <div className="mt-5 min-w-0 overflow-hidden rounded-xl border border-zinc-200 p-4 sm:mt-6 sm:p-5">
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.5,
+                delay: 0.25,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="mt-5 min-w-0 overflow-hidden rounded-xl border border-zinc-200 p-4 sm:mt-6 sm:p-5"
+            >
               <div className="flex min-w-0 flex-col gap-4 sm:flex-row">
                 {/* ICON */}
 
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#f4ecdf] sm:h-12 sm:w-12">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.85 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{
+                    duration: 0.4,
+                    delay: 0.35,
+                  }}
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#f4ecdf] sm:h-12 sm:w-12"
+                >
                   <Home size={21} strokeWidth={1.5} />
-                </div>
+                </motion.div>
 
                 {/* DETAILS */}
 
@@ -291,9 +421,17 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
                   </p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ) : (
-            <div className="mt-5 rounded-xl border border-dashed border-zinc-300 p-7 text-center sm:mt-6 sm:p-8">
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.45,
+                delay: 0.2,
+              }}
+              className="mt-5 rounded-xl border border-dashed border-zinc-300 p-7 text-center sm:mt-6 sm:p-8"
+            >
               <MapPin
                 size={28}
                 className="mx-auto text-zinc-400"
@@ -315,36 +453,65 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
                 Add Address
                 <ArrowRight size={13} />
               </Link>
-            </div>
+            </motion.div>
           )}
 
           {/* VIEW ALL */}
 
           {addresses.length > 0 && (
-            <Link
-              href="/profile?tab=addresses"
-              className="mt-5 inline-flex items-center gap-2 text-xs font-medium text-black underline underline-offset-4"
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{
+                duration: 0.4,
+                delay: 0.45,
+              }}
             >
-              View all addresses
-              <ArrowRight size={13} />
-            </Link>
+              <Link
+                href="/profile?tab=addresses"
+                className="mt-5 inline-flex items-center gap-2 text-xs font-medium text-black underline underline-offset-4"
+              >
+                View all addresses
+                <ArrowRight size={13} />
+              </Link>
+            </motion.div>
           )}
-        </section>
+        </motion.section>
 
         {/* ===================================================
             ACCOUNT SUMMARY
         =================================================== */}
 
-        <section className="h-fit min-w-0 overflow-hidden rounded-xl border border-zinc-200 bg-white p-4 sm:p-5 md:p-7">
+        <motion.section
+          variants={sectionVariants}
+          initial="hidden"
+          animate="visible"
+          transition={{
+            delay: 0.18,
+          }}
+          className="h-fit min-w-0 overflow-hidden rounded-xl border border-zinc-200 bg-white p-4 sm:p-5 md:p-7"
+        >
           <div className="min-w-0">
             <h2 className="font-serif text-2xl text-black">Account Summary</h2>
 
-            <div className="mt-2 h-[2px] w-8 bg-[#b7965d]" />
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: 32 }}
+              transition={{
+                duration: 0.45,
+                delay: 0.4,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="mt-2 h-[2px] bg-[#b7965d]"
+            />
           </div>
 
-          <div className="mt-6 grid min-w-0 grid-cols-1 divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-            {/* ORDERS */}
-
+          <motion.div
+            variants={summaryVariants}
+            initial="hidden"
+            animate="visible"
+            className="mt-6 grid min-w-0 grid-cols-1 divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0"
+          >
             <SummaryCard
               icon={Package}
               value={totalOrders}
@@ -352,8 +519,6 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
               href="/profile?tab=orders"
               linkText="View orders"
             />
-
-            {/* DELIVERED */}
 
             <SummaryCard
               icon={Truck}
@@ -363,8 +528,6 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
               linkText="View delivered"
             />
 
-            {/* WISHLIST */}
-
             <SummaryCard
               icon={Heart}
               value={wishlistCount}
@@ -372,8 +535,8 @@ export default function ProfileDetails({ user }: ProfileDetailsProps) {
               href="/profile?tab=wishlist"
               linkText="View wishlist"
             />
-          </div>
-        </section>
+          </motion.div>
+        </motion.section>
       </div>
     </div>
   );
@@ -415,13 +578,40 @@ function SummaryCard({
   linkText: string;
 }) {
   return (
-    <div className="min-w-0 p-4 sm:p-5">
+    <motion.div
+      variants={{
+        hidden: {
+          opacity: 0,
+          y: 18,
+        },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: {
+            duration: 0.45,
+            ease: [0.22, 1, 0.36, 1],
+          },
+        },
+      }}
+      whileHover={{
+        y: -3,
+        transition: {
+          duration: 0.2,
+        },
+      }}
+      className="min-w-0 p-4 sm:p-5"
+    >
       <div className="flex min-w-0 items-center gap-3">
         {/* ICON */}
 
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f4ecdf]">
+        <motion.div
+          whileHover={{
+            scale: 1.06,
+          }}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f4ecdf]"
+        >
           <Icon size={18} strokeWidth={1.5} />
-        </div>
+        </motion.div>
 
         {/* VALUE + LABEL */}
 
@@ -439,8 +629,11 @@ function SummaryCard({
         className="mt-4 inline-flex max-w-full items-center gap-1 text-xs font-medium text-black underline underline-offset-4 transition hover:text-zinc-600"
       >
         <span className="truncate">{linkText}</span>
-        <ArrowRight size={12} className="shrink-0" />
+
+        <motion.span whileHover={{ x: 4 }} className="flex shrink-0">
+          <ArrowRight size={12} />
+        </motion.span>
       </Link>
-    </div>
+    </motion.div>
   );
 }

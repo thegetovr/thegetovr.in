@@ -3,12 +3,15 @@ import { notFound } from "next/navigation";
 import ProductGallery from "@/components/shop/ProductGallery";
 import ProductPurchasePanel from "@/components/shop/ProductPurchasePanel";
 import ReviewsSection from "@/components/shop/ReviewsSection";
-import { getProduct } from "@/lib/productService";
 import ReviewForm from "@/components/shop/ReviewForm";
+
+import { getProduct } from "@/lib/productService";
 import {
   getProductReviews,
   getProductReviewSummary,
 } from "@/lib/reviewService";
+
+import Reveal from "@/components/animations/Reveal";
 
 interface ProductPageProps {
   params: Promise<{
@@ -32,15 +35,29 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <main className="container mx-auto px-4 py-10">
+      {/* Product Main Section */}
       <div className="grid gap-12 lg:grid-cols-2">
-        <ProductGallery media={product.media} productName={product.name} />
+        <Reveal>
+          <ProductGallery media={product.media} productName={product.name} />
+        </Reveal>
 
-        <ProductPurchasePanel product={product} reviewSummary={reviewSummary} />
+        <Reveal delay={0.1}>
+          <ProductPurchasePanel
+            product={product}
+            reviewSummary={reviewSummary}
+          />
+        </Reveal>
       </div>
 
-      <ReviewsSection reviews={reviews} />
+      {/* Reviews */}
+      <Reveal delay={0.05}>
+        <ReviewsSection reviews={reviews} />
+      </Reveal>
 
-      <ReviewForm productId={product.id} />
+      {/* Review Form */}
+      <Reveal delay={0.1}>
+        <ReviewForm productId={product.id} />
+      </Reveal>
     </main>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { Heart, ShoppingBag, Share2, ChevronDown, Trash2 } from "lucide-react";
 
 interface WishlistItem {
@@ -53,7 +54,15 @@ const wishlistItems: WishlistItem[] = [
 
 export default function Wishlist() {
   return (
-    <section className="min-w-0 flex-1 overflow-hidden rounded-xl border border-[#e6e0d8] bg-white p-4 sm:p-5 md:p-7">
+    <motion.section
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: 0.8,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      className="min-w-0 flex-1 overflow-hidden rounded-xl border border-[#e6e0d8] bg-white p-4 sm:p-5 md:p-7"
+    >
       {/* =====================================================
           HEADER
       ===================================================== */}
@@ -77,6 +86,7 @@ export default function Wishlist() {
             className="inline-flex min-w-0 items-center justify-center gap-1.5 rounded-lg border border-[#ddd5ca] bg-white px-3 py-2.5 text-xs font-medium text-zinc-800 transition hover:bg-[#fcfaf7] sm:gap-2 sm:px-4 sm:text-sm"
           >
             <Share2 size={16} strokeWidth={1.7} className="shrink-0" />
+
             <span className="truncate">Share Wishlist</span>
           </button>
 
@@ -85,6 +95,7 @@ export default function Wishlist() {
             className="inline-flex min-w-0 items-center justify-center gap-1.5 rounded-lg bg-black px-3 py-2.5 text-xs font-medium text-white transition hover:bg-gray-800 sm:gap-2 sm:px-4 sm:text-sm"
           >
             <ShoppingBag size={16} strokeWidth={1.7} className="shrink-0" />
+
             <span className="truncate">Move All to Cart</span>
           </button>
         </div>
@@ -123,7 +134,7 @@ export default function Wishlist() {
           <EmptyWishlist />
         )}
       </div>
-    </section>
+    </motion.section>
   );
 }
 

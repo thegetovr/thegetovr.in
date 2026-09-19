@@ -21,10 +21,7 @@ export async function getOrders(
   const query: Record<string, unknown> = {};
 
   /*
-   * 🔐 USER OWNERSHIP
-   *
-   * If userId is provided, orders are fetched ONLY
-   * for that specific User account.
+   * USER OWNERSHIP
    */
   if (userId) {
     if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -51,10 +48,7 @@ export async function getOrders(
   }
 
   /*
-   * Email filter is retained for admin/backward compatibility.
-   *
-   * IMPORTANT:
-   * User-facing APIs should use userId instead of email.
+   * Email filter retained for admin/backward compatibility.
    */
   if (email?.trim()) {
     query["customer.email"] = email.trim().toLowerCase();
@@ -66,7 +60,10 @@ export async function getOrders(
 }
 
 /*
- * 🔐 Get a single order only if it belongs to the logged-in user.
+ * Get a single order.
+ *
+ * When userId is supplied, only that user's order
+ * can be returned.
  */
 export async function getOrderByNumber(
   orderNumber: string,
@@ -78,9 +75,6 @@ export async function getOrderByNumber(
     orderNumber: orderNumber.trim(),
   };
 
-  /*
-   * When userId is supplied, ownership is mandatory.
-   */
   if (userId) {
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return null;
@@ -97,8 +91,10 @@ export async function getOrderByNumber(
 /*
  * Update order status.
  *
- * This is kept orderNumber based because this function
- * is intended for admin/order-management operations.
+ * This remains orderNumber based because it is intended
+ * for admin/order-management operations.
+ *
+ * The API calling this function must verify admin access.
  */
 export async function updateOrderStatus(
   orderNumber: string,
@@ -153,10 +149,6 @@ export async function updateAdminNotes(
 
 /*
  * Legacy/helper lookup.
- *
- * Kept so existing code doesn't immediately break.
- * New user-facing APIs should NOT trust an email
- * supplied by the frontend.
  */
 export async function getOrderByNumberAndEmail(
   orderNumber: string,
@@ -175,13 +167,128 @@ export async function getOrderByNumberAndEmail(
 /*
  * Create a new order.
  *
- * userId MUST be supplied by the authenticated server-side API.
+ * SECURITY:
+ * We do not blindly trust the client's subtotal/discount/total.
+ *
+ * At this stage we verify that the numbers supplied by the
+ * checkout are internally consistent.
+ *
+ * Server-side product-price verification will be handled
+ * separately so we do not disturb the existing product flow.
  */
 export async function createOrder(orderData: Record<string, unknown>) {
   await connectToDatabase();
 
+  const items = orderData.items;
+
+  if (!Array.isArray(items) || items.length === 0) {
+    throw new Error("Order must contain at least one item.");
+  }
+
+  /*
+   * Validate every item calculation.
+   */
+  let calculatedItemsTotal = 0;
+
+  for (const item of items) {
+    if (!item || typeof item !== "object") {
+      throw new Error("Invalid order item.");
+    }
+
+    const orderItem = item as Record<string, unknown>;
+
+    const quantity = Number(orderItem.quantity);
+    const unitPrice = Number(orderItem.unitPrice);
+    const totalPrice = Number(orderItem.totalPrice);
+
+    if (
+      !Number.isFinite(quantity) ||
+      !Number.isInteger(quantity) ||
+      quantity < 1
+    ) {
+      throw new Error("Invalid item quantity.");
+    }
+
+    if (!Number.isFinite(unitPrice) || unitPrice < 0) {
+      throw new Error("Invalid item price.");
+    }
+
+    if (!Number.isFinite(totalPrice) || totalPrice < 0) {
+      throw new Error("Invalid item total.");
+    }
+
+    const expectedItemTotal = unitPrice * quantity;
+
+    /*
+     * Small floating-point tolerance.
+     */
+    if (Math.abs(expectedItemTotal - totalPrice) > 0.01) {
+      throw new Error("Order item price calculation is invalid.");
+    }
+
+    calculatedItemsTotal += totalPrice;
+  }
+
+  /*
+   * Validate subtotal.
+   */
+  const subtotal = Number(orderData.subtotal);
+
+  if (!Number.isFinite(subtotal) || subtotal < 0) {
+    throw new Error("Invalid order subtotal.");
+  }
+
+  if (Math.abs(calculatedItemsTotal - subtotal) > 0.01) {
+    throw new Error("Order subtotal does not match the item totals.");
+  }
+
+  /*
+   * Validate discount.
+   */
+  const discount =
+    orderData.discount === undefined || orderData.discount === null
+      ? 0
+      : Number(orderData.discount);
+
+  if (!Number.isFinite(discount) || discount < 0) {
+    throw new Error("Invalid order discount.");
+  }
+
+  if (discount > subtotal) {
+    throw new Error("Order discount cannot exceed the subtotal.");
+  }
+
+  /*
+   * Calculate the expected final total on the server.
+   */
+  const calculatedTotal = subtotal - discount;
+
+  /*
+   * Validate the client's total against our calculation.
+   */
+  const clientTotal = Number(orderData.total);
+
+  if (!Number.isFinite(clientTotal) || clientTotal < 0) {
+    throw new Error("Invalid order total.");
+  }
+
+  if (Math.abs(clientTotal - calculatedTotal) > 0.01) {
+    throw new Error("Order total calculation is invalid.");
+  }
+
+  /*
+   * Server controls the initial order status.
+   */
   const data = {
     ...orderData,
+
+    subtotal,
+
+    discount,
+
+    total: calculatedTotal,
+
+    status: "pending",
 
     statusHistory: [
       {

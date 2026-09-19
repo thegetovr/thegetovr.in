@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 interface ProfileUser {
   firstName: string;
@@ -27,7 +28,15 @@ interface SecurityProps {
 
 export default function Security({ user }: SecurityProps) {
   return (
-    <div className="min-w-0 space-y-5">
+    <motion.div
+      className="min-w-0 space-y-5"
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: 0.8,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+    >
       {/* =====================================================
           CHANGE PASSWORD
       ===================================================== */}
@@ -78,7 +87,7 @@ export default function Security({ user }: SecurityProps) {
       ===================================================== */}
 
       <DeleteAccountSection user={user} />
-    </div>
+    </motion.div>
   );
 }
 
@@ -330,11 +339,11 @@ function DeleteAccountSection({ user }: { user: ProfileUser | null }) {
 
       if (!response.ok || !data.success) {
         setError(data.message || "Unable to delete your account.");
+
         setDeleting(false);
         return;
       }
 
-      // Give the browser a moment to receive the cleared cookie.
       window.location.href = "/";
     } catch (error) {
       console.error("DELETE ACCOUNT ERROR:", error);

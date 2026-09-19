@@ -1,40 +1,21 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
 
-import { connectToDatabase } from "@/lib/mongodb";
+import { getAuthenticatedUser } from "@/lib/auth/getAuthenticatedUser";
 import { Address } from "@/models/Address";
 
-async function getUserId() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth_token")?.value;
+// =====================================================
+// GET — LOAD LOGGED-IN USER'S ADDRESSES
+// =====================================================
 
-  if (!token || !process.env.JWT_SECRET) {
-    return null;
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET) as {
-      userId: string;
-    };
-
-    if (!decoded.userId || !mongoose.Types.ObjectId.isValid(decoded.userId)) {
-      return null;
-    }
-
-    return decoded.userId;
-  } catch {
-    return null;
-  }
-}
-
-// GET — Load logged-in user's addresses
 export async function GET() {
   try {
-    const userId = await getUserId();
+    // =====================================================
+    // AUTHENTICATION
+    // =====================================================
 
-    if (!userId) {
+    const user = await getAuthenticatedUser();
+
+    if (!user) {
       return NextResponse.json(
         {
           success: false,
@@ -44,10 +25,17 @@ export async function GET() {
       );
     }
 
-    await connectToDatabase();
+    // =====================================================
+    // LOAD ONLY THIS USER'S ADDRESSES
+    // =====================================================
 
-    const addresses = await Address.find({ userId })
-      .sort({ isDefault: -1, createdAt: -1 })
+    const addresses = await Address.find({
+      userId: user._id,
+    })
+      .sort({
+        isDefault: -1,
+        createdAt: -1,
+      })
       .lean();
 
     return NextResponse.json({
@@ -67,12 +55,19 @@ export async function GET() {
   }
 }
 
-// POST — Add new address
+// =====================================================
+// POST — ADD NEW ADDRESS
+// =====================================================
+
 export async function POST(request: Request) {
   try {
-    const userId = await getUserId();
+    // =====================================================
+    // AUTHENTICATION
+    // =====================================================
 
-    if (!userId) {
+    const user = await getAuthenticatedUser();
+
+    if (!user) {
       return NextResponse.json(
         {
           success: false,
@@ -82,12 +77,27 @@ export async function POST(request: Request) {
       );
     }
 
+    // =====================================================
+    // REQUEST DATA
+    // =====================================================
+
     const body = await request.json();
 
     const { name, phone, address, city, state, pincode, country, isDefault } =
       body;
 
-    if (!name || !phone || !address || !city || !state || !pincode) {
+    // =====================================================
+    // REQUIRED FIELD VALIDATION
+    // =====================================================
+
+    if (
+      !name?.trim() ||
+      !phone?.trim() ||
+      !address?.trim() ||
+      !city?.trim() ||
+      !state?.trim() ||
+      !pincode?.trim()
+    ) {
       return NextResponse.json(
         {
           success: false,
@@ -97,29 +107,84 @@ export async function POST(request: Request) {
       );
     }
 
-    await connectToDatabase();
+    // =====================================================
+    // PHONE VALIDATION
+    // =====================================================
 
-    // If this address is default,
-    // remove default from user's existing addresses.
-    if (isDefault) {
-      await Address.updateMany({ userId }, { $set: { isDefault: false } });
+    const cleanPhone = phone.trim();
+
+    if (!/^\d{10}$/.test(cleanPhone)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Phone number must be 10 digits",
+        },
+        { status: 400 },
+      );
     }
 
-    // If user has no addresses,
-    // automatically make first address default.
-    const existingCount = await Address.countDocuments({ userId });
+    // =====================================================
+    // PINCODE VALIDATION
+    // =====================================================
+
+    const cleanPincode = pincode.trim();
+
+    if (!/^\d{6}$/.test(cleanPincode)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Pincode must be 6 digits",
+        },
+        { status: 400 },
+      );
+    }
+
+    // =====================================================
+    // DEFAULT ADDRESS HANDLING
+    // =====================================================
+
+    if (Boolean(isDefault)) {
+      await Address.updateMany(
+        {
+          userId: user._id,
+        },
+        {
+          $set: {
+            isDefault: false,
+          },
+        },
+      );
+    }
+
+    // =====================================================
+    // CHECK EXISTING ADDRESSES
+    // =====================================================
+
+    const existingCount = await Address.countDocuments({
+      userId: user._id,
+    });
+
+    // =====================================================
+    // CREATE ADDRESS
+    // =====================================================
 
     const newAddress = await Address.create({
-      userId,
+      userId: user._id,
+
       name: name.trim(),
-      phone: phone.trim(),
+      phone: cleanPhone,
       address: address.trim(),
       city: city.trim(),
       state: state.trim(),
-      pincode: pincode.trim(),
+      pincode: cleanPincode,
       country: country?.trim() || "India",
+
       isDefault: existingCount === 0 ? true : Boolean(isDefault),
     });
+
+    // =====================================================
+    // SUCCESS
+    // =====================================================
 
     return NextResponse.json(
       {

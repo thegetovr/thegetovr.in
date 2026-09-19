@@ -6,31 +6,44 @@ type Props = {
   title: string;
   subtitle: string;
   image: string;
+  link: string;
 };
 
 export default function CategoryCard({
   title,
   subtitle,
   image,
+  link,
 }: Props) {
   return (
     <Link
-      href="/shop"
-      className="group block overflow-hidden border border-(--color-border) bg-(--color-surface)"
+      href={link}
+      className="group block overflow-hidden border border-(--color-border) bg-(--color-surface) transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-(--shadow-soft)"
     >
+      {/* Image */}
       <div className="relative aspect-[1.18/1] overflow-hidden bg-(--color-surface-muted)">
-        <Image
-          src={image}
-          alt={title}
-          fill
-          sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, 25vw"
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
-        />
+        {image ? (
+          <Image
+            src={image}
+            alt={title}
+            fill
+            sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, 25vw"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.045]"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold uppercase tracking-[0.2em] text-(--color-text-muted)">
+            Category Image
+          </div>
+        )}
+
+        {/* Subtle Image Overlay */}
+        <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/2.5" />
       </div>
 
+      {/* Content */}
       <div className="flex min-h-[68px] items-center justify-between gap-3 bg-(--color-surface-muted) px-3.5 py-3 sm:min-h-[72px] sm:px-4">
-        <div className="min-w-0">
-          <h3 className="text-[15px] font-black uppercase leading-none tracking-[-0.025em] text-(--color-text-primary) sm:text-[17px]">
+        <div className="min-w-0 transition-transform duration-500 ease-out group-hover:translate-x-0.5">
+          <h3 className="text-[15px] font-black uppercase leading-none tracking-tight text-(--color-text-primary) sm:text-[17px]">
             {title}
           </h3>
 
@@ -39,8 +52,13 @@ export default function CategoryCard({
           </p>
         </div>
 
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-(--color-text-primary) text-(--color-white) transition-transform duration-300 group-hover:translate-x-0.5">
-          <ArrowRight size={14} strokeWidth={2} />
+        {/* Arrow */}
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-(--color-text-primary) text-(--color-white) transition-all duration-400 ease-out group-hover:translate-x-1 group-hover:scale-105">
+          <ArrowRight
+            size={14}
+            strokeWidth={2}
+            className="transition-transform duration-400 group-hover:translate-x-0.5"
+          />
         </span>
       </div>
     </Link>

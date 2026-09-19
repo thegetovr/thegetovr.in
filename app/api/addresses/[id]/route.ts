@@ -1,50 +1,28 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
-import { connectToDatabase } from "@/lib/mongodb";
+import { getAuthenticatedUser } from "@/lib/auth/getAuthenticatedUser";
 import { Address } from "@/models/Address";
 
-async function getUserId() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth_token")?.value;
-
-  if (!token || !process.env.JWT_SECRET) {
-    return null;
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET) as {
-      userId: string;
-    };
-
-    if (!decoded.userId || !mongoose.Types.ObjectId.isValid(decoded.userId)) {
-      return null;
-    }
-
-    return decoded.userId;
-  } catch {
-    return null;
-  }
+interface RouteContext {
+  params: Promise<{
+    id: string;
+  }>;
 }
 
 // =====================================================
 // DELETE ADDRESS
 // =====================================================
 
-export async function DELETE(
-  request: Request,
-  {
-    params,
-  }: {
-    params: Promise<{ id: string }>;
-  },
-) {
+export async function DELETE(request: Request, { params }: RouteContext) {
   try {
-    const userId = await getUserId();
+    // =====================================================
+    // AUTHENTICATION
+    // =====================================================
 
-    if (!userId) {
+    const user = await getAuthenticatedUser();
+
+    if (!user) {
       return NextResponse.json(
         {
           success: false,
@@ -53,6 +31,10 @@ export async function DELETE(
         { status: 401 },
       );
     }
+
+    // =====================================================
+    // ADDRESS ID
+    // =====================================================
 
     const { id } = await params;
 
@@ -66,11 +48,13 @@ export async function DELETE(
       );
     }
 
-    await connectToDatabase();
+    // =====================================================
+    // DELETE ONLY USER'S OWN ADDRESS
+    // =====================================================
 
     const address = await Address.findOneAndDelete({
       _id: id,
-      userId,
+      userId: user._id,
     });
 
     if (!address) {
@@ -83,12 +67,16 @@ export async function DELETE(
       );
     }
 
-    // If deleted address was default,
-    // make another address default.
+    // =====================================================
+    // RESTORE DEFAULT ADDRESS
+    // =====================================================
+
     if (address.isDefault) {
       const nextAddress = await Address.findOne({
-        userId,
-      }).sort({ createdAt: -1 });
+        userId: user._id,
+      }).sort({
+        createdAt: -1,
+      });
 
       if (nextAddress) {
         nextAddress.isDefault = true;
@@ -101,7 +89,7 @@ export async function DELETE(
       message: "Address deleted successfully",
     });
   } catch (error) {
-    console.error("❌ DELETE ADDRESS ERROR:", error);
+    console.error("DELETE ADDRESS ERROR:", error);
 
     return NextResponse.json(
       {
@@ -118,18 +106,15 @@ export async function DELETE(
 // MAKE DEFAULT ADDRESS
 // =====================================================
 
-export async function PATCH(
-  request: Request,
-  {
-    params,
-  }: {
-    params: Promise<{ id: string }>;
-  },
-) {
+export async function PATCH(request: Request, { params }: RouteContext) {
   try {
-    const userId = await getUserId();
+    // =====================================================
+    // AUTHENTICATION
+    // =====================================================
 
-    if (!userId) {
+    const user = await getAuthenticatedUser();
+
+    if (!user) {
       return NextResponse.json(
         {
           success: false,
@@ -138,6 +123,10 @@ export async function PATCH(
         { status: 401 },
       );
     }
+
+    // =====================================================
+    // ADDRESS ID
+    // =====================================================
 
     const { id } = await params;
 
@@ -151,12 +140,13 @@ export async function PATCH(
       );
     }
 
-    await connectToDatabase();
+    // =====================================================
+    // CHECK OWNERSHIP
+    // =====================================================
 
-    // Check that address belongs to logged-in user
     const address = await Address.findOne({
       _id: id,
-      userId,
+      userId: user._id,
     });
 
     if (!address) {
@@ -169,9 +159,15 @@ export async function PATCH(
       );
     }
 
-    // Remove default from all user's addresses
+    // =====================================================
+    // REMOVE DEFAULT FROM USER'S OTHER ADDRESSES
+    // =====================================================
+
     await Address.updateMany(
-      { userId },
+      {
+        userId: user._id,
+        _id: { $ne: id },
+      },
       {
         $set: {
           isDefault: false,
@@ -179,7 +175,10 @@ export async function PATCH(
       },
     );
 
-    // Make selected address default
+    // =====================================================
+    // MAKE SELECTED ADDRESS DEFAULT
+    // =====================================================
+
     address.isDefault = true;
 
     await address.save();
@@ -190,7 +189,7 @@ export async function PATCH(
       address,
     });
   } catch (error) {
-    console.error("❌ MAKE DEFAULT ADDRESS ERROR:", error);
+    console.error("MAKE DEFAULT ADDRESS ERROR:", error);
 
     return NextResponse.json(
       {
@@ -209,18 +208,15 @@ export async function PATCH(
 // UPDATE ADDRESS
 // =====================================================
 
-export async function PUT(
-  request: Request,
-  {
-    params,
-  }: {
-    params: Promise<{ id: string }>;
-  },
-) {
+export async function PUT(request: Request, { params }: RouteContext) {
   try {
-    const userId = await getUserId();
+    // =====================================================
+    // AUTHENTICATION
+    // =====================================================
 
-    if (!userId) {
+    const user = await getAuthenticatedUser();
+
+    if (!user) {
       return NextResponse.json(
         {
           success: false,
@@ -229,6 +225,10 @@ export async function PUT(
         { status: 401 },
       );
     }
+
+    // =====================================================
+    // ADDRESS ID
+    // =====================================================
 
     const { id } = await params;
 
@@ -242,6 +242,10 @@ export async function PUT(
       );
     }
 
+    // =====================================================
+    // REQUEST DATA
+    // =====================================================
+
     const body = await request.json();
 
     const name = String(body.name ?? "").trim();
@@ -253,6 +257,10 @@ export async function PUT(
     const country = String(body.country ?? "India").trim();
     const isDefault = Boolean(body.isDefault);
 
+    // =====================================================
+    // REQUIRED FIELD VALIDATION
+    // =====================================================
+
     if (!name || !phone || !address || !city || !state || !pincode) {
       return NextResponse.json(
         {
@@ -263,11 +271,41 @@ export async function PUT(
       );
     }
 
-    await connectToDatabase();
+    // =====================================================
+    // PHONE VALIDATION
+    // =====================================================
+
+    if (!/^\d{10}$/.test(phone)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Phone number must be 10 digits",
+        },
+        { status: 400 },
+      );
+    }
+
+    // =====================================================
+    // PINCODE VALIDATION
+    // =====================================================
+
+    if (!/^\d{6}$/.test(pincode)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Pincode must be 6 digits",
+        },
+        { status: 400 },
+      );
+    }
+
+    // =====================================================
+    // FIND ONLY USER'S OWN ADDRESS
+    // =====================================================
 
     const existingAddress = await Address.findOne({
       _id: id,
-      userId,
+      userId: user._id,
     });
 
     if (!existingAddress) {
@@ -280,12 +318,14 @@ export async function PUT(
       );
     }
 
-    // If this address is becoming default,
-    // remove default from all other addresses.
+    // =====================================================
+    // DEFAULT ADDRESS HANDLING
+    // =====================================================
+
     if (isDefault) {
       await Address.updateMany(
         {
-          userId,
+          userId: user._id,
           _id: { $ne: id },
         },
         {
@@ -295,6 +335,10 @@ export async function PUT(
         },
       );
     }
+
+    // =====================================================
+    // UPDATE ADDRESS
+    // =====================================================
 
     existingAddress.name = name;
     existingAddress.phone = phone;
@@ -307,13 +351,17 @@ export async function PUT(
 
     await existingAddress.save();
 
+    // =====================================================
+    // SUCCESS
+    // =====================================================
+
     return NextResponse.json({
       success: true,
       message: "Address updated successfully",
       address: existingAddress,
     });
   } catch (error) {
-    console.error("❌ UPDATE ADDRESS ERROR:", error);
+    console.error("UPDATE ADDRESS ERROR:", error);
 
     return NextResponse.json(
       {

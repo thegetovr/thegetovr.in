@@ -1,15 +1,15 @@
-import { getOrderByNumberAndEmail } from "@/lib/orderService";
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
-import { connectToDatabase } from "@/lib/mongodb";
-import User from "@/models/User";
+import { getOrderByNumber } from "@/lib/orderService";
+import { getAuthenticatedUser } from "@/lib/auth/getAuthenticatedUser";
+
 import CustomerCard from "@/components/orders/CustomerCard";
 import OrderItems from "@/components/orders/OrderItems";
 import PaymentSummary from "@/components/orders/PaymentSummary";
 import ShippingCard from "@/components/orders/ShippingCard";
 import OrderHeader from "@/components/orders/OrderHeader";
 import OrderTimeline from "@/components/orders/OrderTimeline";
+
 import { ORDER_STATUS } from "@/lib/order-status";
+
 import Link from "next/link";
 
 type OrderPageProps = {
@@ -22,86 +22,42 @@ export default async function OrderDetailsPage({ params }: OrderPageProps) {
   const { orderNumber } = await params;
 
   // =====================================================
-  // CHECK LOGIN
+  // AUTHENTICATION
   // =====================================================
 
-  const cookieStore = await cookies();
+  const user = await getAuthenticatedUser();
 
-  const token = cookieStore.get("auth_token")?.value;
-
-  if (!token) {
+  if (!user) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-(--color-page) px-6 text-(--color-text-primary) shadow-2xl">
+      <main className="flex min-h-screen items-center justify-center bg-(--color-page) px-6 text-(--color-text-primary)">
         <div className="text-center">
           <h1 className="text-3xl font-semibold">Please Login</h1>
 
           <p className="mt-2 text-sm text-(--color-text-muted)">
             Please login to view your order details.
           </p>
-        </div>
-      </main>
-    );
-  }
 
-  // =====================================================
-  // VERIFY JWT
-  // =====================================================
-
-  let decoded: jwt.JwtPayload | null = null;
-  let authErrorMessage: string | null = null;
-
-  try {
-    const verifiedToken = jwt.verify(token, process.env.JWT_SECRET!);
-
-    if (typeof verifiedToken === "string" || !verifiedToken.userId) {
-      authErrorMessage = "Unauthorized";
-    } else {
-      decoded = verifiedToken;
-    }
-  } catch (error) {
-    console.error("ORDER AUTH ERROR:", error);
-    authErrorMessage = "Please login again.";
-  }
-
-  if (authErrorMessage) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-(--color-page) px-6 text-(--color-text-primary)">
-        <div className="text-center">
-          <h1 className="text-3xl font-semibold">Unauthorized</h1>
-
-          {authErrorMessage !== "Unauthorized" && (
-            <p className="mt-2 text-sm text-(--color-text-muted)">
-              {authErrorMessage}
-            </p>
-          )}
-        </div>
-      </main>
-    );
-  }
-
-  if (!decoded) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-(--color-page) px-6 text-(--color-text-primary)">
-        <div className="text-center">
-          <h1 className="text-3xl font-semibold">Unauthorized</h1>
-        </div>
-      </main>
-    );
-  }
-
-  // =====================================================
-  // GET CURRENT USER
-  // =====================================================
-
-  await connectToDatabase();
-
-  const user = await User.findById(decoded.userId).select("email");
-
-  if (!user) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-(--color-page) px-6 text-(--color-text-primary)">
-        <div className="text-center">
-          <h1 className="text-3xl font-semibold">User Not Found</h1>
+          <Link
+            href={`/login?redirect=/orders/${encodeURIComponent(orderNumber)}`}
+            className="
+              mt-6
+              inline-flex
+              items-center
+              justify-center
+              rounded-(--radius-sm)
+              bg-(--color-text-primary)
+              px-5
+              py-3
+              text-sm
+              font-medium
+              text-(--color-white)
+              transition-colors
+              duration-200
+              hover:bg-(--color-text-secondary)
+            "
+          >
+            Login
+          </Link>
         </div>
       </main>
     );
@@ -111,7 +67,7 @@ export default async function OrderDetailsPage({ params }: OrderPageProps) {
   // SECURE ORDER LOOKUP
   // =====================================================
 
-  const order = await getOrderByNumberAndEmail(orderNumber, user.email);
+  const order = await getOrderByNumber(orderNumber, user._id.toString());
 
   // =====================================================
   // ORDER NOT FOUND / NOT OWNED
@@ -126,14 +82,48 @@ export default async function OrderDetailsPage({ params }: OrderPageProps) {
           <p className="mt-2 text-sm text-(--color-text-muted)">
             This order does not exist or does not belong to your account.
           </p>
+
+          <Link
+            href="/profile?tab=orders"
+            className="
+              mt-6
+              inline-flex
+              items-center
+              justify-center
+              rounded-(--radius-sm)
+              border
+              border-(--color-border)
+              bg-(--color-surface)
+              px-5
+              py-3
+              text-sm
+              font-medium
+              text-(--color-text-secondary)
+              transition-colors
+              duration-200
+              hover:border-(--color-text-primary)
+              hover:bg-(--color-surface-muted)
+              hover:text-(--color-text-primary)
+            "
+          >
+            Back to Orders
+          </Link>
         </div>
       </main>
     );
   }
 
+  // =====================================================
+  // ORDER STATUS
+  // =====================================================
+
   const statusInfo =
     ORDER_STATUS[order.status as keyof typeof ORDER_STATUS] ??
     ORDER_STATUS.pending;
+
+  // =====================================================
+  // ORDER DETAILS
+  // =====================================================
 
   return (
     <main className="min-h-screen bg-(--color-page) px-6 py-12 text-(--color-text-primary) md:px-8 md:py-16">
@@ -144,25 +134,25 @@ export default async function OrderDetailsPage({ params }: OrderPageProps) {
           <Link
             href="/profile?tab=orders"
             className="
-      mb-5
-      inline-flex
-      items-center
-      gap-2
-      rounded-(--radius-sm)
-      border
-      border-(--color-border)
-      bg-(--color-surface)
-      px-4
-      py-2
-      text-sm
-      font-medium
-      text-(--color-text-secondary)
-      transition-colors
-      duration-200
-      hover:border-(--color-text-primary)
-      hover:bg-(--color-surface-muted)
-      hover:text-(--color-text-primary)
-    "
+              mb-5
+              inline-flex
+              items-center
+              gap-2
+              rounded-(--radius-sm)
+              border
+              border-(--color-border)
+              bg-(--color-surface)
+              px-4
+              py-2
+              text-sm
+              font-medium
+              text-(--color-text-secondary)
+              transition-colors
+              duration-200
+              hover:border-(--color-text-primary)
+              hover:bg-(--color-surface-muted)
+              hover:text-(--color-text-primary)
+            "
           >
             ← Back to Orders
           </Link>
@@ -176,7 +166,7 @@ export default async function OrderDetailsPage({ params }: OrderPageProps) {
           </p>
         </div>
 
-        {/* Order Number - FULL WIDTH */}
+        {/* Order Number */}
 
         <div className="mb-8">
           <OrderHeader
@@ -192,7 +182,7 @@ export default async function OrderDetailsPage({ params }: OrderPageProps) {
           {/* LEFT SIDE */}
 
           <div className="space-y-8 lg:col-span-2">
-            {/* Confirmed / Current Status */}
+            {/* Current Status */}
 
             <section className="rounded-xl border border-(--color-border) bg-(--color-surface) p-6 shadow-(--shadow-soft)">
               <h2 className="text-2xl font-semibold text-(--color-text-primary)">
@@ -242,7 +232,9 @@ export default async function OrderDetailsPage({ params }: OrderPageProps) {
             {/* Download Invoice */}
 
             <a
-              href={`/api/orders/${order.orderNumber}/invoice`}
+              href={`/api/orders/${encodeURIComponent(
+                order.orderNumber,
+              )}/invoice`}
               download
               className="
                 flex

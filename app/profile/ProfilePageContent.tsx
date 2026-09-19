@@ -1,5 +1,7 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
+
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
 import MyOrders from "@/components/profile/MyOrders";
 import Addresses from "@/components/profile/Address";
@@ -8,6 +10,8 @@ import Wishlist from "@/components/profile/Wishlist";
 import ProfileEdit from "@/components/profile/ProfileEdit";
 import GetOvrCollection from "@/components/profile/GetOvrCollection";
 import Security from "@/components/profile/Security";
+
+import { useCartStore } from "@/stores/cartStore";
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -21,10 +25,35 @@ interface UserData {
   gender?: string;
 }
 
+const contentVariants = {
+  initial: {
+    opacity: 0,
+    y: 20,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -12,
+    transition: {
+      duration: 0.25,
+      ease: "easeIn",
+    },
+  },
+};
+
 export default function ProfilePageContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const deactivateAccount = useCartStore((state) => state.deactivateAccount);
 
   const [user, setUser] = useState<UserData | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
@@ -62,17 +91,19 @@ export default function ProfilePageContent() {
           setUser(result.user);
         } else {
           setUser(null);
+          deactivateAccount();
         }
       } catch (error) {
         console.error("Session Check Error:", error);
         setUser(null);
+        deactivateAccount();
       } finally {
         setLoadingUser(false);
       }
     };
 
     checkSession();
-  }, []);
+  }, [deactivateAccount]);
 
   // =====================================================
   // LOGOUT
@@ -87,11 +118,18 @@ export default function ProfilePageContent() {
       const result = await response.json();
 
       if (result.success) {
+        // =================================================
+        // HIDE ACTIVE CART
+        //
+        // Saved cart remains stored against the user's ID.
+        // =================================================
+
+        deactivateAccount();
+
         setUser(null);
 
         const message = result.message || "Logout Successful";
 
-        // Show immediately
         window.dispatchEvent(
           new CustomEvent("auth-notification", {
             detail: {
@@ -165,13 +203,7 @@ export default function ProfilePageContent() {
   // =====================================================
 
   if (loadingUser) {
-    return (
-      <main className="min-h-screen bg-[#fcfbf9]">
-        <div className="flex min-h-screen items-center justify-center">
-          <p className="text-sm text-zinc-500">Loading profile...</p>
-        </div>
-      </main>
-    );
+    return <PageLoader />;
   }
 
   // =====================================================
@@ -187,7 +219,15 @@ export default function ProfilePageContent() {
       <div className="mx-auto max-w-[1440px] px-4 pt-8">
         {/* Breadcrumb */}
 
-        <div className="flex items-center gap-3 text-sm text-zinc-500">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: 0.45,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          className="flex items-center gap-3 text-sm text-zinc-500"
+        >
           <button
             type="button"
             onClick={() => router.push("/")}
@@ -202,7 +242,13 @@ export default function ProfilePageContent() {
 
           <span>›</span>
 
-          <span className="text-zinc-900">
+          <motion.span
+            key={activeSection}
+            initial={{ opacity: 0, x: 8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+            className="text-zinc-900"
+          >
             {activeSection === "profile"
               ? "Profile"
               : activeSection === "orders"
@@ -214,20 +260,32 @@ export default function ProfilePageContent() {
                     : activeSection === "security"
                       ? "Security"
                       : "Profile"}
-          </span>
-        </div>
+          </motion.span>
+        </motion.div>
 
         {/* Heading */}
 
-        <div className="pb-6 pt-4">
-          <h1 className="font-serif text-5xl font-medium tracking-tight text-black md:text-6xl">
-            {getPageTitle()}
-          </h1>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeSection}
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{
+              duration: 0.5,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="pb-6 pt-4"
+          >
+            <h1 className="font-serif text-5xl font-medium tracking-tight text-black md:text-6xl">
+              {getPageTitle()}
+            </h1>
 
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-600">
-            {getPageDescription()}
-          </p>
-        </div>
+            <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-600">
+              {getPageDescription()}
+            </p>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* =================================================
@@ -240,7 +298,16 @@ export default function ProfilePageContent() {
               LEFT SIDEBAR
           ================================================= */}
 
-          <aside className="w-full">
+          <motion.aside
+            initial={{ opacity: 0, x: -25 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.6,
+              delay: 0.08,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="w-full"
+          >
             <ProfileSidebar
               user={user}
               onLogout={handleLogout}
@@ -248,52 +315,71 @@ export default function ProfilePageContent() {
               onSectionChange={handleSectionChange}
             />
 
-            <GetOvrCollection />
-          </aside>
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.5,
+                delay: 0.25,
+              }}
+            >
+              <GetOvrCollection />
+            </motion.div>
+          </motion.aside>
 
           {/* =================================================
               RIGHT CONTENT
           ================================================= */}
 
           <section className="min-w-0">
-            {/* PROFILE */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${activeSection}-${searchParams.get("edit") || "view"}`}
+                variants={contentVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+              >
+                {/* PROFILE */}
 
-            {activeSection === "profile" &&
-              (searchParams.get("edit") === "true" ? (
-                <ProfileEdit
-                  user={user}
-                  onCancel={() =>
-                    router.push(`${pathname}?tab=profile`, {
-                      scroll: false,
-                    })
-                  }
-                  onSaved={(updatedUser) => {
-                    setUser(updatedUser);
+                {activeSection === "profile" &&
+                  (searchParams.get("edit") === "true" ? (
+                    <ProfileEdit
+                      user={user}
+                      onCancel={() =>
+                        router.push(`${pathname}?tab=profile`, {
+                          scroll: false,
+                        })
+                      }
+                      onSaved={(updatedUser) => {
+                        setUser(updatedUser);
 
-                    router.push(`${pathname}?tab=profile`, {
-                      scroll: false,
-                    });
-                  }}
-                />
-              ) : (
-                <ProfileDetails user={user} />
-              ))}
+                        router.push(`${pathname}?tab=profile`, {
+                          scroll: false,
+                        });
+                      }}
+                    />
+                  ) : (
+                    <ProfileDetails user={user} />
+                  ))}
 
-            {/* ORDERS */}
+                {/* ORDERS */}
 
-            {activeSection === "orders" && <MyOrders user={user} />}
+                {activeSection === "orders" && <MyOrders user={user} />}
 
-            {/* ADDRESSES */}
+                {/* ADDRESSES */}
 
-            {activeSection === "addresses" && <Addresses />}
+                {activeSection === "addresses" && <Addresses />}
 
-            {/* WISHLIST */}
+                {/* WISHLIST */}
 
-            {activeSection === "wishlist" && <Wishlist />}
+                {activeSection === "wishlist" && <Wishlist />}
 
-            {/* SECURITY */}
+                {/* SECURITY */}
 
-            {activeSection === "security" && <Security user={user} />}
+                {activeSection === "security" && <Security user={user} />}
+              </motion.div>
+            </AnimatePresence>
           </section>
         </div>
       </div>

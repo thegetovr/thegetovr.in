@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import StateDropdown from "./StateDropdown";
 
 export interface AddressFormData {
@@ -84,12 +85,29 @@ export default function AddressForm({
   };
 
   return (
-    <div className="min-w-0 overflow-hidden rounded-xl border border-gray-200 bg-white p-4 sm:p-5 md:p-6">
+    <motion.div
+      className="min-w-0 overflow-hidden rounded-xl border border-gray-200 bg-white p-4 sm:p-5 md:p-6"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+    >
       {/* =====================================================
           HEADER
       ===================================================== */}
 
-      <div className="min-w-0">
+      <motion.div
+        className="min-w-0"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          duration: 0.45,
+          delay: 0.08,
+          ease: [0.22, 1, 0.36, 1],
+        }}
+      >
         <h2 className="text-lg font-semibold text-black sm:text-xl">
           {isEditing ? "Edit Address" : "Add New Address"}
         </h2>
@@ -99,13 +117,23 @@ export default function AddressForm({
             ? "Update your saved delivery address."
             : "Save an address for faster checkout."}
         </p>
-      </div>
+      </motion.div>
 
       {/* =====================================================
           FORM
       ===================================================== */}
 
-      <form onSubmit={handleSubmit} className="mt-5 sm:mt-6">
+      <motion.form
+        onSubmit={handleSubmit}
+        className="mt-5 sm:mt-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{
+          duration: 0.5,
+          delay: 0.14,
+          ease: "easeOut",
+        }}
+      >
         {/* =================================================
             NAME + PHONE
         ================================================= */}
@@ -273,15 +301,18 @@ export default function AddressForm({
             Cancel
           </button>
 
-          <button
+          <motion.button
             type="submit"
             disabled={saving}
+            whileHover={!saving ? { scale: 1.02 } : undefined}
+            whileTap={!saving ? { scale: 0.98 } : undefined}
+            transition={{ duration: 0.15 }}
             className="inline-flex min-h-11 items-center justify-center rounded-lg bg-black px-4 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60 sm:px-5"
           >
             {saving ? "Saving..." : isEditing ? "Save Changes" : "Save Address"}
-          </button>
+          </motion.button>
         </div>
-      </form>
-    </div>
+      </motion.form>
+    </motion.div>
   );
 }

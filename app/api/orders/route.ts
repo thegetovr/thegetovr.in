@@ -1,62 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
 
 import { createOrder, getOrders } from "@/lib/orderService";
-import { connectToDatabase } from "@/lib/mongodb";
-import User from "@/models/User";
-import { sendOrderPlacedEmail } from "@/lib/emails/orderPlaced";
 
-type AuthenticatedUser = {
-  userId: string;
-  email: string;
-};
+import { getAuthenticatedUser } from "@/lib/auth/getAuthenticatedUser";
 
-async function getLoggedInUser(): Promise<AuthenticatedUser | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth_token")?.value;
-
-  if (!token || !process.env.JWT_SECRET) {
-    return null;
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET) as {
-      userId?: string;
-      email?: string;
-    };
-
-    if (!decoded.userId || !mongoose.Types.ObjectId.isValid(decoded.userId)) {
-      return null;
-    }
-
-    await connectToDatabase();
-
-    const user = await User.findById(decoded.userId).select("_id email");
-
-    if (!user) {
-      return null;
-    }
-
-    return {
-      userId: user._id.toString(),
-      email: user.email,
-    };
-  } catch (error) {
-    console.error("GET LOGGED IN USER ERROR:", error);
-    return null;
-  }
-}
+import { sendEmail } from "@/lib/email/sendEmail";
+import { OrderPlacedEmail } from "@/lib/email/templates/OrderPlacedEmail";
 
 /*
  * =========================
  * CREATE ORDER
  * =========================
  */
+
 export async function POST(request: NextRequest) {
   try {
-    const user = await getLoggedInUser();
+    // =====================================================
+    // AUTHENTICATION
+    // =====================================================
+
+    const user = await getAuthenticatedUser();
 
     if (!user) {
       return NextResponse.json(
@@ -67,6 +30,10 @@ export async function POST(request: NextRequest) {
         { status: 401 },
       );
     }
+
+    // =====================================================
+    // REQUEST DATA
+    // =====================================================
 
     const order = await request.json();
 
@@ -80,38 +47,60 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // =====================================================
+    // SERVER-OWNED USER DATA
+    // =====================================================
+
     /*
-     * 🔐 IMPORTANT SECURITY RULE
+     * NEVER trust userId or email coming from frontend.
      *
-     * Never trust userId/email coming from frontend.
-     * We overwrite both values using the authenticated
-     * account from auth_token.
+     * These values are always taken from the
+     * authenticated account.
      */
+
     const orderWithUserOwnership = {
       ...order,
 
-      // Remove any frontend supplied userId and force
-      // the authenticated user's actual MongoDB _id.
-      userId: user.userId,
+      userId: user._id.toString(),
 
       customer: {
         ...order.customer,
-
-        // Force email from the logged-in User account.
         email: user.email,
       },
     };
 
+    // =====================================================
+    // CREATE ORDER
+    // =====================================================
+
     const savedOrder = await createOrder(orderWithUserOwnership);
+
+    // =====================================================
+    // ORDER EMAIL
+    // =====================================================
 
     /*
      * Email failure should NOT make the order fail.
      */
+
     try {
-      await sendOrderPlacedEmail(savedOrder);
+      const emailHtml = OrderPlacedEmail({
+        order: savedOrder,
+      });
+
+      await sendEmail({
+        type: "ORDER_PLACED",
+        to: savedOrder.customer.email,
+        subject: `Order #${savedOrder.orderNumber} Confirmed | The GetOvr`,
+        html: emailHtml,
+      });
     } catch (emailError) {
       console.error("ORDER PLACED EMAIL ERROR:", emailError);
     }
+
+    // =====================================================
+    // SUCCESS
+    // =====================================================
 
     return NextResponse.json({
       success: true,
@@ -119,7 +108,7 @@ export async function POST(request: NextRequest) {
       order: savedOrder,
     });
   } catch (error) {
-    console.error("Order API Error:", error);
+    console.error("ORDER API ERROR:", error);
 
     return NextResponse.json(
       {
@@ -137,9 +126,14 @@ export async function POST(request: NextRequest) {
  * GET MY ORDERS
  * =========================
  */
+
 export async function GET(request: NextRequest) {
   try {
-    const user = await getLoggedInUser();
+    // =====================================================
+    // AUTHENTICATION
+    // =====================================================
+
+    const user = await getAuthenticatedUser();
 
     if (!user) {
       return NextResponse.json(
@@ -151,14 +145,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    /*
-     * 🔐 Fetch ONLY orders belonging to the
-     * authenticated user's userId.
-     *
-     * We intentionally DO NOT use email here.
-     */
+    // =====================================================
+    // FETCH ONLY AUTHENTICATED USER'S ORDERS
+    // =====================================================
+
     const orders = await getOrders({
-      userId: user.userId,
+      userId: user._id.toString(),
     });
 
     return NextResponse.json({
@@ -166,7 +158,7 @@ export async function GET(request: NextRequest) {
       orders,
     });
   } catch (error) {
-    console.error("Orders GET API Error:", error);
+    console.error("ORDERS GET API ERROR:", error);
 
     return NextResponse.json(
       {

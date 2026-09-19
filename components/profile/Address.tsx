@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { Plus, ShieldCheck } from "lucide-react";
 
 import AddressForm, { type AddressFormData } from "./addresses/AddressForm";
@@ -75,6 +76,21 @@ export default function Addresses() {
   }, []);
 
   // =====================================================
+  // NOTIFICATION
+  // =====================================================
+
+  const showNotification = (message: string, type: "success" | "error") => {
+    setNotification({
+      message,
+      type,
+    });
+
+    setTimeout(() => {
+      setNotification(null);
+    }, 2000);
+  };
+
+  // =====================================================
   // ADD / EDIT ADDRESS
   // =====================================================
 
@@ -108,14 +124,7 @@ export default function Addresses() {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        setNotification({
-          message: data.message || "Failed to save address",
-          type: "error",
-        });
-
-        setTimeout(() => {
-          setNotification(null);
-        }, 2000);
+        showNotification(data.message || "Failed to save address", "error");
 
         return;
       }
@@ -168,16 +177,12 @@ export default function Addresses() {
       // SUCCESS NOTIFICATION
       // =================================================
 
-      setNotification({
-        message: editingId
+      showNotification(
+        editingId
           ? "Address updated successfully"
           : "Address saved successfully",
-        type: "success",
-      });
-
-      setTimeout(() => {
-        setNotification(null);
-      }, 2000);
+        "success",
+      );
 
       // =================================================
       // RESET FORM
@@ -189,14 +194,10 @@ export default function Addresses() {
     } catch (error) {
       console.error("Save address error:", error);
 
-      setNotification({
-        message: "Something went wrong while saving the address.",
-        type: "error",
-      });
-
-      setTimeout(() => {
-        setNotification(null);
-      }, 2000);
+      showNotification(
+        "Something went wrong while saving the address.",
+        "error",
+      );
     } finally {
       setSaving(false);
     }
@@ -242,14 +243,7 @@ export default function Addresses() {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        setNotification({
-          message: data.message || "Failed to delete address",
-          type: "error",
-        });
-
-        setTimeout(() => {
-          setNotification(null);
-        }, 2000);
+        showNotification(data.message || "Failed to delete address", "error");
 
         return;
       }
@@ -258,25 +252,14 @@ export default function Addresses() {
         current.filter((address) => address._id !== id),
       );
 
-      setNotification({
-        message: "Address deleted successfully",
-        type: "success",
-      });
-
-      setTimeout(() => {
-        setNotification(null);
-      }, 2000);
+      showNotification("Address deleted successfully", "success");
     } catch (error) {
       console.error("Delete address error:", error);
 
-      setNotification({
-        message: "Something went wrong while deleting the address.",
-        type: "error",
-      });
-
-      setTimeout(() => {
-        setNotification(null);
-      }, 2000);
+      showNotification(
+        "Something went wrong while deleting the address.",
+        "error",
+      );
     }
   };
 
@@ -296,14 +279,10 @@ export default function Addresses() {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        setNotification({
-          message: data.message || "Failed to update default address",
-          type: "error",
-        });
-
-        setTimeout(() => {
-          setNotification(null);
-        }, 2000);
+        showNotification(
+          data.message || "Failed to update default address",
+          "error",
+        );
 
         return;
       }
@@ -315,25 +294,14 @@ export default function Addresses() {
         })),
       );
 
-      setNotification({
-        message: "Default address updated successfully",
-        type: "success",
-      });
-
-      setTimeout(() => {
-        setNotification(null);
-      }, 2000);
+      showNotification("Default address updated successfully", "success");
     } catch (error) {
       console.error("Make default error:", error);
 
-      setNotification({
-        message: "Something went wrong while updating the default address.",
-        type: "error",
-      });
-
-      setTimeout(() => {
-        setNotification(null);
-      }, 2000);
+      showNotification(
+        "Something went wrong while updating the default address.",
+        "error",
+      );
     }
   };
 
@@ -357,8 +325,20 @@ export default function Addresses() {
     setShowForm(false);
   };
 
+  // =====================================================
+  // PAGE
+  // =====================================================
+
   return (
-    <section className="min-w-0 flex-1 overflow-hidden bg-white px-4 py-5 sm:px-6 sm:py-6 md:px-8 md:py-7">
+    <motion.section
+      className="min-w-0 flex-1 overflow-hidden bg-white px-4 py-5 sm:px-6 sm:py-6 md:px-8 md:py-7"
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: 0.8,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+    >
       {/* =====================================================
           NOTIFICATION
       ===================================================== */}
@@ -375,7 +355,7 @@ export default function Addresses() {
             {notification.type === "success" ? "✓" : "!"}
           </span>
 
-          <p className="min-w-0 text-sm font-medium break-words">
+          <p className="min-w-0 break-words text-sm font-medium">
             {notification.message}
           </p>
         </div>
@@ -388,6 +368,7 @@ export default function Addresses() {
       <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <h1 className="font-serif text-2xl text-black">My Addresses</h1>
+
           <div className="mt-2 h-[2px] w-8 bg-[#b7965d]" />
 
           <p className="mt-1.5 text-sm leading-5 text-gray-500">
@@ -427,8 +408,44 @@ export default function Addresses() {
 
       <div className="mt-5 min-w-0 space-y-4 sm:mt-7">
         {loading ? (
-          <div className="rounded-xl border border-gray-200 px-4 py-8 text-center text-sm text-gray-500">
-            Loading your addresses...
+          <div className="flex min-h-[320px] flex-col items-center justify-center rounded-xl border border-[#e6e0d8] bg-white px-4 py-10">
+            <div
+              className="h-7 w-7 animate-spin rounded-full border-2 border-[#e7dfd4] border-t-[#b7965d]"
+              aria-label="Loading addresses"
+              role="status"
+            />
+
+            <div className="mt-6 w-full max-w-3xl space-y-4">
+              {[1, 2].map((item) => (
+                <div
+                  key={item}
+                  className="animate-pulse rounded-xl border border-[#eee9e2] bg-white p-4 sm:p-5 md:p-6"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0 flex-1 space-y-3">
+                      <div className="h-5 w-32 rounded bg-[#eee9e2]" />
+                      <div className="h-3 w-24 rounded bg-[#f2eee8]" />
+                    </div>
+
+                    <div className="hidden gap-3 sm:flex">
+                      <div className="h-8 w-14 rounded-lg bg-[#f3eee7]" />
+                      <div className="h-8 w-16 rounded-lg bg-[#f3eee7]" />
+                    </div>
+                  </div>
+
+                  <div className="mt-5 space-y-2">
+                    <div className="h-3 w-full max-w-md rounded bg-[#f2eee8]" />
+                    <div className="h-3 w-3/4 max-w-sm rounded bg-[#f2eee8]" />
+                    <div className="h-3 w-1/3 max-w-[140px] rounded bg-[#f2eee8]" />
+                  </div>
+
+                  <div className="mt-5 flex justify-between gap-3 sm:hidden">
+                    <div className="h-8 w-14 rounded-lg bg-[#f3eee7]" />
+                    <div className="h-8 w-16 rounded-lg bg-[#f3eee7]" />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         ) : !showForm && addresses.length === 0 ? (
           <div className="rounded-xl border border-dashed border-gray-300 px-5 py-10 text-center sm:px-8">
@@ -486,6 +503,6 @@ export default function Addresses() {
           </p>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }
