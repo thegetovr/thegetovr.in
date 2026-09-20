@@ -13,6 +13,7 @@ export async function saveHomeCategories(formData: FormData) {
       Array.from(formData.keys())
         .map((key) => {
           const match = key.match(/^category-(\d+)-id$/);
+
           return match ? Number(match[1]) : null;
         })
         .filter((index): index is number => index !== null),
@@ -27,7 +28,8 @@ export async function saveHomeCategories(formData: FormData) {
     ),
     link: String(formData.get(`category-${index}-link`) ?? ""),
     order: Number(formData.get(`category-${index}-order`) ?? 0),
-    enabled: formData.get(`category-${index}-enabled`) === "on",
+    enabled:
+      formData.get(`category-${index}-enabled`) === "on",
   }));
 
   const parsed = homeCategoriesSchema.safeParse(categories);
@@ -37,6 +39,7 @@ export async function saveHomeCategories(formData: FormData) {
       "HOME CATEGORIES VALIDATION ERROR:",
       parsed.error.flatten(),
     );
+
     return;
   }
 
@@ -46,12 +49,15 @@ export async function saveHomeCategories(formData: FormData) {
 
   if (!existingHome) {
     console.error("Home content does not exist.");
+
     return;
   }
 
   const updatedCategories = [];
 
-  for (const category of parsed.data) {
+  for (let index = 0; index < parsed.data.length; index++) {
+    const category = parsed.data[index];
+
     const existingCategory = existingHome.categories.find(
       (item: { id: string }) => item.id === category.id,
     );
@@ -59,7 +65,7 @@ export async function saveHomeCategories(formData: FormData) {
     let image = existingCategory?.image ?? null;
 
     const imageFile = formData.get(
-      `category-${categoryIndexes[parsed.data.indexOf(category)]}-image`,
+      `category-${categoryIndexes[index]}-image`,
     );
 
     if (imageFile instanceof File && imageFile.size > 0) {
@@ -81,8 +87,34 @@ export async function saveHomeCategories(formData: FormData) {
     });
   }
 
+  /*
+   * Collections is a permanent homepage category.
+   * It must always remain enabled and appear last.
+   */
+  const nonCollections = updatedCategories
+    .filter((category) => category.id !== "collections")
+    .map((category, index) => ({
+      ...category,
+      order: index + 1,
+    }));
+
+  const collections = updatedCategories.find(
+    (category) => category.id === "collections",
+  );
+
+  const normalizedCategories = collections
+    ? [
+        ...nonCollections,
+        {
+          ...collections,
+          enabled: true,
+          order: nonCollections.length + 1,
+        },
+      ]
+    : nonCollections;
+
   await HomeContent.findByIdAndUpdate(existingHome._id, {
-    categories: updatedCategories,
+    categories: normalizedCategories,
   });
 
   revalidatePath("/");
