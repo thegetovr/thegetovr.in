@@ -2,7 +2,8 @@ import "server-only";
 
 const ADMIN_EMAILS = [
   "admin@thegetovr.in",
-  "shivdeepraina@gmail.com",
+  "Shivdeepraina@gmail.com",
+  "Dikshitmishra1@gmail.com",
 
   // Add more admin emails here when needed
   // "another-admin@example.com",
