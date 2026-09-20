@@ -21,15 +21,12 @@ export default function Wishlist() {
   const addReadyMadeItem = useCartStore((state) => state.addReadyMadeItem);
 
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [addingId, setAddingId] = useState<string | null>(null);
   const [movingAll, setMovingAll] = useState(false);
 
   const loadWishlist = useCallback(async () => {
     try {
-      setLoading(true);
-
       const response = await fetch("/api/wishlist", {
         method: "GET",
         credentials: "include",
@@ -46,8 +43,6 @@ export default function Wishlist() {
     } catch (error) {
       console.error("LOAD WISHLIST ERROR:", error);
       setWishlistItems([]);
-    } finally {
-      setLoading(false);
     }
   }, []);
 
@@ -243,7 +238,7 @@ export default function Wishlist() {
 
       <div className="mt-5 flex min-w-0 items-center justify-between rounded-xl border border-[#ddd5ca] bg-white px-4 py-3.5 sm:mt-6 sm:px-5 sm:py-4 md:px-6">
         <p className="text-sm font-medium text-black">
-          {loading ? "Loading..." : `${wishlistItems.length} Items`}
+          {wishlistItems.length} Items
         </p>
 
         <button
@@ -264,9 +259,7 @@ export default function Wishlist() {
       ===================================================== */}
 
       <div className="mt-5 min-w-0 overflow-hidden rounded-xl border border-[#ddd5ca] bg-white">
-        {loading ? (
-          <WishlistLoading />
-        ) : wishlistItems.length > 0 ? (
+        {wishlistItems.length > 0 ? (
           wishlistItems.map((item) => (
             <WishlistRow
               key={item.id}
@@ -451,29 +444,6 @@ function WishlistRow({
           </button>
         </div>
       </div>
-    </div>
-  );
-}
-
-/* =========================================================
-   LOADING
-========================================================= */
-
-function WishlistLoading() {
-  return (
-    <div className="divide-y divide-[#e8e2da]">
-      {[1, 2, 3].map((item) => (
-        <div key={item} className="flex items-center gap-4 p-4 md:px-5 md:py-5">
-          <div className="h-[88px] w-[88px] shrink-0 animate-pulse rounded-lg bg-[#f3f0eb]" />
-
-          <div className="flex-1 space-y-3">
-            <div className="h-4 w-2/5 animate-pulse rounded bg-[#f3f0eb]" />
-            <div className="h-3 w-1/4 animate-pulse rounded bg-[#f3f0eb]" />
-          </div>
-
-          <div className="hidden h-4 w-20 animate-pulse rounded bg-[#f3f0eb] md:block" />
-        </div>
-      ))}
     </div>
   );
 }
