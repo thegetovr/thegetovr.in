@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Heart, ShoppingBag, Share2, ChevronDown, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -25,30 +26,41 @@ export default function Wishlist() {
   const [addingId, setAddingId] = useState<string | null>(null);
   const [movingAll, setMovingAll] = useState(false);
 
-  const loadWishlist = useCallback(async () => {
-    try {
-      const response = await fetch("/api/wishlist", {
-        method: "GET",
-        credentials: "include",
-        cache: "no-store",
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || "Failed to load wishlist");
-      }
-
-      setWishlistItems(data.items ?? []);
-    } catch (error) {
-      console.error("LOAD WISHLIST ERROR:", error);
-      setWishlistItems([]);
-    }
-  }, []);
-
   useEffect(() => {
+    let cancelled = false;
+
+    const loadWishlist = async () => {
+      try {
+        const response = await fetch("/api/wishlist", {
+          method: "GET",
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Failed to load wishlist");
+        }
+
+        if (!cancelled) {
+          setWishlistItems(data.items ?? []);
+        }
+      } catch (error) {
+        console.error("LOAD WISHLIST ERROR:", error);
+
+        if (!cancelled) {
+          setWishlistItems([]);
+        }
+      }
+    };
+
     loadWishlist();
-  }, [loadWishlist]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   /* =====================================================
      REMOVE FROM WISHLIST
@@ -305,9 +317,11 @@ function WishlistRow({
         <div className="flex min-w-0 items-start gap-3">
           <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#f8f6f2]">
             {item.image ? (
-              <img
+              <Image
                 src={item.image}
                 alt={item.name}
+                width={72}
+                height={72}
                 className="h-full w-full object-contain"
               />
             ) : (
@@ -379,9 +393,11 @@ function WishlistRow({
 
         <div className="flex h-[88px] w-[88px] items-center justify-center overflow-hidden rounded-lg bg-[#f8f6f2]">
           {item.image ? (
-            <img
+            <Image
               src={item.image}
               alt={item.name}
+              width={88}
+              height={88}
               className="h-full w-full object-contain transition duration-300 hover:scale-105"
             />
           ) : (

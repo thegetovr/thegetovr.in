@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -31,6 +32,22 @@ interface UserData {
 
 interface MyOrdersProps {
   user: UserData | null;
+}
+
+interface RawOrderItem {
+  name?: string;
+  product?: string;
+  image?: string;
+}
+
+interface RawOrder {
+  orderNumber?: string;
+  _id?: string;
+  id?: string;
+  items?: RawOrderItem[];
+  status?: string;
+  createdAt?: string | number | Date;
+  total?: string | number;
 }
 
 const ORDERS_PER_PAGE = 5;
@@ -73,7 +90,7 @@ export default function MyOrders({ user }: MyOrdersProps) {
   // MAP DATABASE ORDER TO UI
   // =====================================================
 
-  const mapOrderToUI = (order: any): Order => {
+  const mapOrderToUI = useCallback((order: RawOrder): Order => {
     const firstItem = order.items?.[0];
 
     const status = normalizeStatus(order.status);
@@ -115,7 +132,7 @@ export default function MyOrders({ user }: MyOrdersProps) {
 
       createdAt: createdAt.toISOString(),
     };
-  };
+  }, []);
 
   // =====================================================
   // FETCH ORDERS
@@ -152,8 +169,8 @@ export default function MyOrders({ user }: MyOrdersProps) {
           return;
         }
 
-        const mappedOrders = Array.isArray(result.orders)
-          ? result.orders.map(mapOrderToUI)
+        const mappedOrders: Order[] = Array.isArray(result.orders)
+          ? result.orders.map((order: RawOrder) => mapOrderToUI(order))
           : [];
 
         setOrders(mappedOrders);
@@ -171,7 +188,7 @@ export default function MyOrders({ user }: MyOrdersProps) {
     };
 
     fetchOrders();
-  }, [user]);
+  }, [user, mapOrderToUI]);
 
   // =====================================================
   // RECEIVE FILTERED ORDERS
@@ -198,20 +215,6 @@ export default function MyOrders({ user }: MyOrdersProps) {
     startIndex,
     startIndex + ORDERS_PER_PAGE,
   );
-
-  // =====================================================
-  // KEEP CURRENT PAGE VALID
-  // =====================================================
-
-  useEffect(() => {
-    if (totalPages > 0 && currentPage > totalPages) {
-      setCurrentPage(totalPages);
-    }
-
-    if (totalPages === 0 && currentPage !== 1) {
-      setCurrentPage(1);
-    }
-  }, [totalPages, currentPage]);
 
   // =====================================================
   // STATUS STYLE
@@ -371,9 +374,11 @@ export default function MyOrders({ user }: MyOrdersProps) {
 
                           <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#f8f6f2]">
                             {order.image ? (
-                              <img
+                              <Image
                                 src={order.image}
                                 alt={order.productName}
+                                width={72}
+                                height={72}
                                 className="h-full w-full object-contain"
                               />
                             ) : (
@@ -475,9 +480,11 @@ export default function MyOrders({ user }: MyOrdersProps) {
 
                         <div className="flex h-[88px] w-[88px] items-center justify-center overflow-hidden rounded-lg bg-[#f8f6f2]">
                           {order.image ? (
-                            <img
+                            <Image
                               src={order.image}
                               alt={order.productName}
+                              width={88}
+                              height={88}
                               className="h-full w-full object-contain"
                             />
                           ) : (

@@ -87,7 +87,7 @@ const sections = [
         </ul>
 
         <div className="mt-6 rounded-xl border border-[#ddd5ca] bg-white p-5 sm:p-6">
-          <p className="!text-black">
+          <p className="text-black">
             <strong>Your information is not sold.</strong> The GetOvr does not
             sell your personal information to third parties. Where service
             providers are required to operate the website, we may share only the
@@ -272,11 +272,11 @@ const sections = [
     icon: FileText,
     content: (
       <p>
-        The GetOvr's logo, brand name, website design, graphics, images, text,
-        product presentation, software, UI elements and original content may be
-        owned by or licensed to The GetOvr and may be protected by applicable
-        intellectual-property laws. Unauthorized reproduction, modification,
-        distribution, or commercial exploitation is not permitted.
+        The GetOvr&apos;s logo, brand name, website design, graphics, images,
+        text, product presentation, software, UI elements and original content
+        may be owned by or licensed to The GetOvr and may be protected by
+        applicable intellectual-property laws. Unauthorized reproduction,
+        modification, distribution, or commercial exploitation is not permitted.
       </p>
     ),
   },
@@ -296,7 +296,7 @@ const sections = [
           <li>Introduce malware or malicious code.</li>
           <li>Create fake accounts or abuse promotions.</li>
           <li>Interfere with website functionality.</li>
-          <li>Use another person's account without authorization.</li>
+          <li>Use another person&apos;s account without authorization.</li>
           <li>Violate applicable laws.</li>
         </ul>
       </>
@@ -695,7 +695,7 @@ export default function TermsPage() {
               </p>
 
               <h2 className="mt-3 font-serif text-3xl tracking-tight sm:text-4xl">
-                We're here to help.
+                We&apos;re here to help.
               </h2>
 
               <p className="mt-4 max-w-xl text-sm leading-7 text-white/65">

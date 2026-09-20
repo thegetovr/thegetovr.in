@@ -56,34 +56,27 @@ export default function HeroCarousel({ hero }: HeroCarouselProps) {
   const slides = createSlides(hero);
 
   const [activeIndex, setActiveIndex] = useState(0);
-  const [direction, setDirection] = useState(1);
 
   const goToSlide = useCallback(
     (index: number) => {
       const nextIndex =
         ((index % slides.length) + slides.length) % slides.length;
 
-      setDirection(nextIndex > activeIndex ? 1 : -1);
       setActiveIndex(nextIndex);
     },
-    [activeIndex, slides.length],
+    [slides.length],
   );
 
   const nextSlide = useCallback(() => {
-    setDirection(1);
     setActiveIndex((current) => (current + 1) % slides.length);
   }, [slides.length]);
 
   const previousSlide = useCallback(() => {
-    setDirection(-1);
-
     setActiveIndex((current) => (current - 1 + slides.length) % slides.length);
   }, [slides.length]);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
-      setDirection(1);
-
       setActiveIndex((current) => (current + 1) % slides.length);
     }, 7000);
 

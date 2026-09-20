@@ -124,7 +124,7 @@ export async function rateLimit(
 
   const now = new Date();
 
-  let record = await RateLimit.findOne({ key });
+  const record = await RateLimit.findOne({ key });
 
   if (!record) {
     await RateLimit.create({
@@ -198,7 +198,7 @@ export async function checkSuccessfulLoginLimit(
 
   const now = new Date();
 
-  let record = await RateLimit.findOne({ key });
+  const record = await RateLimit.findOne({ key });
 
   /* First successful login */
   if (!record) {

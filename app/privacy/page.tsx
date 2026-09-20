@@ -6,11 +6,8 @@ import {
   ArrowRight,
   ArrowUpRight,
   Check,
-  ChevronDown,
-  Cookie,
   Database,
   Eye,
-  FileText,
   KeyRound,
   Lock,
   Mail,
@@ -166,7 +163,7 @@ export default function PrivacyPolicyPage() {
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            className="absolute -right-40 -top-40 h-[520px] w-[520px] rounded-full bg-[#9b7b46]/15 blur-[120px]"
+            className="absolute -right-40 -top-40 h-130 w-130 rounded-full bg-[#9b7b46]/15 blur-[120px]"
           />
 
           <motion.div
@@ -179,13 +176,13 @@ export default function PrivacyPolicyPage() {
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            className="absolute -bottom-52 left-[-120px] h-[500px] w-[500px] rounded-full bg-[#d8c5aa]/45 blur-[120px]"
+            className="absolute -bottom-52 -left-30 h-125 w-125 rounded-full bg-[#d8c5aa]/45 blur-[120px]"
           />
 
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(155,123,70,0.08),transparent_32%)]" />
         </div>
 
-        <div className="relative mx-auto max-w-[1440px] px-5 pb-16 pt-7 sm:px-7 sm:pb-20 lg:px-10 lg:pb-24">
+        <div className="relative mx-auto max-w-360 px-5 pb-16 pt-7 sm:px-7 sm:pb-20 lg:px-10 lg:pb-24">
           {/* TOP BAR */}
 
           <motion.div
@@ -240,7 +237,7 @@ export default function PrivacyPolicyPage() {
                   duration: 0.9,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className="mt-7 max-w-[850px] font-serif text-[clamp(4rem,9vw,8.8rem)] font-medium leading-[0.82] tracking-[-0.07em]"
+                className="mt-7 max-w-212.25 font-serif text-[clamp(4rem,9vw,8.8rem)] font-medium leading-[0.82] tracking-[-0.07em]"
               >
                 Your data.
                 <br />
@@ -251,7 +248,7 @@ export default function PrivacyPolicyPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5, duration: 0.8 }}
-                className="mt-8 max-w-[600px] text-sm leading-7 text-zinc-600 sm:text-[15px] sm:leading-8"
+                className="mt-8 max-w-150 text-sm leading-7 text-zinc-600 sm:text-[15px] sm:leading-8"
               >
                 We believe privacy should be understandable, not hidden behind
                 complicated language. This policy explains what information we
@@ -280,7 +277,7 @@ export default function PrivacyPolicyPage() {
                 duration: 1,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="relative mx-auto h-[340px] w-[340px] sm:h-[390px] sm:w-[390px]"
+              className="relative mx-auto h-85 w-[340px] sm:h-[390px] sm:w-[390px]"
             >
               <motion.div
                 animate={{ rotate: 360 }}
@@ -474,7 +471,7 @@ export default function PrivacyPolicyPage() {
           </motion.div>
 
           <div className="mt-16">
-            {privacySections.map((section, index) => (
+            {privacySections.map((section) => (
               <motion.article
                 key={section.number}
                 id={`section-${section.number}`}
