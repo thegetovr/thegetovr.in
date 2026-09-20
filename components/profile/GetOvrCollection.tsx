@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
@@ -19,13 +20,15 @@ export default function GetOvrCollection() {
       ================================================= */}
 
       <div
-        className="pointer-events-none absolute right-[-5px] top-1/2 z-10 
-      h-[225px] w-[225px] -translate-y-1/2 transition-transform 
+        className="pointer-events-none absolute right-[-5px] top-1/2 z-10
+      h-[225px] w-[225px] -translate-y-1/2 transition-transform
       duration-500 group-hover:scale-[1.04]"
       >
-        <img
+        <Image
           src="/images/getovr-model.png"
           alt="GETOVR Collection"
+          width={225}
+          height={225}
           className="h-full w-full object-contain object-center mix-blend-multiply"
         />
       </div>
@@ -73,7 +76,7 @@ export default function GetOvrCollection() {
           <Link
             href="/shop"
             className="inline-flex items-center gap-2 rounded-lg border border-[#cbb99f]
-            bg-[#eee3d5] hover:bg-[#e6d8c6] px-3.5 py-2 text-[10px] font-medium text-[#332f2a] shadow-sm 
+            bg-[#eee3d5] hover:bg-[#e6d8c6] px-3.5 py-2 text-[10px] font-medium text-[#332f2a] shadow-sm
              backdrop-blur-sm transition-all duration-200 hover:shadow-md"
           >
             Shop Collection

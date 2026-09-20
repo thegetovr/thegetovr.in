@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
@@ -27,13 +28,33 @@ interface Order {
   deliveryText: string;
 }
 
+interface FullOrderItem {
+  [key: string]: unknown;
+}
+
+interface FullOrderCustomer {
+  [key: string]: unknown;
+}
+
+interface FullOrder {
+  items: FullOrderItem[];
+  orderNumber: string;
+  status: string;
+  createdAt: string;
+  customer: FullOrderCustomer;
+  subtotal: string | number;
+  discount: string | number;
+  total: string | number;
+  coupon?: string;
+}
+
 interface OrderDetailsProps {
   order: Order;
   onBack: () => void;
 }
 
 export default function OrderDetails({ order, onBack }: OrderDetailsProps) {
-  const [fullOrder, setFullOrder] = useState<any>(null);
+  const [fullOrder, setFullOrder] = useState<FullOrder | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -50,7 +71,7 @@ export default function OrderDetails({ order, onBack }: OrderDetailsProps) {
           return;
         }
 
-        setFullOrder(result.order);
+        setFullOrder(result.order as FullOrder);
       } catch (error) {
         console.error("Order Details Error:", error);
       } finally {
@@ -70,6 +91,7 @@ export default function OrderDetails({ order, onBack }: OrderDetailsProps) {
       </section>
     );
   }
+
   return (
     <section className="min-w-0 flex-1 bg-white px-8 py-7">
       {/* =====================================================
@@ -129,15 +151,17 @@ export default function OrderDetails({ order, onBack }: OrderDetailsProps) {
           {/* =================================================
               ORDER ITEMS
           ================================================= */}
-          <OrderItems items={fullOrder.items} />
+          <OrderItems items={fullOrder?.items ?? []} />
+
           {/* =================================================
               ORDER STATUS
           ================================================= */}
           <OrderTrackingCard
-            orderNumber={fullOrder.orderNumber}
-            status={fullOrder.status}
-            createdAt={fullOrder.createdAt}
+            orderNumber={fullOrder?.orderNumber ?? order.id}
+            status={fullOrder?.status ?? order.status}
+            createdAt={fullOrder?.createdAt ?? ""}
           />
+
           {/* =================================================
               PAYMENT DETAILS
           ================================================= */}
@@ -247,13 +271,15 @@ export default function OrderDetails({ order, onBack }: OrderDetailsProps) {
 
           {/*   <CustomerCard customer={fullOrder.customer} variant="profile" /> */}
 
-          <ShippingCard customer={fullOrder.customer} />
+          <ShippingCard customer={fullOrder?.customer} />
+
           <PaymentSummary
-            subtotal={fullOrder.subtotal}
-            discount={fullOrder.discount}
-            total={fullOrder.total}
-            coupon={fullOrder.coupon}
+            subtotal={fullOrder?.subtotal ?? 0}
+            discount={fullOrder?.discount ?? 0}
+            total={fullOrder?.total ?? 0}
+            coupon={fullOrder?.coupon}
           />
+
           {/* =================================================
               ORDER SUMMARY
           ================================================= */}

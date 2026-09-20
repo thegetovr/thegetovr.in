@@ -1,58 +1,192 @@
 "use client";
 
+import Image from "next/image";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Heart, ShoppingBag, Share2, ChevronDown, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import { useCartStore } from "@/stores/cartStore";
 
 interface WishlistItem {
   id: string;
   name: string;
   image: string;
-  variant?: string;
   price: number;
-  originalPrice?: number;
   stock: boolean;
 }
 
-const wishlistItems: WishlistItem[] = [
-  {
-    id: "1",
-    name: "GETOVR Oversized Hoodie",
-    image: "/images/products/hoodie.png",
-    variant: "Black / XL",
-    price: 1999,
-    originalPrice: 2999,
-    stock: true,
-  },
-  {
-    id: "2",
-    name: "GETOVR Runner Sneakers",
-    image: "/images/products/sneakers.png",
-    variant: "White / 42",
-    price: 2499,
-    originalPrice: 3499,
-    stock: true,
-  },
-  {
-    id: "3",
-    name: "GETOVR Minimal Backpack",
-    image: "/images/products/backpack.png",
-    variant: "Black",
-    price: 1499,
-    originalPrice: 1999,
-    stock: true,
-  },
-  {
-    id: "4",
-    name: "GETOVR Classic Cap",
-    image: "/images/products/cap.png",
-    variant: "Black",
-    price: 999,
-    originalPrice: 1299,
-    stock: true,
-  },
-];
-
 export default function Wishlist() {
+  const router = useRouter();
+
+  const addReadyMadeItem = useCartStore((state) => state.addReadyMadeItem);
+
+  const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
+  const [removingId, setRemovingId] = useState<string | null>(null);
+  const [addingId, setAddingId] = useState<string | null>(null);
+  const [movingAll, setMovingAll] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadWishlist = async () => {
+      try {
+        const response = await fetch("/api/wishlist", {
+          method: "GET",
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Failed to load wishlist");
+        }
+
+        if (!cancelled) {
+          setWishlistItems(data.items ?? []);
+        }
+      } catch (error) {
+        console.error("LOAD WISHLIST ERROR:", error);
+
+        if (!cancelled) {
+          setWishlistItems([]);
+        }
+      }
+    };
+
+    loadWishlist();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  /* =====================================================
+     REMOVE FROM WISHLIST
+  ===================================================== */
+
+  const removeFromWishlist = async (productId: string) => {
+    try {
+      setRemovingId(productId);
+
+      const response = await fetch("/api/wishlist", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          productId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Failed to remove product");
+      }
+
+      setWishlistItems((current) =>
+        current.filter((item) => item.id !== productId),
+      );
+    } catch (error) {
+      console.error("REMOVE WISHLIST ERROR:", error);
+    } finally {
+      setRemovingId(null);
+    }
+  };
+
+  /* =====================================================
+     ADD SINGLE ITEM TO CART
+     No redirect
+  ===================================================== */
+
+  const handleAddToCart = (item: WishlistItem) => {
+    if (!item.stock || addingId) {
+      return;
+    }
+
+    try {
+      setAddingId(item.id);
+
+      addReadyMadeItem({
+        id: crypto.randomUUID(),
+        kind: "ready-made",
+        productId: item.id,
+        name: item.name,
+        image: item.image,
+        quantity: 1,
+        unitPrice: item.price,
+        totalPrice: item.price,
+        createdAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error("ADD WISHLIST ITEM TO CART ERROR:", error);
+    } finally {
+      setAddingId(null);
+    }
+  };
+
+  /* =====================================================
+     MOVE ALL TO CART
+     No redirect
+  ===================================================== */
+
+  const handleMoveAllToCart = () => {
+    if (wishlistItems.length === 0 || movingAll) {
+      return;
+    }
+
+    const availableItems = wishlistItems.filter((item) => item.stock);
+
+    if (availableItems.length === 0) {
+      return;
+    }
+
+    try {
+      setMovingAll(true);
+
+      availableItems.forEach((item) => {
+        addReadyMadeItem({
+          id: crypto.randomUUID(),
+          kind: "ready-made",
+          productId: item.id,
+          name: item.name,
+          image: item.image,
+          quantity: 1,
+          unitPrice: item.price,
+          totalPrice: item.price,
+          createdAt: new Date().toISOString(),
+        });
+      });
+    } catch (error) {
+      console.error("MOVE ALL TO CART ERROR:", error);
+    } finally {
+      setMovingAll(false);
+    }
+  };
+
+  /* =====================================================
+     SHARE WISHLIST
+  ===================================================== */
+
+  const shareWishlist = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "My Getovr Wishlist",
+          text: "Check out my wishlist on The Getovr.",
+          url: window.location.href,
+        });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+      }
+    } catch {
+      // User cancelled sharing.
+    }
+  };
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 40 }}
@@ -83,6 +217,7 @@ export default function Wishlist() {
         <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:items-center sm:gap-3">
           <button
             type="button"
+            onClick={shareWishlist}
             className="inline-flex min-w-0 items-center justify-center gap-1.5 rounded-lg border border-[#ddd5ca] bg-white px-3 py-2.5 text-xs font-medium text-zinc-800 transition hover:bg-[#fcfaf7] sm:gap-2 sm:px-4 sm:text-sm"
           >
             <Share2 size={16} strokeWidth={1.7} className="shrink-0" />
@@ -92,11 +227,19 @@ export default function Wishlist() {
 
           <button
             type="button"
-            className="inline-flex min-w-0 items-center justify-center gap-1.5 rounded-lg bg-black px-3 py-2.5 text-xs font-medium text-white transition hover:bg-gray-800 sm:gap-2 sm:px-4 sm:text-sm"
+            onClick={handleMoveAllToCart}
+            disabled={
+              wishlistItems.length === 0 ||
+              movingAll ||
+              !wishlistItems.some((item) => item.stock)
+            }
+            className="inline-flex min-w-0 items-center justify-center gap-1.5 rounded-lg bg-black px-3 py-2.5 text-xs font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-300 sm:gap-2 sm:px-4 sm:text-sm"
           >
             <ShoppingBag size={16} strokeWidth={1.7} className="shrink-0" />
 
-            <span className="truncate">Move All to Cart</span>
+            <span className="truncate">
+              {movingAll ? "Moving..." : "Move All to Cart"}
+            </span>
           </button>
         </div>
       </div>
@@ -129,9 +272,18 @@ export default function Wishlist() {
 
       <div className="mt-5 min-w-0 overflow-hidden rounded-xl border border-[#ddd5ca] bg-white">
         {wishlistItems.length > 0 ? (
-          wishlistItems.map((item) => <WishlistRow key={item.id} item={item} />)
+          wishlistItems.map((item) => (
+            <WishlistRow
+              key={item.id}
+              item={item}
+              removing={removingId === item.id}
+              adding={addingId === item.id}
+              onRemove={removeFromWishlist}
+              onAddToCart={handleAddToCart}
+            />
+          ))
         ) : (
-          <EmptyWishlist />
+          <EmptyWishlist onStartShopping={() => router.push("/shop")} />
         )}
       </div>
     </motion.section>
@@ -142,11 +294,19 @@ export default function Wishlist() {
    WISHLIST ROW
 ========================================================= */
 
-function WishlistRow({ item }: { item: WishlistItem }) {
-  const discount =
-    item.originalPrice &&
-    Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100);
-
+function WishlistRow({
+  item,
+  removing,
+  adding,
+  onRemove,
+  onAddToCart,
+}: {
+  item: WishlistItem;
+  removing: boolean;
+  adding: boolean;
+  onRemove: (productId: string) => void;
+  onAddToCart: (item: WishlistItem) => void;
+}) {
   return (
     <div className="border-b border-[#e8e2da] p-3.5 last:border-b-0 sm:p-4 md:px-5 md:py-4">
       {/* =================================================
@@ -154,27 +314,27 @@ function WishlistRow({ item }: { item: WishlistItem }) {
       ================================================= */}
 
       <div className="block md:hidden">
-        {/* PRODUCT */}
-
         <div className="flex min-w-0 items-start gap-3">
           <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#f8f6f2]">
-            <img
-              src={item.image}
-              alt={item.name}
-              className="h-full w-full object-contain"
-            />
+            {item.image ? (
+              <Image
+                src={item.image}
+                alt={item.name}
+                width={72}
+                height={72}
+                className="h-full w-full object-contain"
+              />
+            ) : (
+              <span className="text-[9px] uppercase tracking-wider text-zinc-400">
+                No Image
+              </span>
+            )}
           </div>
 
           <div className="min-w-0 flex-1">
             <h2 className="line-clamp-2 text-sm font-semibold leading-5 text-black">
               {item.name}
             </h2>
-
-            {item.variant && (
-              <p className="mt-1 truncate text-xs text-zinc-500">
-                {item.variant}
-              </p>
-            )}
 
             <p
               className={`mt-2 text-xs font-medium ${
@@ -185,12 +345,12 @@ function WishlistRow({ item }: { item: WishlistItem }) {
             </p>
           </div>
 
-          {/* REMOVE */}
-
           <button
             type="button"
+            onClick={() => onRemove(item.id)}
+            disabled={removing}
             aria-label={`Remove ${item.name} from wishlist`}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-red-500 transition hover:bg-red-50"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-red-500 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Trash2 size={17} strokeWidth={1.8} />
           </button>
@@ -200,33 +360,26 @@ function WishlistRow({ item }: { item: WishlistItem }) {
 
         <div className="mt-4 flex min-w-0 items-center justify-between gap-3 border-t border-[#eee9e2] pt-3.5">
           <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <span className="text-sm font-semibold text-black">
-                ₹{item.price.toLocaleString("en-IN")}
-              </span>
-
-              {item.originalPrice && (
-                <>
-                  <span className="text-xs text-zinc-400 line-through">
-                    ₹{item.originalPrice.toLocaleString("en-IN")}
-                  </span>
-
-                  <span className="text-xs font-medium text-red-500">
-                    {discount}% OFF
-                  </span>
-                </>
-              )}
-            </div>
+            <span className="text-sm font-semibold text-black">
+              ₹{item.price.toLocaleString("en-IN")}
+            </span>
           </div>
 
           <button
             type="button"
-            disabled={!item.stock}
+            onClick={() => onAddToCart(item)}
+            disabled={!item.stock || adding}
             className="inline-flex min-w-0 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-[#eee3d5] px-3 py-2.5 text-xs font-medium text-zinc-900 transition hover:bg-[#e6d8c6] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
           >
             <ShoppingBag size={15} strokeWidth={1.8} />
 
-            <span>{item.stock ? "Add to Cart" : "Out of Stock"}</span>
+            <span>
+              {adding
+                ? "Adding..."
+                : item.stock
+                  ? "Add to Cart"
+                  : "Out of Stock"}
+            </span>
           </button>
         </div>
       </div>
@@ -239,11 +392,19 @@ function WishlistRow({ item }: { item: WishlistItem }) {
         {/* IMAGE */}
 
         <div className="flex h-[88px] w-[88px] items-center justify-center overflow-hidden rounded-lg bg-[#f8f6f2]">
-          <img
-            src={item.image}
-            alt={item.name}
-            className="h-full w-full object-contain transition duration-300 hover:scale-105"
-          />
+          {item.image ? (
+            <Image
+              src={item.image}
+              alt={item.name}
+              width={88}
+              height={88}
+              className="h-full w-full object-contain transition duration-300 hover:scale-105"
+            />
+          ) : (
+            <span className="text-[9px] uppercase tracking-wider text-zinc-400">
+              No Image
+            </span>
+          )}
         </div>
 
         {/* INFO */}
@@ -252,10 +413,6 @@ function WishlistRow({ item }: { item: WishlistItem }) {
           <h2 className="truncate text-sm font-semibold text-black">
             {item.name}
           </h2>
-
-          {item.variant && (
-            <p className="mt-1 text-xs text-zinc-500">{item.variant}</p>
-          )}
 
           <div className="mt-2 flex items-center gap-2">
             <span
@@ -271,23 +428,9 @@ function WishlistRow({ item }: { item: WishlistItem }) {
         {/* PRICE */}
 
         <div>
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="text-sm font-semibold text-black">
-              ₹{item.price.toLocaleString("en-IN")}
-            </span>
-
-            {item.originalPrice && (
-              <span className="text-xs text-zinc-400 line-through">
-                ₹{item.originalPrice.toLocaleString("en-IN")}
-              </span>
-            )}
-          </div>
-
-          {item.originalPrice && (
-            <p className="mt-1 text-xs font-medium text-red-500">
-              {discount}% OFF
-            </p>
-          )}
+          <span className="text-sm font-semibold text-black">
+            ₹{item.price.toLocaleString("en-IN")}
+          </span>
         </div>
 
         {/* ACTIONS */}
@@ -295,21 +438,25 @@ function WishlistRow({ item }: { item: WishlistItem }) {
         <div className="flex flex-col items-end gap-2">
           <button
             type="button"
+            onClick={() => onRemove(item.id)}
+            disabled={removing}
             aria-label={`Remove ${item.name} from wishlist`}
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-red-500 transition hover:text-red-600"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-red-500 transition hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Trash2 size={15} strokeWidth={1.8} />
-            Remove
+
+            {removing ? "Removing..." : "Remove"}
           </button>
 
           <button
             type="button"
-            disabled={!item.stock}
+            onClick={() => onAddToCart(item)}
+            disabled={!item.stock || adding}
             className="inline-flex items-center gap-1.5 rounded-lg bg-[#eee3d5] px-3 py-2 text-xs font-medium text-zinc-900 transition hover:bg-[#e6d8c6] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
           >
             <ShoppingBag size={15} strokeWidth={1.8} />
 
-            {item.stock ? "Add to Cart" : "Out of Stock"}
+            {adding ? "Adding..." : item.stock ? "Add to Cart" : "Out of Stock"}
           </button>
         </div>
       </div>
@@ -321,7 +468,7 @@ function WishlistRow({ item }: { item: WishlistItem }) {
    EMPTY WISHLIST
 ========================================================= */
 
-function EmptyWishlist() {
+function EmptyWishlist({ onStartShopping }: { onStartShopping: () => void }) {
   return (
     <div className="flex min-h-[320px] flex-col items-center justify-center px-5 text-center sm:min-h-[360px]">
       <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#f5f1eb]">
@@ -338,6 +485,7 @@ function EmptyWishlist() {
 
       <button
         type="button"
+        onClick={onStartShopping}
         className="mt-5 rounded-lg bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-gray-800"
       >
         Start Shopping

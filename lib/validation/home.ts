@@ -1,11 +1,5 @@
 import { z } from "zod";
 
-const homeMediaSchema = z.object({
-  url: z.string().trim().min(1),
-  publicId: z.string().trim().min(1),
-  alt: z.string().trim().default(""),
-});
-
 const homeTrustPointSchema = z.object({
   icon: z.string().trim().min(1, "Icon is required"),
   title: z.string().trim().min(1, "Trust point title is required"),
@@ -17,15 +11,9 @@ export const homeHeroSchema = z.object({
   heading: z.string().trim().min(1, "Heading is required"),
   description: z.string().trim().min(1, "Description is required"),
 
-  primaryCtaLabel: z
-    .string()
-    .trim()
-    .min(1, "Primary button label is required"),
+  primaryCtaLabel: z.string().trim().min(1, "Primary button label is required"),
 
-  primaryCtaLink: z
-    .string()
-    .trim()
-    .min(1, "Primary button link is required"),
+  primaryCtaLink: z.string().trim().min(1, "Primary button link is required"),
 
   secondaryCtaLabel: z
     .string()

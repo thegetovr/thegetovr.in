@@ -44,7 +44,11 @@ export default function AddressForm({
   const [form, setForm] = useState<AddressFormData>(initialData ?? emptyForm);
 
   useEffect(() => {
-    setForm(initialData ?? emptyForm);
+    const nextForm = initialData ?? emptyForm;
+
+    queueMicrotask(() => {
+      setForm(nextForm);
+    });
   }, [initialData]);
 
   const handleChange = (

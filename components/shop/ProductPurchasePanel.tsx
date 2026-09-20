@@ -41,6 +41,7 @@ export default function ProductPurchasePanel({
       const response = await fetch("/api/auth/session", {
         method: "GET",
         cache: "no-store",
+        credentials: "include",
       });
 
       const session = await response.json();
@@ -55,7 +56,6 @@ export default function ProductPurchasePanel({
       const coverImage =
         product.media.find((media) => media.isCover) ?? product.media[0];
 
-      // Existing cart functionality remains unchanged.
       addReadyMadeItem({
         id: crypto.randomUUID(),
         kind: "ready-made",
@@ -68,12 +68,10 @@ export default function ProductPurchasePanel({
         createdAt: new Date().toISOString(),
       });
 
-      // Existing behavior remains unchanged.
-      router.push("/cart");
+      // Stay on the current product page after adding to cart.
     } catch (error) {
       console.error("Add to cart login check failed:", error);
 
-      // If session check itself fails, don't add the item.
       router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
     } finally {
       setCheckingLogin(false);
