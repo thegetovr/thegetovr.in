@@ -7,6 +7,12 @@ import { connectToDatabase } from "@/lib/mongodb";
 import Wishlist from "@/models/Wishlist";
 import Product from "@/models/Product";
 
+interface ProductMedia {
+  isCover?: boolean;
+  url?: string;
+  order?: number;
+}
+
 async function getUserId() {
   const cookieStore = await cookies();
   const token = cookieStore.get("auth_token")?.value;
@@ -57,7 +63,9 @@ function invalidProduct() {
 async function getWishlistResponse(userId: string) {
   const wishlist = await Wishlist.findOne({ userId }).lean();
 
-  const productIds = (wishlist?.productIds ?? []).map((id) => String(id));
+  const productIds = (wishlist?.productIds ?? []).map(
+    (id: mongoose.Types.ObjectId) => String(id),
+  );
 
   if (productIds.length === 0) {
     return NextResponse.json({
@@ -81,7 +89,7 @@ async function getWishlistResponse(userId: string) {
   );
 
   const items = productIds
-    .map((id) => {
+    .map((id: string) => {
       const product = productMap.get(id);
 
       if (!product) {
@@ -89,8 +97,10 @@ async function getWishlistResponse(userId: string) {
       }
 
       const coverImage =
-        product.media?.find((media) => media.isCover)?.url ??
-        product.media?.sort((a, b) => a.order - b.order)[0]?.url ??
+        product.media?.find((media: ProductMedia) => media.isCover)?.url ??
+        product.media?.sort(
+          (a: ProductMedia, b: ProductMedia) => (a.order ?? 0) - (b.order ?? 0),
+        )[0]?.url ??
         "";
 
       return {
