@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
   ShoppingBag,
   Clock3,
@@ -17,7 +18,7 @@ import {
   Headphones,
   ArrowRight,
 } from "lucide-react";
-import image from "next/image";
+
 import { useEffect, useState } from "react";
 
 interface UserData {
@@ -350,10 +351,11 @@ export default function Overview({ user }: OverviewProps) {
       <div className="relative mt-5 h-[200px] overflow-hidden rounded-xl bg-black">
         {/* Banner Image */}
 
-        <img
+        <Image
           src="/images/arrival_banner.png"
           alt="GETOVR New Arrivals"
-          className="absolute inset-0 h-full w-full object-cover"
+          fill
+          className="object-cover"
         />
 
         {/* Dark Overlay */}

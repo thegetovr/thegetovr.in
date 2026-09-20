@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { SlidersHorizontal, ChevronDown, Check } from "lucide-react";
 
@@ -239,12 +239,12 @@ export default function OrderFilter({
   // CLOSE WITHOUT APPLYING
   // =======================================================
 
-  const handleCloseFilter = () => {
+  const handleCloseFilter = useCallback(() => {
     setDraftSort(appliedSort);
     setDraftYear(appliedYear);
 
     setFilterOpen(false);
-  };
+  }, [appliedSort, appliedYear]);
 
   // =======================================================
   // OUTSIDE CLICK
@@ -267,7 +267,7 @@ export default function OrderFilter({
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
-  }, [filterOpen, appliedSort, appliedYear]);
+  }, [filterOpen, appliedSort, appliedYear, handleCloseFilter]);
 
   // =======================================================
   // ACTIVE FILTER

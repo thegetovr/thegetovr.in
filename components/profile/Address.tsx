@@ -49,30 +49,42 @@ export default function Addresses() {
   // LOAD ADDRESSES
   // =====================================================
 
-  const loadAddresses = async () => {
-    try {
-      setLoading(true);
-
-      const response = await fetch("/api/addresses", {
-        cache: "no-store",
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setAddresses(data.addresses);
-      } else {
-        console.error(data.message);
-      }
-    } catch (error) {
-      console.error("Load addresses error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    let cancelled = false;
+
+    const loadAddresses = async () => {
+      try {
+        if (!cancelled) {
+          setLoading(true);
+        }
+
+        const response = await fetch("/api/addresses", {
+          cache: "no-store",
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          if (!cancelled) {
+            setAddresses(data.addresses);
+          }
+        } else {
+          console.error(data.message);
+        }
+      } catch (error) {
+        console.error("Load addresses error:", error);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
     loadAddresses();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // =====================================================

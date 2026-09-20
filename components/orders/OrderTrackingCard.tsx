@@ -1,5 +1,5 @@
 import OrderHeader from "./OrderHeader";
-import OrderTimeline from "./OrderTimeline";
+
 import { ORDER_STATUS } from "@/lib/order-status";
 
 interface StatusHistoryItem {

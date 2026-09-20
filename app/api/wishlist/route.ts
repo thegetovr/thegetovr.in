@@ -20,10 +20,7 @@ async function getUserId() {
       userId?: string;
     };
 
-    if (
-      !decoded.userId ||
-      !mongoose.Types.ObjectId.isValid(decoded.userId)
-    ) {
+    if (!decoded.userId || !mongoose.Types.ObjectId.isValid(decoded.userId)) {
       return null;
     }
 
@@ -60,9 +57,56 @@ function invalidProduct() {
 async function getWishlistResponse(userId: string) {
   const wishlist = await Wishlist.findOne({ userId }).lean();
 
+  const productIds = (wishlist?.productIds ?? []).map((id) => String(id));
+
+  if (productIds.length === 0) {
+    return NextResponse.json({
+      success: true,
+      items: [],
+      productIds: [],
+    });
+  }
+
+  const products = await Product.find({
+    _id: {
+      $in: productIds,
+    },
+    status: "active",
+  })
+    .select("_id name price stock media")
+    .lean();
+
+  const productMap = new Map(
+    products.map((product) => [String(product._id), product]),
+  );
+
+  const items = productIds
+    .map((id) => {
+      const product = productMap.get(id);
+
+      if (!product) {
+        return null;
+      }
+
+      const coverImage =
+        product.media?.find((media) => media.isCover)?.url ??
+        product.media?.sort((a, b) => a.order - b.order)[0]?.url ??
+        "";
+
+      return {
+        id: String(product._id),
+        name: product.name,
+        image: coverImage,
+        price: product.price,
+        stock: product.stock > 0,
+      };
+    })
+    .filter(Boolean);
+
   return NextResponse.json({
     success: true,
-    productIds: (wishlist?.productIds ?? []).map((id: unknown) => String(id)),
+    items,
+    productIds,
   });
 }
 
