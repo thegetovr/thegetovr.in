@@ -14,6 +14,8 @@ import OrderItems from "@/components/orders/OrderItems";
 import PaymentSummary from "@/components/orders/PaymentSummary";
 import ShippingCard from "@/components/orders/ShippingCard";
 import OrderTrackingCard from "@/components/orders/OrderTrackingCard";
+import type { CartItem } from "@/types/cart";
+import type { CustomerInfo } from "@/types/order";
 
 interface Order {
   id: string;
@@ -151,7 +153,9 @@ export default function OrderDetails({ order, onBack }: OrderDetailsProps) {
           {/* =================================================
               ORDER ITEMS
           ================================================= */}
-          <OrderItems items={fullOrder?.items ?? []} />
+          <OrderItems
+            items={(fullOrder?.items ?? []) as unknown as CartItem[]}
+          />
 
           {/* =================================================
               ORDER STATUS
@@ -271,12 +275,14 @@ export default function OrderDetails({ order, onBack }: OrderDetailsProps) {
 
           {/*   <CustomerCard customer={fullOrder.customer} variant="profile" /> */}
 
-          <ShippingCard customer={fullOrder?.customer} />
+          <ShippingCard
+            customer={fullOrder?.customer as unknown as CustomerInfo}
+          />
 
           <PaymentSummary
-            subtotal={fullOrder?.subtotal ?? 0}
-            discount={fullOrder?.discount ?? 0}
-            total={fullOrder?.total ?? 0}
+            subtotal={Number(fullOrder?.subtotal ?? 0)}
+            discount={Number(fullOrder?.discount ?? 0)}
+            total={Number(fullOrder?.total ?? 0)}
             coupon={fullOrder?.coupon}
           />
 
