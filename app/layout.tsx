@@ -6,6 +6,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Reveal from "@/components/animations/Reveal";
 import PageTransition from "@/components/animations/PageTransition";
+import AnnouncementBar from "@/components/layout/AnnouncementBar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,6 +32,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${playfair.variable}`}>
+        <AnnouncementBar />
+
         <Navbar />
 
         <PageTransition>{children}</PageTransition>
