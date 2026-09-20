@@ -583,7 +583,7 @@ export default function ReturnsPage() {
                 Once an eligible returned product is received and successfully
                 inspected, the applicable refund will be initiated to the
                 original payment method used for the order, subject to the
-                payment provider's processing time.
+                payment provider&apos;s processing time.
               </p>
             </div>
 
@@ -658,7 +658,7 @@ export default function ReturnsPage() {
 
             <p className="mt-4 text-sm leading-7 text-zinc-600">
               Customized products may not be cancellable once production has
-              started because they are created according to the customer's
+              started because they are created according to the customer&apos;s
               specifications.
             </p>
           </div>
@@ -713,7 +713,7 @@ export default function ReturnsPage() {
             </p>
 
             <h2 className="mt-3 font-serif text-3xl tracking-[-0.035em] sm:text-4xl">
-              Let's sort it out.
+              Let&apos;s sort it out.
             </h2>
 
             <p className="mt-3 max-w-[550px] text-sm leading-7 text-zinc-500">

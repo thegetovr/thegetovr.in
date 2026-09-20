@@ -44,7 +44,9 @@ const sections = [
 
         <ul>
           <li>Keep your account information accurate and updated.</li>
-          <li>Do not use another person's account without authorization.</li>
+          <li>
+            Do not use another person&apos;s account without authorization.
+          </li>
           <li>Keep your login credentials confidential.</li>
           <li>Notify us if you believe your account has been compromised.</li>
         </ul>
