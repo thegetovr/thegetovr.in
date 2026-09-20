@@ -120,6 +120,9 @@ export async function POST(request: Request) {
       {
         userId: user._id.toString(),
         email: user.email,
+
+        // Admin/User Role
+        role: user.role ?? "user",
       },
       jwtSecret,
       {
@@ -137,6 +140,9 @@ export async function POST(request: Request) {
           lastName: user.lastName,
           email: user.email,
           phone: user.phone,
+
+          // Return role to frontend
+          role: user.role ?? "user",
         },
       },
       { status: 200 },

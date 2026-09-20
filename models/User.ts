@@ -7,6 +7,9 @@ export interface IUser {
   phone: string;
   password: string;
 
+  // Role
+  role: "user" | "admin";
+
   // Consent
   consentGiven: boolean;
   consentAt?: Date;
@@ -53,6 +56,17 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: true,
       minlength: 8,
+    },
+
+    // =====================================================
+    // ROLE
+    // =====================================================
+
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+      required: true,
     },
 
     // =====================================================
