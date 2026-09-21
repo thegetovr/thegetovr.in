@@ -1,13 +1,13 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
 
-const announcements = [
-  "FREE DELIVERY ON ORDERS ABOVE ₹999",
-  "NEW COLLECTION IS LIVE",
-  "USE CODE GETOVR10 FOR 10% OFF",
-  "PREMIUM QUALITY • SECURE CHECKOUT",
-];
+interface Announcement {
+  _id: string;
+  text: string;
+  order: number;
+}
 
 function AnnouncementItem({ text }: { text: string }) {
   return (
@@ -28,6 +28,38 @@ function AnnouncementItem({ text }: { text: string }) {
 }
 
 export default function AnnouncementBar() {
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+
+  useEffect(() => {
+    async function fetchAnnouncements() {
+      try {
+        const response = await fetch("/api/announcements", {
+          cache: "no-store",
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          setAnnouncements(data.announcements ?? []);
+        }
+      } catch (error) {
+        console.error("❌ Failed to load announcements:", error);
+      }
+    }
+
+    fetchAnnouncements();
+  }, []);
+
+  if (announcements.length === 0) {
+    return null;
+  }
+
+  /*
+   * Repeat the announcements so the marquee
+   * always has enough content to cover the screen.
+   */
+  const loopAnnouncements = [...announcements, ...announcements];
+
   return (
     <div className="relative z-[60] w-full overflow-hidden bg-[var(--color-charcoal-900)] text-white">
       {/* Left Fade */}
@@ -36,21 +68,24 @@ export default function AnnouncementBar() {
       {/* Right Fade */}
       <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-[var(--color-charcoal-900)] to-transparent" />
 
-      <div className="flex h-9 w-max items-center sm:h-10">
+      <div className="flex h-9 w-max animate-marquee items-center sm:h-10">
         {/* First Group */}
-        <div className="flex shrink-0 animate-marquee items-center">
-          {announcements.map((announcement, index) => (
-            <AnnouncementItem key={`first-${index}`} text={announcement} />
+        <div className="flex shrink-0 items-center">
+          {loopAnnouncements.map((announcement, index) => (
+            <AnnouncementItem
+              key={`first-${announcement._id}-${index}`}
+              text={announcement.text}
+            />
           ))}
         </div>
 
         {/* Second Group */}
-        <div
-          className="flex shrink-0 animate-marquee items-center"
-          aria-hidden="true"
-        >
-          {announcements.map((announcement, index) => (
-            <AnnouncementItem key={`second-${index}`} text={announcement} />
+        <div className="flex shrink-0 items-center" aria-hidden="true">
+          {loopAnnouncements.map((announcement, index) => (
+            <AnnouncementItem
+              key={`second-${announcement._id}-${index}`}
+              text={announcement.text}
+            />
           ))}
         </div>
       </div>

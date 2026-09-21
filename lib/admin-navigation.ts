@@ -1,4 +1,5 @@
 import type { AdminNavigationItem } from "@/types/admin";
+
 import {
   DashboardIcon,
   OrdersIcon,
@@ -42,7 +43,7 @@ export const adminNavigation: AdminNavigationItem[] = [
     href: "/admin/customers",
     icon: CustomersIcon,
   },
-    {
+  {
     name: "Reviews",
     href: "/admin/reviews",
     icon: ReviewsIcon,
@@ -56,6 +57,11 @@ export const adminNavigation: AdminNavigationItem[] = [
     name: "Analytics",
     href: "/admin/analytics",
     icon: AnalyticsIcon,
+  },
+  {
+    name: "Announcements",
+    href: "/admin/announcements",
+    icon: ReviewsIcon,
   },
   {
     name: "Settings",
