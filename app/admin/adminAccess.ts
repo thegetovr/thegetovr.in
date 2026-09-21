@@ -2,9 +2,9 @@ import "server-only";
 
 const ADMIN_EMAILS = [
   "admin@thegetovr.in",
-  "Shivdeepraina@gmail.com",
-  "Dikshitmishra1@gmail.com",
-
+  "shivdeepraina@gmail.com",
+  "dikshitmishra1@gmail.com",
+  // always add in lowercase to avoid case sensitivity issues
   // Add more admin emails here when needed
   // "another-admin@example.com",
 ];
